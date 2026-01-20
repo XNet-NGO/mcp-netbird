@@ -1,6 +1,15 @@
 mcp-netbird
-Copyright 2025 aantti
+Copyright 2025-2026 XNet Inc.
+Copyright 2025-2026 Joshua S. Doucette
 
-This product includes software developed at Grafana Labs (https://grafana.com/).
+This product is a comprehensive NetBird MCP server providing full CRUD operations
+for all NetBird API resources, policy management, group workflows, and helper functions.
 
-This product includes software developed at Mark III Labs (https://github.com/mark3labs/mcp-go).
+ATTRIBUTION:
+
+This project was originally derived from the MCP Server for Grafana
+(https://github.com/grafana/mcp-grafana) developed by Grafana Labs.
+The current codebase has been substantially modified and extended.
+
+This product uses MCP Go (https://github.com/mark3labs/mcp-go) developed by Mark III Labs.
+

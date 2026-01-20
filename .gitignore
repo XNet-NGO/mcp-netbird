@@ -1,18 +1,28 @@
-# Python-generated files
-__pycache__/
-*.py[oc]
-build/
-dist/
-wheels/
-env/
-venv/
-*.egg-info
+# Binaries
+*.exe
+*.exe~
+mcp-netbird
+mcp-netbird.exe
 
-# Environment variables
-.env
-.env.local
+# Go build artifacts
+*.o
+*.a
+*.so
+*.test
+*.out
+coverage.txt
+coverage.html
 
-# OS generated files
+# Go workspace
+go.work
+go.work.sum
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
 .DS_Store
 .DS_Store?
 ._*
@@ -21,5 +31,36 @@ venv/
 ehthumbs.db
 Thumbs.db
 
-# Old stuff
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Build directories
+build/
+dist/
+bin/
+
+# Test artifacts
+*.test
+*.prof
+
+# Temporary files
+*.tmp
+*.bak
 *.old
+image-tag
+
+# Python (if any scripts)
+__pycache__/
+*.py[oc]
+venv/
+env/
+*.egg-info
+
+# Docker
+.dockerignore.local
+
+# Local development
+.kiro/local/
+archive/local/

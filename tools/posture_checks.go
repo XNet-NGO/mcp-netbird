@@ -83,6 +83,90 @@ var ListNetbirdPostureChecks = mcpnetbird.MustTool(
 	listNetbirdPostureChecks,
 )
 
+type GetNetbirdPostureCheckParams struct {
+	PostureCheckID string `json:"posture_check_id" jsonschema:"required,description=The ID of the posture check"`
+}
+
+func getNetbirdPostureCheck(ctx context.Context, args GetNetbirdPostureCheckParams) (*NetbirdPostureCheck, error) {
+	client := mcpnetbird.NewNetbirdClient()
+	var check NetbirdPostureCheck
+	if err := client.Get(ctx, "/posture-checks/"+args.PostureCheckID, &check); err != nil {
+		return nil, err
+	}
+	return &check, nil
+}
+
+var GetNetbirdPostureCheck = mcpnetbird.MustTool(
+	"get_netbird_posture_check",
+	"Get a specific Netbird posture check by ID",
+	getNetbirdPostureCheck,
+)
+
+type CreateNetbirdPostureCheckParams struct {
+	Name        string      `json:"name" jsonschema:"required,description=Posture check name"`
+	Description *string     `json:"description,omitempty" jsonschema:"description=Posture check description"`
+	Checks      CheckConfig `json:"checks" jsonschema:"required,description=Check configuration"`
+}
+
+func createNetbirdPostureCheck(ctx context.Context, args CreateNetbirdPostureCheckParams) (*NetbirdPostureCheck, error) {
+	client := mcpnetbird.NewNetbirdClient()
+	var check NetbirdPostureCheck
+	if err := client.Post(ctx, "/posture-checks", args, &check); err != nil {
+		return nil, err
+	}
+	return &check, nil
+}
+
+var CreateNetbirdPostureCheck = mcpnetbird.MustTool(
+	"create_netbird_posture_check",
+	"Create a new Netbird posture check",
+	createNetbirdPostureCheck,
+)
+
+type UpdateNetbirdPostureCheckParams struct {
+	PostureCheckID string      `json:"posture_check_id" jsonschema:"required,description=The ID of the posture check to update"`
+	Name           *string     `json:"name,omitempty" jsonschema:"description=Posture check name"`
+	Description    *string     `json:"description,omitempty" jsonschema:"description=Posture check description"`
+	Checks         CheckConfig `json:"checks,omitempty" jsonschema:"description=Check configuration"`
+}
+
+func updateNetbirdPostureCheck(ctx context.Context, args UpdateNetbirdPostureCheckParams) (*NetbirdPostureCheck, error) {
+	client := mcpnetbird.NewNetbirdClient()
+	var check NetbirdPostureCheck
+	if err := client.Put(ctx, "/posture-checks/"+args.PostureCheckID, args, &check); err != nil {
+		return nil, err
+	}
+	return &check, nil
+}
+
+var UpdateNetbirdPostureCheck = mcpnetbird.MustTool(
+	"update_netbird_posture_check",
+	"Update an existing Netbird posture check",
+	updateNetbirdPostureCheck,
+)
+
+type DeleteNetbirdPostureCheckParams struct {
+	PostureCheckID string `json:"posture_check_id" jsonschema:"required,description=The ID of the posture check to delete"`
+}
+
+func deleteNetbirdPostureCheck(ctx context.Context, args DeleteNetbirdPostureCheckParams) (map[string]string, error) {
+	client := mcpnetbird.NewNetbirdClient()
+	if err := client.Delete(ctx, "/posture-checks/"+args.PostureCheckID); err != nil {
+		return nil, err
+	}
+	return map[string]string{"status": "deleted", "posture_check_id": args.PostureCheckID}, nil
+}
+
+var DeleteNetbirdPostureCheck = mcpnetbird.MustTool(
+	"delete_netbird_posture_check",
+	"Delete a Netbird posture check",
+	deleteNetbirdPostureCheck,
+)
+
 func AddNetbirdPostureCheckTools(mcp *server.MCPServer) {
 	ListNetbirdPostureChecks.Register(mcp)
+	GetNetbirdPostureCheck.Register(mcp)
+	CreateNetbirdPostureCheck.Register(mcp)
+	UpdateNetbirdPostureCheck.Register(mcp)
+	DeleteNetbirdPostureCheck.Register(mcp)
 }

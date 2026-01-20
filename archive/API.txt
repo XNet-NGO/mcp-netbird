@@ -1,0 +1,7859 @@
+
+/api/accounts
+List all Accounts
+Returns a list of accounts of a user. Always returns a list of one account.
+
+Request
+cURL
+JavaScript
+Python
+Go
+Ruby
+Java
+PHP
+GET
+/api/accounts
+curl -X GET https://api.netbird.io/api/accounts \
+-H 'Accept: application/json' \
+-H 'Authorization: Token <TOKEN>' 
+
+Copy
+Copied!
+Response
+Example
+Schema
+[
+  {
+    "id": "ch8i4ug6lnn4g9hqv7l0",
+    "settings": {
+      "peer_login_expiration_enabled": true,
+      "peer_login_expiration": 43200,
+      "peer_inactivity_expiration_enabled": true,
+      "peer_inactivity_expiration": 43200,
+      "regular_users_view_blocked": true,
+      "groups_propagation_enabled": true,
+      "jwt_groups_enabled": true,
+      "jwt_groups_claim_name": "roles",
+      "jwt_allow_groups": [
+        "Administrators"
+      ],
+      "routing_peer_dns_resolution_enabled": true,
+      "dns_domain": "my-organization.org",
+      "network_range": "100.64.0.0/16",
+      "extra": {
+        "peer_approval_enabled": true,
+        "user_approval_required": false,
+        "network_traffic_logs_enabled": true,
+        "network_traffic_logs_groups": [
+          "ch8i4ug6lnn4g9hqv7m0"
+        ],
+        "network_traffic_packet_counter_enabled": true
+      },
+      "lazy_connection_enabled": true,
+      "auto_update_version": "0.51.2",
+      "embedded_idp_enabled": false
+    },
+    "domain": "netbird.io",
+    "domain_category": "private",
+    "created_at": "2023-05-05T09:00:35.477782Z",
+    "created_by": "google-oauth2|277474792786460067937",
+    "onboarding": {
+      "signup_form_pending": true,
+      "onboarding_flow_pending": false
+    }
+  }
+]
+
+Copy
+Copied!
+DELETE
+/api/accounts/{accountId}
+Delete an Account
+Deletes an account and all its resources. Only account owners can delete accounts.
+
+Path Parameters
+Name
+accountId
+Type
+string
+Required
+required
+Enum
+Description
+The unique identifier of an account
+
+Request
+cURL
+JavaScript
+Python
+Go
+Ruby
+Java
+PHP
+DELETE
+/api/accounts/{accountId}
+curl -X DELETE https://api.netbird.io/api/accounts/{accountId} \
+-H 'Authorization: Token <TOKEN>' 
+
+Copy
+Copied!
+PUT
+/api/accounts/{accountId}
+Update an Account
+Update information about an account
+
+Path Parameters
+Name
+accountId
+Type
+string
+Required
+required
+Enum
+Description
+The unique identifier of an account
+
+Request-Body Parameters
+Name
+settings
+Type
+object
+Required
+required
+Enum
+Description
+More Information
+Name
+peer_login_expiration_enabled
+Type
+boolean
+Required
+required
+Enum
+Description
+Enables or disables peer login expiration globally. After peer's login has expired the user has to log in (authenticate). Applies only to peers that were added by a user (interactive SSO login).
+
+Name
+peer_login_expiration
+Type
+integer
+Required
+required
+Enum
+Description
+Period of time after which peer login expires (seconds).
+
+Name
+peer_inactivity_expiration_enabled
+Type
+boolean
+Required
+required
+Enum
+Description
+Enables or disables peer inactivity expiration globally. After peer's session has expired the user has to log in (authenticate). Applies only to peers that were added by a user (interactive SSO login).
+
+Name
+peer_inactivity_expiration
+Type
+integer
+Required
+required
+Enum
+Description
+Period of time of inactivity after which peer session expires (seconds).
+
+Name
+regular_users_view_blocked
+Type
+boolean
+Required
+required
+Enum
+Description
+Allows blocking regular users from viewing parts of the system.
+
+Name
+groups_propagation_enabled
+Type
+boolean
+Required
+optional
+Enum
+Description
+Allows propagate the new user auto groups to peers that belongs to the user
+
+Name
+jwt_groups_enabled
+Type
+boolean
+Required
+optional
+Enum
+Description
+Allows extract groups from JWT claim and add it to account groups.
+
+Name
+jwt_groups_claim_name
+Type
+string
+Required
+optional
+Enum
+Description
+Name of the claim from which we extract groups names to add it to account groups.
+
+Name
+jwt_allow_groups
+Type
+string[]
+Required
+optional
+Enum
+Description
+List of groups to which users are allowed access
+
+Name
+routing_peer_dns_resolution_enabled
+Type
+boolean
+Required
+optional
+Enum
+Description
+Enables or disables DNS resolution on the routing peers
+
+Name
+dns_domain
+Type
+string
+Required
+optional
+Enum
+Description
+Allows to define a custom dns domain for the account
+
+Name
+network_range
+Type
+string
+Required
+optional
+Enum
+Description
+Allows to define a custom network range for the account in CIDR format
+
+Name
+extra
+Type
+object
+Required
+optional
+Enum
+Description
+More Information
+Name
+peer_approval_enabled
+Type
+boolean
+Required
+required
+Enum
+Description
+(Cloud only) Enables or disables peer approval globally. If enabled, all peers added will be in pending state until approved by an admin.
+
+Name
+user_approval_required
+Type
+boolean
+Required
+required
+Enum
+Description
+Enables manual approval for new users joining via domain matching. When enabled, users are blocked with pending approval status until explicitly approved by an admin.
+
+Name
+network_traffic_logs_enabled
+Type
+boolean
+Required
+required
+Enum
+Description
+Enables or disables network traffic logging. If enabled, all network traffic events from peers will be stored.
+
+Name
+network_traffic_logs_groups
+Type
+string[]
+Required
+required
+Enum
+Description
+Limits traffic logging to these groups. If unset all peers are enabled.
+
+Name
+network_traffic_packet_counter_enabled
+Type
+boolean
+Required
+required
+Enum
+Description
+Enables or disables network traffic packet counter. If enabled, network packets and their size will be counted and reported. (This can have an slight impact on performance)
+
+Name
+lazy_connection_enabled
+Type
+boolean
+Required
+optional
+Enum
+Description
+Enables or disables experimental lazy connection
+
+Name
+auto_update_version
+Type
+string
+Required
+optional
+Enum
+Description
+Set Clients auto-update version. "latest", "disabled", or a specific version (e.g "0.50.1")
+
+Name
+embedded_idp_enabled
+Type
+boolean
+Required
+optional
+Enum
+Description
+Indicates whether the embedded identity provider (Dex) is enabled for this account. This is a read-only field.
+
+Name
+onboarding
+Type
+object
+Required
+optional
+Enum
+Description
+More Information
+Name
+signup_form_pending
+Type
+boolean
+Required
+required
+Enum
+Description
+Indicates whether the account signup form is pending
+
+Name
+onboarding_flow_pending
+Type
+boolean
+Required
+required
+Enum
+Description
+Indicates whether the account onboarding flow is pending
+
+Request
+cURL
+JavaScript
+Python
+Go
+Ruby
+Java
+PHP
+PUT
+/api/accounts/{accountId}
+curl -X PUT https://api.netbird.io/api/accounts/{accountId} \
+-H 'Accept: application/json' \
+-H 'Content-Type: application/json' \
+-H 'Authorization: Token <TOKEN>' \
+--data-raw '{
+  "settings": {
+    "peer_login_expiration_enabled": true,
+    "peer_login_expiration": 43200,
+    "peer_inactivity_expiration_enabled": true,
+    "peer_inactivity_expiration": 43200,
+    "regular_users_view_blocked": true,
+    "groups_propagation_enabled": true,
+    "jwt_groups_enabled": true,
+    "jwt_groups_claim_name": "roles",
+    "jwt_allow_groups": [
+      "Administrators"
+    ],
+    "routing_peer_dns_resolution_enabled": true,
+    "dns_domain": "my-organization.org",
+    "network_range": "100.64.0.0/16",
+    "extra": {
+      "peer_approval_enabled": true,
+      "user_approval_required": false,
+      "network_traffic_logs_enabled": true,
+      "network_traffic_logs_groups": [
+        "ch8i4ug6lnn4g9hqv7m0"
+      ],
+      "network_traffic_packet_counter_enabled": true
+    },
+    "lazy_connection_enabled": true,
+    "auto_update_version": "0.51.2",
+    "embedded_idp_enabled": false
+  },
+  "onboarding": {
+    "signup_form_pending": true,
+    "onboarding_flow_pending": false
+  }
+}'
+
+Copy
+Copied!
+Response
+Example
+Schema
+{
+  "id": "ch8i4ug6lnn4g9hqv7l0",
+  "settings": {
+    "peer_login_expiration_enabled": true,
+    "peer_login_expiration": 43200,
+    "peer_inactivity_expiration_enabled": true,
+    "peer_inactivity_expiration": 43200,
+    "regular_users_view_blocked": true,
+    "groups_propagation_enabled": true,
+    "jwt_groups_enabled": true,
+    "jwt_groups_claim_name": "roles",
+    "jwt_allow_groups": [
+      "Administrators"
+    ],
+    "routing_peer_dns_resolution_enabled": true,
+    "dns_domain": "my-organization.org",
+    "network_range": "100.64.0.0/16",
+    "extra": {
+      "peer_approval_enabled": true,
+      "user_approval_required": false,
+      "network_traffic_logs_enabled": true,
+      "network_traffic_logs_groups": [
+        "ch8i4ug6lnn4g9hqv7m0"
+      ],
+      "network_traffic_packet_counter_enabled": true
+    },
+    "lazy_connection_enabled": true,
+    "auto_update_version": "0.51.2",
+    "embedded_idp_enabled": false
+  },
+  "domain": "netbird.io",
+  "domain_category": "private",
+  "created_at": "2023-05-05T09:00:35.477782Z",
+  "created_by": "google-oauth2|277474792786460067937",
+  "onboarding": {
+    "signup_form_pending": true,
+    "onboarding_flow_pending": false
+  }
+}
+
+/api/users
+List all Users
+Returns a list of all users
+
+Query Parameters
+Name
+service_user
+Type
+boolean
+Required
+optional
+Enum
+Description
+Filters users and returns either regular users or service users
+
+Request
+cURL
+JavaScript
+Python
+Go
+Ruby
+Java
+PHP
+GET
+/api/users
+curl -X GET https://api.netbird.io/api/users \
+-H 'Accept: application/json' \
+-H 'Authorization: Token <TOKEN>' 
+
+Copy
+Copied!
+Response
+Example
+Schema
+[
+  {
+    "id": "google-oauth2|277474792786460067937",
+    "email": "demo@netbird.io",
+    "password": "super_secure_password",
+    "name": "Tom Schulz",
+    "role": "admin",
+    "status": "active",
+    "last_login": "2023-05-05T09:00:35.477782Z",
+    "auto_groups": [
+      "ch8i4ug6lnn4g9hqv7m0"
+    ],
+    "is_current": true,
+    "is_service_user": false,
+    "is_blocked": false,
+    "pending_approval": false,
+    "issued": "api",
+    "idp_id": "okta-abc123",
+    "permissions": {
+      "is_restricted": {
+        "type": "boolean",
+        "description": "Indicates whether this User's Peers view is restricted"
+      },
+      "modules": {
+        "networks": {
+          "read": true,
+          "create": false,
+          "update": false,
+          "delete": false
+        },
+        "peers": {
+          "read": false,
+          "create": false,
+          "update": false,
+          "delete": false
+        }
+      }
+    }
+  }
+]
+
+Copy
+Copied!
+POST
+/api/users
+Create a User
+Creates a new service user or sends an invite to a regular user
+
+Request-Body Parameters
+Name
+email
+Type
+string
+Required
+optional
+Enum
+Description
+User's Email to send invite to
+
+Name
+name
+Type
+string
+Required
+optional
+Enum
+Description
+User's full name
+
+Name
+role
+Type
+string
+Required
+required
+Enum
+Description
+User's NetBird account role
+
+Name
+auto_groups
+Type
+string[]
+Required
+required
+Enum
+Description
+Group IDs to auto-assign to peers registered by this user
+
+Name
+is_service_user
+Type
+boolean
+Required
+required
+Enum
+Description
+Is true if this user is a service user
+
+Request
+cURL
+JavaScript
+Python
+Go
+Ruby
+Java
+PHP
+POST
+/api/users
+curl -X POST https://api.netbird.io/api/users \
+-H 'Accept: application/json' \
+-H 'Content-Type: application/json' \
+-H 'Authorization: Token <TOKEN>' \
+--data-raw '{
+  "email": "demo@netbird.io",
+  "name": "Tom Schulz",
+  "role": "admin",
+  "auto_groups": [
+    "ch8i4ug6lnn4g9hqv7m0"
+  ],
+  "is_service_user": false
+}'
+
+Copy
+Copied!
+Response
+Example
+Schema
+{
+  "id": "google-oauth2|277474792786460067937",
+  "email": "demo@netbird.io",
+  "password": "super_secure_password",
+  "name": "Tom Schulz",
+  "role": "admin",
+  "status": "active",
+  "last_login": "2023-05-05T09:00:35.477782Z",
+  "auto_groups": [
+    "ch8i4ug6lnn4g9hqv7m0"
+  ],
+  "is_current": true,
+  "is_service_user": false,
+  "is_blocked": false,
+  "pending_approval": false,
+  "issued": "api",
+  "idp_id": "okta-abc123",
+  "permissions": {
+    "is_restricted": {
+      "type": "boolean",
+      "description": "Indicates whether this User's Peers view is restricted"
+    },
+    "modules": {
+      "networks": {
+        "read": true,
+        "create": false,
+        "update": false,
+        "delete": false
+      },
+      "peers": {
+        "read": false,
+        "create": false,
+        "update": false,
+        "delete": false
+      }
+    }
+  }
+}
+
+Copy
+Copied!
+PUT
+/api/users/{userId}
+Update a User
+Update information about a User
+
+Path Parameters
+Name
+userId
+Type
+string
+Required
+required
+Enum
+Description
+The unique identifier of a user
+
+Request-Body Parameters
+Name
+role
+Type
+string
+Required
+required
+Enum
+Description
+User's NetBird account role
+
+Name
+auto_groups
+Type
+string[]
+Required
+required
+Enum
+Description
+Group IDs to auto-assign to peers registered by this user
+
+Name
+is_blocked
+Type
+boolean
+Required
+required
+Enum
+Description
+If set to true then user is blocked and can't use the system
+
+Request
+cURL
+JavaScript
+Python
+Go
+Ruby
+Java
+PHP
+PUT
+/api/users/{userId}
+curl -X PUT https://api.netbird.io/api/users/{userId} \
+-H 'Accept: application/json' \
+-H 'Content-Type: application/json' \
+-H 'Authorization: Token <TOKEN>' \
+--data-raw '{
+  "role": "admin",
+  "auto_groups": [
+    "ch8i4ug6lnn4g9hqv7m0"
+  ],
+  "is_blocked": false
+}'
+
+Copy
+Copied!
+Response
+Example
+Schema
+{
+  "id": "google-oauth2|277474792786460067937",
+  "email": "demo@netbird.io",
+  "password": "super_secure_password",
+  "name": "Tom Schulz",
+  "role": "admin",
+  "status": "active",
+  "last_login": "2023-05-05T09:00:35.477782Z",
+  "auto_groups": [
+    "ch8i4ug6lnn4g9hqv7m0"
+  ],
+  "is_current": true,
+  "is_service_user": false,
+  "is_blocked": false,
+  "pending_approval": false,
+  "issued": "api",
+  "idp_id": "okta-abc123",
+  "permissions": {
+    "is_restricted": {
+      "type": "boolean",
+      "description": "Indicates whether this User's Peers view is restricted"
+    },
+    "modules": {
+      "networks": {
+        "read": true,
+        "create": false,
+        "update": false,
+        "delete": false
+      },
+      "peers": {
+        "read": false,
+        "create": false,
+        "update": false,
+        "delete": false
+      }
+    }
+  }
+}
+
+Copy
+Copied!
+DELETE
+/api/users/{userId}
+Delete a User
+This method removes a user from accessing the system. For this leaves the IDP user intact unless the --user-delete-from-idp is passed to management startup.
+
+Path Parameters
+Name
+userId
+Type
+string
+Required
+required
+Enum
+Description
+The unique identifier of a user
+
+Request
+cURL
+JavaScript
+Python
+Go
+Ruby
+Java
+PHP
+DELETE
+/api/users/{userId}
+curl -X DELETE https://api.netbird.io/api/users/{userId} \
+-H 'Authorization: Token <TOKEN>' 
+
+Copy
+Copied!
+POST
+/api/users/{userId}/invite
+Resend user invitation
+Resend user invitation
+
+Path Parameters
+Name
+userId
+Type
+string
+Required
+required
+Enum
+Description
+The unique identifier of a user
+
+Request
+cURL
+JavaScript
+Python
+Go
+Ruby
+Java
+PHP
+POST
+/api/users/{userId}/invite
+curl -X POST https://api.netbird.io/api/users/{userId}/invite \
+-H 'Authorization: Token <TOKEN>' 
+
+Copy
+Copied!
+POST
+/api/users/{userId}/approve
+Approve user
+Approve a user that is pending approval
+
+Path Parameters
+Name
+userId
+Type
+string
+Required
+required
+Enum
+Description
+The unique identifier of a user
+
+Request
+cURL
+JavaScript
+Python
+Go
+Ruby
+Java
+PHP
+POST
+/api/users/{userId}/approve
+curl -X POST https://api.netbird.io/api/users/{userId}/approve \
+-H 'Accept: application/json' \
+-H 'Authorization: Token <TOKEN>' 
+
+Copy
+Copied!
+Response
+Example
+Schema
+{
+  "id": "google-oauth2|277474792786460067937",
+  "email": "demo@netbird.io",
+  "password": "super_secure_password",
+  "name": "Tom Schulz",
+  "role": "admin",
+  "status": "active",
+  "last_login": "2023-05-05T09:00:35.477782Z",
+  "auto_groups": [
+    "ch8i4ug6lnn4g9hqv7m0"
+  ],
+  "is_current": true,
+  "is_service_user": false,
+  "is_blocked": false,
+  "pending_approval": false,
+  "issued": "api",
+  "idp_id": "okta-abc123",
+  "permissions": {
+    "is_restricted": {
+      "type": "boolean",
+      "description": "Indicates whether this User's Peers view is restricted"
+    },
+    "modules": {
+      "networks": {
+        "read": true,
+        "create": false,
+        "update": false,
+        "delete": false
+      },
+      "peers": {
+        "read": false,
+        "create": false,
+        "update": false,
+        "delete": false
+      }
+    }
+  }
+}
+
+Copy
+Copied!
+DELETE
+/api/users/{userId}/reject
+Reject user
+Reject a user that is pending approval by removing them from the account
+
+Path Parameters
+Name
+userId
+Type
+string
+Required
+required
+Enum
+Description
+The unique identifier of a user
+
+Request
+cURL
+JavaScript
+Python
+Go
+Ruby
+Java
+PHP
+DELETE
+/api/users/{userId}/reject
+curl -X DELETE https://api.netbird.io/api/users/{userId}/reject \
+-H 'Authorization: Token <TOKEN>' 
+
+Copy
+Copied!
+GET
+/api/users/current
+Retrieve current user
+Get information about the current user
+
+Request
+cURL
+JavaScript
+Python
+Go
+Ruby
+Java
+PHP
+GET
+/api/users/current
+curl -X GET https://api.netbird.io/api/users/current \
+-H 'Accept: application/json' \
+-H 'Authorization: Token <TOKEN>' 
+
+Copy
+Copied!
+Response
+Example
+Schema
+{
+  "id": "google-oauth2|277474792786460067937",
+  "email": "demo@netbird.io",
+  "password": "super_secure_password",
+  "name": "Tom Schulz",
+  "role": "admin",
+  "status": "active",
+  "last_login": "2023-05-05T09:00:35.477782Z",
+  "auto_groups": [
+    "ch8i4ug6lnn4g9hqv7m0"
+  ],
+  "is_current": true,
+  "is_service_user": false,
+  "is_blocked": false,
+  "pending_approval": false,
+  "issued": "api",
+  "idp_id": "okta-abc123",
+  "permissions": {
+    "is_restricted": {
+      "type": "boolean",
+      "description": "Indicates whether this User's Peers view is restricted"
+    },
+    "modules": {
+      "networks": {
+        "read": true,
+        "create": false,
+        "update": false,
+        "delete": false
+      },
+      "peers": {
+        "read": false,
+        "create": false,
+        "update": false,
+        "delete": false
+      }
+    }
+  }
+}
+
+/api/users/{userId}/tokens
+List all Tokens
+Returns a list of all tokens for a user
+
+Path Parameters
+Name
+userId
+Type
+string
+Required
+required
+Enum
+Description
+The unique identifier of a user
+
+Request
+cURL
+JavaScript
+Python
+Go
+Ruby
+Java
+PHP
+GET
+/api/users/{userId}/tokens
+curl -X GET https://api.netbird.io/api/users/{userId}/tokens \
+-H 'Accept: application/json' \
+-H 'Authorization: Token <TOKEN>' 
+
+Copy
+Copied!
+Response
+Example
+Schema
+[
+  {
+    "id": "ch8i54g6lnn4g9hqv7n0",
+    "name": "My first token",
+    "expiration_date": "2023-05-05T14:38:28.977616Z",
+    "created_by": "google-oauth2|277474792786460067937",
+    "created_at": "2023-05-02T14:48:20.465209Z",
+    "last_used": "2023-05-04T12:45:25.9723616Z"
+  }
+]
+
+Copy
+Copied!
+POST
+/api/users/{userId}/tokens
+Create a Token
+Create a new token for a user
+
+Path Parameters
+Name
+userId
+Type
+string
+Required
+required
+Enum
+Description
+The unique identifier of a user
+
+Request-Body Parameters
+Name
+name
+Type
+string
+Required
+required
+Enum
+Description
+Name of the token
+
+Name
+expires_in
+Type
+integer
+Required
+required
+Enum
+Possible Values: >=1 and <=365
+Description
+Expiration in days
+
+Request
+cURL
+JavaScript
+Python
+Go
+Ruby
+Java
+PHP
+POST
+/api/users/{userId}/tokens
+curl -X POST https://api.netbird.io/api/users/{userId}/tokens \
+-H 'Accept: application/json' \
+-H 'Content-Type: application/json' \
+-H 'Authorization: Token <TOKEN>' \
+--data-raw '{
+  "name": "My first token",
+  "expires_in": 30
+}'
+
+Copy
+Copied!
+Response
+Example
+Schema
+{
+  "plain_token": {},
+  "personal_access_token": {
+    "id": "ch8i54g6lnn4g9hqv7n0",
+    "name": "My first token",
+    "expiration_date": "2023-05-05T14:38:28.977616Z",
+    "created_by": "google-oauth2|277474792786460067937",
+    "created_at": "2023-05-02T14:48:20.465209Z",
+    "last_used": "2023-05-04T12:45:25.9723616Z"
+  }
+}
+
+Copy
+Copied!
+GET
+/api/users/{userId}/tokens/{tokenId}
+Retrieve a Token
+Returns a specific token for a user
+
+Path Parameters
+Name
+userId
+Type
+string
+Required
+required
+Enum
+Description
+The unique identifier of a user
+
+Name
+tokenId
+Type
+string
+Required
+required
+Enum
+Description
+The unique identifier of a token
+
+Request
+cURL
+JavaScript
+Python
+Go
+Ruby
+Java
+PHP
+GET
+/api/users/{userId}/tokens/{tokenId}
+curl -X GET https://api.netbird.io/api/users/{userId}/tokens/{tokenId} \
+-H 'Accept: application/json' \
+-H 'Authorization: Token <TOKEN>' 
+
+Copy
+Copied!
+Response
+Example
+Schema
+{
+  "id": "ch8i54g6lnn4g9hqv7n0",
+  "name": "My first token",
+  "expiration_date": "2023-05-05T14:38:28.977616Z",
+  "created_by": "google-oauth2|277474792786460067937",
+  "created_at": "2023-05-02T14:48:20.465209Z",
+  "last_used": "2023-05-04T12:45:25.9723616Z"
+}
+
+Copy
+Copied!
+DELETE
+/api/users/{userId}/tokens/{tokenId}
+Delete a Token
+Delete a token for a user
+
+Path Parameters
+Name
+userId
+Type
+string
+Required
+required
+Enum
+Description
+The unique identifier of a user
+
+Name
+tokenId
+Type
+string
+Required
+required
+Enum
+Description
+The unique identifier of a token
+
+Request
+cURL
+JavaScript
+Python
+Go
+Ruby
+Java
+PHP
+DELETE
+/api/users/{userId}/tokens/{tokenId}
+curl -X DELETE https://api.netbird.io/api/users/{userId}/tokens/{tokenId} \
+-H 'Authorization: Token <TOKEN>' 
+
+/api/peers
+List all Peers
+Returns a list of all peers
+
+Query Parameters
+Name
+name
+Type
+string
+Required
+optional
+Enum
+Description
+Filter peers by name
+
+Name
+ip
+Type
+string
+Required
+optional
+Enum
+Description
+Filter peers by IP address
+
+Request
+cURL
+JavaScript
+Python
+Go
+Ruby
+Java
+PHP
+GET
+/api/peers
+curl -X GET https://api.netbird.io/api/peers \
+-H 'Accept: application/json' \
+-H 'Authorization: Token <TOKEN>' 
+
+Copy
+Copied!
+Response
+Example
+Schema
+[
+  {
+    "id": "chacbco6lnnbn6cg5s90",
+    "name": "stage-host-1",
+    "created_at": "2023-05-05T09:00:35.477782Z",
+    "ip": "10.64.0.1",
+    "connection_ip": "35.64.0.1",
+    "connected": true,
+    "last_seen": "2023-05-05T10:05:26.420578Z",
+    "os": "Darwin 13.2.1",
+    "kernel_version": "23.2.0",
+    "geoname_id": 2643743,
+    "version": "0.14.0",
+    "groups": [
+      {
+        "id": "ch8i4ug6lnn4g9hqv7m0",
+        "name": "devs",
+        "peers_count": 2,
+        "resources_count": 5,
+        "issued": "api"
+      }
+    ],
+    "ssh_enabled": true,
+    "user_id": "google-oauth2|277474792786460067937",
+    "hostname": "stage-host-1",
+    "ui_version": "0.14.0",
+    "dns_label": "stage-host-1.netbird.cloud",
+    "login_expiration_enabled": false,
+    "login_expired": false,
+    "last_login": "2023-05-05T09:00:35.477782Z",
+    "inactivity_expiration_enabled": false,
+    "approval_required": true,
+    "disapproval_reason": {
+      "description": "(Cloud only) Reason why the peer requires approval",
+      "type": "string"
+    },
+    "country_code": "DE",
+    "city_name": "Berlin",
+    "serial_number": "C02XJ0J0JGH7",
+    "extra_dns_labels": [
+      "stage-host-1"
+    ],
+    "ephemeral": false,
+    "local_flags": {
+      "rosenpass_enabled": true,
+      "rosenpass_permissive": false,
+      "server_ssh_allowed": true,
+      "disable_client_routes": false,
+      "disable_server_routes": false,
+      "disable_dns": false,
+      "disable_firewall": false,
+      "block_lan_access": false,
+      "block_inbound": false,
+      "lazy_connection_enabled": false
+    },
+    "accessible_peers_count": 5
+  }
+]
+
+Copy
+Copied!
+GET
+/api/peers/{peerId}
+Retrieve a Peer
+Get information about a peer
+
+Path Parameters
+Name
+peerId
+Type
+string
+Required
+required
+Enum
+Description
+The unique identifier of a peer
+
+Request
+cURL
+JavaScript
+Python
+Go
+Ruby
+Java
+PHP
+GET
+/api/peers/{peerId}
+curl -X GET https://api.netbird.io/api/peers/{peerId} \
+-H 'Accept: application/json' \
+-H 'Authorization: Token <TOKEN>' 
+
+Copy
+Copied!
+Response
+Example
+Schema
+{
+  "id": "chacbco6lnnbn6cg5s90",
+  "name": "stage-host-1",
+  "created_at": "2023-05-05T09:00:35.477782Z",
+  "ip": "10.64.0.1",
+  "connection_ip": "35.64.0.1",
+  "connected": true,
+  "last_seen": "2023-05-05T10:05:26.420578Z",
+  "os": "Darwin 13.2.1",
+  "kernel_version": "23.2.0",
+  "geoname_id": 2643743,
+  "version": "0.14.0",
+  "groups": [
+    {
+      "id": "ch8i4ug6lnn4g9hqv7m0",
+      "name": "devs",
+      "peers_count": 2,
+      "resources_count": 5,
+      "issued": "api"
+    }
+  ],
+  "ssh_enabled": true,
+  "user_id": "google-oauth2|277474792786460067937",
+  "hostname": "stage-host-1",
+  "ui_version": "0.14.0",
+  "dns_label": "stage-host-1.netbird.cloud",
+  "login_expiration_enabled": false,
+  "login_expired": false,
+  "last_login": "2023-05-05T09:00:35.477782Z",
+  "inactivity_expiration_enabled": false,
+  "approval_required": true,
+  "disapproval_reason": {
+    "description": "(Cloud only) Reason why the peer requires approval",
+    "type": "string"
+  },
+  "country_code": "DE",
+  "city_name": "Berlin",
+  "serial_number": "C02XJ0J0JGH7",
+  "extra_dns_labels": [
+    "stage-host-1"
+  ],
+  "ephemeral": false,
+  "local_flags": {
+    "rosenpass_enabled": true,
+    "rosenpass_permissive": false,
+    "server_ssh_allowed": true,
+    "disable_client_routes": false,
+    "disable_server_routes": false,
+    "disable_dns": false,
+    "disable_firewall": false,
+    "block_lan_access": false,
+    "block_inbound": false,
+    "lazy_connection_enabled": false
+  }
+}
+
+Copy
+Copied!
+PUT
+/api/peers/{peerId}
+Update a Peer
+Update information about a peer
+
+Path Parameters
+Name
+peerId
+Type
+string
+Required
+required
+Enum
+Description
+The unique identifier of a peer
+
+Request-Body Parameters
+Name
+name
+Type
+string
+Required
+required
+Enum
+Description
+Name
+ssh_enabled
+Type
+boolean
+Required
+required
+Enum
+Description
+Name
+login_expiration_enabled
+Type
+boolean
+Required
+required
+Enum
+Description
+Name
+inactivity_expiration_enabled
+Type
+boolean
+Required
+required
+Enum
+Description
+Name
+approval_required
+Type
+boolean
+Required
+optional
+Enum
+Description
+(Cloud only) Indicates whether peer needs approval
+
+Name
+ip
+Type
+string
+Required
+optional
+Enum
+Description
+Peer's IP address
+
+Request
+cURL
+JavaScript
+Python
+Go
+Ruby
+Java
+PHP
+PUT
+/api/peers/{peerId}
+curl -X PUT https://api.netbird.io/api/peers/{peerId} \
+-H 'Accept: application/json' \
+-H 'Content-Type: application/json' \
+-H 'Authorization: Token <TOKEN>' \
+--data-raw '{
+  "name": "stage-host-1",
+  "ssh_enabled": true,
+  "login_expiration_enabled": false,
+  "inactivity_expiration_enabled": false,
+  "approval_required": true,
+  "ip": "100.64.0.15"
+}'
+
+Copy
+Copied!
+Response
+Example
+Schema
+{
+  "id": "chacbco6lnnbn6cg5s90",
+  "name": "stage-host-1",
+  "created_at": "2023-05-05T09:00:35.477782Z",
+  "ip": "10.64.0.1",
+  "connection_ip": "35.64.0.1",
+  "connected": true,
+  "last_seen": "2023-05-05T10:05:26.420578Z",
+  "os": "Darwin 13.2.1",
+  "kernel_version": "23.2.0",
+  "geoname_id": 2643743,
+  "version": "0.14.0",
+  "groups": [
+    {
+      "id": "ch8i4ug6lnn4g9hqv7m0",
+      "name": "devs",
+      "peers_count": 2,
+      "resources_count": 5,
+      "issued": "api"
+    }
+  ],
+  "ssh_enabled": true,
+  "user_id": "google-oauth2|277474792786460067937",
+  "hostname": "stage-host-1",
+  "ui_version": "0.14.0",
+  "dns_label": "stage-host-1.netbird.cloud",
+  "login_expiration_enabled": false,
+  "login_expired": false,
+  "last_login": "2023-05-05T09:00:35.477782Z",
+  "inactivity_expiration_enabled": false,
+  "approval_required": true,
+  "disapproval_reason": {
+    "description": "(Cloud only) Reason why the peer requires approval",
+    "type": "string"
+  },
+  "country_code": "DE",
+  "city_name": "Berlin",
+  "serial_number": "C02XJ0J0JGH7",
+  "extra_dns_labels": [
+    "stage-host-1"
+  ],
+  "ephemeral": false,
+  "local_flags": {
+    "rosenpass_enabled": true,
+    "rosenpass_permissive": false,
+    "server_ssh_allowed": true,
+    "disable_client_routes": false,
+    "disable_server_routes": false,
+    "disable_dns": false,
+    "disable_firewall": false,
+    "block_lan_access": false,
+    "block_inbound": false,
+    "lazy_connection_enabled": false
+  }
+}
+
+Copy
+Copied!
+DELETE
+/api/peers/{peerId}
+Delete a Peer
+Delete a peer
+
+Path Parameters
+Name
+peerId
+Type
+string
+Required
+required
+Enum
+Description
+The unique identifier of a peer
+
+Request
+cURL
+JavaScript
+Python
+Go
+Ruby
+Java
+PHP
+DELETE
+/api/peers/{peerId}
+curl -X DELETE https://api.netbird.io/api/peers/{peerId} \
+-H 'Authorization: Token <TOKEN>' 
+
+Copy
+Copied!
+GET
+/api/peers/{peerId}/accessible-peers
+List accessible Peers
+Returns a list of peers that the specified peer can connect to within the network.
+
+Path Parameters
+Name
+peerId
+Type
+string
+Required
+required
+Enum
+Description
+The unique identifier of a peer
+
+Request
+cURL
+JavaScript
+Python
+Go
+Ruby
+Java
+PHP
+GET
+/api/peers/{peerId}/accessible-peers
+curl -X GET https://api.netbird.io/api/peers/{peerId}/accessible-peers \
+-H 'Accept: application/json' \
+-H 'Authorization: Token <TOKEN>' 
+
+Copy
+Copied!
+Response
+Example
+Schema
+[
+  {
+    "id": "chacbco6lnnbn6cg5s90",
+    "name": "stage-host-1",
+    "ip": "10.64.0.1",
+    "dns_label": "stage-host-1.netbird.cloud",
+    "user_id": "google-oauth2|277474792786460067937",
+    "os": "linux",
+    "country_code": "DE",
+    "city_name": "Berlin",
+    "geoname_id": 2643743,
+    "connected": true,
+    "last_seen": "2023-05-05T10:05:26.420578Z"
+  }
+]
+
+Copy
+Copied!
+POST
+/api/peers/{peerId}/temporary-access
+Create a Temporary Access Peer
+Creates a temporary access peer that can be used to access this peer and this peer only. The temporary access peer and its access policies will be automatically deleted after it disconnects.
+
+Path Parameters
+Name
+peerId
+Type
+string
+Required
+required
+Enum
+Description
+The unique identifier of a peer
+
+Request-Body Parameters
+Name
+name
+Type
+string
+Required
+required
+Enum
+Description
+Peer's hostname
+
+Name
+wg_pub_key
+Type
+string
+Required
+required
+Enum
+Description
+Peer's WireGuard public key
+
+Name
+rules
+Type
+string[]
+Required
+required
+Enum
+Description
+List of temporary access rules
+
+Request
+cURL
+JavaScript
+Python
+Go
+Ruby
+Java
+PHP
+POST
+/api/peers/{peerId}/temporary-access
+curl -X POST https://api.netbird.io/api/peers/{peerId}/temporary-access \
+-H 'Accept: application/json' \
+-H 'Content-Type: application/json' \
+-H 'Authorization: Token <TOKEN>' \
+--data-raw '{
+  "name": "temp-host-1",
+  "wg_pub_key": "n0r3pL4c3h0ld3rK3y==",
+  "rules": [
+    "tcp/80"
+  ]
+}'
+
+Copy
+Copied!
+Response
+Example
+Schema
+{
+  "name": "temp-host-1",
+  "id": "chacbco6lnnbn6cg5s90",
+  "rules": [
+    "tcp/80"
+  ]
+}
+
+/api/peers/{peerId}/ingress/ports
+List all Port Allocations cloud-only
+Returns a list of all ingress port allocations for a peer
+
+Path Parameters
+Name
+peerId
+Type
+string
+Required
+required
+Enum
+Description
+The unique identifier of a peer
+
+Query Parameters
+Name
+name
+Type
+string
+Required
+optional
+Enum
+Description
+Filters ingress port allocations by name
+
+Request
+cURL
+JavaScript
+Python
+Go
+Ruby
+Java
+PHP
+GET
+/api/peers/{peerId}/ingress/ports
+curl -X GET https://api.netbird.io/api/peers/{peerId}/ingress/ports \
+-H 'Accept: application/json' \
+-H 'Authorization: Token <TOKEN>' 
+
+Copy
+Copied!
+Response
+Example
+Schema
+[
+  {
+    "id": "ch8i4ug6lnn4g9hqv7m0",
+    "name": "Ingress Peer Allocation 1",
+    "ingress_peer_id": "x7p3kqf2rdd8j5zxw4n9",
+    "region": "germany",
+    "enabled": true,
+    "ingress_ip": "192.34.0.123",
+    "port_range_mappings": [
+      {
+        "translated_start": 80,
+        "translated_end": 320,
+        "ingress_start": 1080,
+        "ingress_end": 1320,
+        "protocol": "tcp"
+      }
+    ]
+  }
+]
+
+Copy
+Copied!
+POST
+/api/peers/{peerId}/ingress/ports
+Create a Port Allocation cloud-only
+Creates a new ingress port allocation for a peer
+
+Path Parameters
+Name
+peerId
+Type
+string
+Required
+required
+Enum
+Description
+The unique identifier of a peer
+
+Request-Body Parameters
+Name
+name
+Type
+string
+Required
+required
+Enum
+Description
+Name of the ingress port allocation
+
+Name
+enabled
+Type
+boolean
+Required
+required
+Enum
+Description
+Indicates if an ingress port allocation is enabled
+
+Name
+port_ranges
+Type
+object[]
+Required
+optional
+Enum
+Description
+List of port ranges that are forwarded by the ingress peer
+Name
+start
+Type
+integer
+Required
+required
+Enum
+Description
+The starting port of the range of forwarded ports
+
+Name
+end
+Type
+integer
+Required
+required
+Enum
+Description
+The ending port of the range of forwarded ports
+
+Name
+protocol
+Type
+string
+Required
+required
+Enum
+Description
+The protocol accepted by the port range
+
+Name
+direct_port
+Type
+object
+Required
+optional
+Enum
+Description
+More Information
+Name
+count
+Type
+integer
+Required
+required
+Enum
+Description
+The number of ports to be forwarded
+
+Name
+protocol
+Type
+string
+Required
+required
+Enum
+Description
+The protocol accepted by the port
+
+Request
+cURL
+JavaScript
+Python
+Go
+Ruby
+Java
+PHP
+POST
+/api/peers/{peerId}/ingress/ports
+curl -X POST https://api.netbird.io/api/peers/{peerId}/ingress/ports \
+-H 'Accept: application/json' \
+-H 'Content-Type: application/json' \
+-H 'Authorization: Token <TOKEN>' \
+--data-raw '{
+  "name": "Ingress Port Allocation 1",
+  "enabled": true,
+  "port_ranges": [
+    {
+      "start": 80,
+      "end": 320,
+      "protocol": "tcp"
+    }
+  ],
+  "direct_port": {
+    "count": 5,
+    "protocol": "udp"
+  }
+}'
+
+Copy
+Copied!
+Response
+Example
+Schema
+{
+  "id": "ch8i4ug6lnn4g9hqv7m0",
+  "name": "Ingress Peer Allocation 1",
+  "ingress_peer_id": "x7p3kqf2rdd8j5zxw4n9",
+  "region": "germany",
+  "enabled": true,
+  "ingress_ip": "192.34.0.123",
+  "port_range_mappings": [
+    {
+      "translated_start": 80,
+      "translated_end": 320,
+      "ingress_start": 1080,
+      "ingress_end": 1320,
+      "protocol": "tcp"
+    }
+  ]
+}
+
+Copy
+Copied!
+GET
+/api/peers/{peerId}/ingress/ports/{allocationId}
+Retrieve a Port Allocation cloud-only
+Get information about an ingress port allocation
+
+Path Parameters
+Name
+peerId
+Type
+string
+Required
+required
+Enum
+Description
+The unique identifier of a peer
+
+Name
+allocationId
+Type
+string
+Required
+required
+Enum
+Description
+The unique identifier of an ingress port allocation
+
+Request
+cURL
+JavaScript
+Python
+Go
+Ruby
+Java
+PHP
+GET
+/api/peers/{peerId}/ingress/ports/{allocationId}
+curl -X GET https://api.netbird.io/api/peers/{peerId}/ingress/ports/{allocationId} \
+-H 'Accept: application/json' \
+-H 'Authorization: Token <TOKEN>' 
+
+Copy
+Copied!
+Response
+Example
+Schema
+{
+  "id": "ch8i4ug6lnn4g9hqv7m0",
+  "name": "Ingress Peer Allocation 1",
+  "ingress_peer_id": "x7p3kqf2rdd8j5zxw4n9",
+  "region": "germany",
+  "enabled": true,
+  "ingress_ip": "192.34.0.123",
+  "port_range_mappings": [
+    {
+      "translated_start": 80,
+      "translated_end": 320,
+      "ingress_start": 1080,
+      "ingress_end": 1320,
+      "protocol": "tcp"
+    }
+  ]
+}
+
+Copy
+Copied!
+PUT
+/api/peers/{peerId}/ingress/ports/{allocationId}
+Update a Port Allocation cloud-only
+Update information about an ingress port allocation
+
+Path Parameters
+Name
+peerId
+Type
+string
+Required
+required
+Enum
+Description
+The unique identifier of a peer
+
+Name
+allocationId
+Type
+string
+Required
+required
+Enum
+Description
+The unique identifier of an ingress port allocation
+
+Request-Body Parameters
+Name
+name
+Type
+string
+Required
+required
+Enum
+Description
+Name of the ingress port allocation
+
+Name
+enabled
+Type
+boolean
+Required
+required
+Enum
+Description
+Indicates if an ingress port allocation is enabled
+
+Name
+port_ranges
+Type
+object[]
+Required
+optional
+Enum
+Description
+List of port ranges that are forwarded by the ingress peer
+Name
+start
+Type
+integer
+Required
+required
+Enum
+Description
+The starting port of the range of forwarded ports
+
+Name
+end
+Type
+integer
+Required
+required
+Enum
+Description
+The ending port of the range of forwarded ports
+
+Name
+protocol
+Type
+string
+Required
+required
+Enum
+Description
+The protocol accepted by the port range
+
+Name
+direct_port
+Type
+object
+Required
+optional
+Enum
+Description
+More Information
+Name
+count
+Type
+integer
+Required
+required
+Enum
+Description
+The number of ports to be forwarded
+
+Name
+protocol
+Type
+string
+Required
+required
+Enum
+Description
+The protocol accepted by the port
+
+Request
+cURL
+JavaScript
+Python
+Go
+Ruby
+Java
+PHP
+PUT
+/api/peers/{peerId}/ingress/ports/{allocationId}
+curl -X PUT https://api.netbird.io/api/peers/{peerId}/ingress/ports/{allocationId} \
+-H 'Accept: application/json' \
+-H 'Content-Type: application/json' \
+-H 'Authorization: Token <TOKEN>' \
+--data-raw '{
+  "name": "Ingress Port Allocation 1",
+  "enabled": true,
+  "port_ranges": [
+    {
+      "start": 80,
+      "end": 320,
+      "protocol": "tcp"
+    }
+  ],
+  "direct_port": {
+    "count": 5,
+    "protocol": "udp"
+  }
+}'
+
+Copy
+Copied!
+Response
+Example
+Schema
+{
+  "id": "ch8i4ug6lnn4g9hqv7m0",
+  "name": "Ingress Peer Allocation 1",
+  "ingress_peer_id": "x7p3kqf2rdd8j5zxw4n9",
+  "region": "germany",
+  "enabled": true,
+  "ingress_ip": "192.34.0.123",
+  "port_range_mappings": [
+    {
+      "translated_start": 80,
+      "translated_end": 320,
+      "ingress_start": 1080,
+      "ingress_end": 1320,
+      "protocol": "tcp"
+    }
+  ]
+}
+
+Copy
+Copied!
+DELETE
+/api/peers/{peerId}/ingress/ports/{allocationId}
+Delete a Port Allocation cloud-only
+Delete an ingress port allocation
+
+Path Parameters
+Name
+peerId
+Type
+string
+Required
+required
+Enum
+Description
+The unique identifier of a peer
+
+Name
+allocationId
+Type
+string
+Required
+required
+Enum
+Description
+The unique identifier of an ingress port allocation
+
+Request
+cURL
+JavaScript
+Python
+Go
+Ruby
+Java
+PHP
+DELETE
+/api/peers/{peerId}/ingress/ports/{allocationId}
+curl -X DELETE https://api.netbird.io/api/peers/{peerId}/ingress/ports/{allocationId} \
+-H 'Authorization: Token <TOKEN>' 
+
+Copy
+Copied!
+GET
+/api/ingress/peers
+List all Ingress Peers cloud-only
+Returns a list of all ingress peers
+
+Request
+cURL
+JavaScript
+Python
+Go
+Ruby
+Java
+PHP
+GET
+/api/ingress/peers
+curl -X GET https://api.netbird.io/api/ingress/peers \
+-H 'Accept: application/json' \
+-H 'Authorization: Token <TOKEN>' 
+
+Copy
+Copied!
+Response
+Example
+Schema
+[
+  {
+    "id": "ch8i4ug6lnn4g9hqv7m0",
+    "peer_id": "x7p3kqf2rdd8j5zxw4n9",
+    "ingress_ip": "192.34.0.123",
+    "available_ports": {
+      "tcp": 45765,
+      "udp": 50000
+    },
+    "enabled": true,
+    "connected": true,
+    "fallback": true,
+    "region": "germany"
+  }
+]
+
+Copy
+Copied!
+POST
+/api/ingress/peers
+Create a Ingress Peer cloud-only
+Creates a new ingress peer
+
+Request-Body Parameters
+Name
+peer_id
+Type
+string
+Required
+required
+Enum
+Description
+ID of the peer that is used as an ingress peer
+
+Name
+enabled
+Type
+boolean
+Required
+required
+Enum
+Description
+Defines if an ingress peer is enabled
+
+Name
+fallback
+Type
+boolean
+Required
+required
+Enum
+Description
+Defines if an ingress peer can be used as a fallback if no ingress peer can be found in the region of the forwarded peer
+
+Request
+cURL
+JavaScript
+Python
+Go
+Ruby
+Java
+PHP
+POST
+/api/ingress/peers
+curl -X POST https://api.netbird.io/api/ingress/peers \
+-H 'Accept: application/json' \
+-H 'Content-Type: application/json' \
+-H 'Authorization: Token <TOKEN>' \
+--data-raw '{
+  "peer_id": "ch8i4ug6lnn4g9hqv7m0",
+  "enabled": true,
+  "fallback": true
+}'
+
+Copy
+Copied!
+Response
+Example
+Schema
+{
+  "id": "ch8i4ug6lnn4g9hqv7m0",
+  "peer_id": "x7p3kqf2rdd8j5zxw4n9",
+  "ingress_ip": "192.34.0.123",
+  "available_ports": {
+    "tcp": 45765,
+    "udp": 50000
+  },
+  "enabled": true,
+  "connected": true,
+  "fallback": true,
+  "region": "germany"
+}
+
+Copy
+Copied!
+GET
+/api/ingress/peers/{ingressPeerId}
+Retrieve a Ingress Peer cloud-only
+Get information about an ingress peer
+
+Path Parameters
+Name
+ingressPeerId
+Type
+string
+Required
+required
+Enum
+Description
+The unique identifier of an ingress peer
+
+Request
+cURL
+JavaScript
+Python
+Go
+Ruby
+Java
+PHP
+GET
+/api/ingress/peers/{ingressPeerId}
+curl -X GET https://api.netbird.io/api/ingress/peers/{ingressPeerId} \
+-H 'Accept: application/json' \
+-H 'Authorization: Token <TOKEN>' 
+
+Copy
+Copied!
+Response
+Example
+Schema
+{
+  "id": "ch8i4ug6lnn4g9hqv7m0",
+  "peer_id": "x7p3kqf2rdd8j5zxw4n9",
+  "ingress_ip": "192.34.0.123",
+  "available_ports": {
+    "tcp": 45765,
+    "udp": 50000
+  },
+  "enabled": true,
+  "connected": true,
+  "fallback": true,
+  "region": "germany"
+}
+
+Copy
+Copied!
+PUT
+/api/ingress/peers/{ingressPeerId}
+Update a Ingress Peer cloud-only
+Update information about an ingress peer
+
+Path Parameters
+Name
+ingressPeerId
+Type
+string
+Required
+required
+Enum
+Description
+The unique identifier of an ingress peer
+
+Request-Body Parameters
+Name
+enabled
+Type
+boolean
+Required
+required
+Enum
+Description
+Defines if an ingress peer is enabled
+
+Name
+fallback
+Type
+boolean
+Required
+required
+Enum
+Description
+Defines if an ingress peer can be used as a fallback if no ingress peer can be found in the region of the forwarded peer
+
+Request
+cURL
+JavaScript
+Python
+Go
+Ruby
+Java
+PHP
+PUT
+/api/ingress/peers/{ingressPeerId}
+curl -X PUT https://api.netbird.io/api/ingress/peers/{ingressPeerId} \
+-H 'Accept: application/json' \
+-H 'Content-Type: application/json' \
+-H 'Authorization: Token <TOKEN>' \
+--data-raw '{
+  "enabled": true,
+  "fallback": true
+}'
+
+Copy
+Copied!
+Response
+Example
+Schema
+{
+  "id": "ch8i4ug6lnn4g9hqv7m0",
+  "peer_id": "x7p3kqf2rdd8j5zxw4n9",
+  "ingress_ip": "192.34.0.123",
+  "available_ports": {
+    "tcp": 45765,
+    "udp": 50000
+  },
+  "enabled": true,
+  "connected": true,
+  "fallback": true,
+  "region": "germany"
+}
+
+Copy
+Copied!
+DELETE
+/api/ingress/peers/{ingressPeerId}
+Delete a Ingress Peer cloud-only
+Delete an ingress peer
+
+Path Parameters
+Name
+ingressPeerId
+Type
+string
+Required
+required
+Enum
+Description
+The unique identifier of an ingress peer
+
+Request
+cURL
+JavaScript
+Python
+Go
+Ruby
+Java
+PHP
+DELETE
+/api/ingress/peers/{ingressPeerId}
+curl -X DELETE https://api.netbird.io/api/ingress/peers/{ingressPeerId} \
+-H 'Authorization: Token <TOKEN>' 
+
+/api/setup-keys
+List all Setup Keys
+Returns a list of all Setup Keys
+
+Request
+cURL
+JavaScript
+Python
+Go
+Ruby
+Java
+PHP
+GET
+/api/setup-keys
+curl -X GET https://api.netbird.io/api/setup-keys \
+-H 'Accept: application/json' \
+-H 'Authorization: Token <TOKEN>' 
+
+Copy
+Copied!
+Response
+Example
+Schema
+[
+  {
+    "id": 2531583362,
+    "name": "Default key",
+    "expires": "2023-06-01T14:47:22.291057Z",
+    "type": "reusable",
+    "valid": true,
+    "revoked": false,
+    "used_times": 2,
+    "last_used": "2023-05-05T09:00:35.477782Z",
+    "state": "valid",
+    "auto_groups": [
+      "ch8i4ug6lnn4g9hqv7m0"
+    ],
+    "updated_at": "2023-05-05T09:00:35.477782Z",
+    "usage_limit": 0,
+    "ephemeral": true,
+    "allow_extra_dns_labels": true,
+    "key": "A6160****"
+  }
+]
+
+Copy
+Copied!
+POST
+/api/setup-keys
+Create a Setup Key
+Creates a setup key
+
+Request-Body Parameters
+Name
+name
+Type
+string
+Required
+required
+Enum
+Description
+Setup Key name
+
+Name
+type
+Type
+string
+Required
+required
+Enum
+Description
+Setup key type, one-off for single time usage and reusable
+
+Name
+expires_in
+Type
+integer
+Required
+required
+Enum
+Possible Values: >=86400 and <=31536000
+Description
+Expiration time in seconds
+
+Name
+auto_groups
+Type
+string[]
+Required
+required
+Enum
+Description
+List of group IDs to auto-assign to peers registered with this key
+
+Name
+usage_limit
+Type
+integer
+Required
+required
+Enum
+Description
+A number of times this key can be used. The value of 0 indicates the unlimited usage.
+
+Name
+ephemeral
+Type
+boolean
+Required
+optional
+Enum
+Description
+Indicate that the peer will be ephemeral or not
+
+Name
+allow_extra_dns_labels
+Type
+boolean
+Required
+optional
+Enum
+Description
+Allow extra DNS labels to be added to the peer
+
+Request
+cURL
+JavaScript
+Python
+Go
+Ruby
+Java
+PHP
+POST
+/api/setup-keys
+curl -X POST https://api.netbird.io/api/setup-keys \
+-H 'Accept: application/json' \
+-H 'Content-Type: application/json' \
+-H 'Authorization: Token <TOKEN>' \
+--data-raw '{
+  "name": "Default key",
+  "type": "reusable",
+  "expires_in": 86400,
+  "auto_groups": [
+    "ch8i4ug6lnn4g9hqv7m0"
+  ],
+  "usage_limit": 0,
+  "ephemeral": true,
+  "allow_extra_dns_labels": true
+}'
+
+Copy
+Copied!
+Response
+Example
+Schema
+{
+  "id": 2531583362,
+  "name": "Default key",
+  "expires": "2023-06-01T14:47:22.291057Z",
+  "type": "reusable",
+  "valid": true,
+  "revoked": false,
+  "used_times": 2,
+  "last_used": "2023-05-05T09:00:35.477782Z",
+  "state": "valid",
+  "auto_groups": [
+    "ch8i4ug6lnn4g9hqv7m0"
+  ],
+  "updated_at": "2023-05-05T09:00:35.477782Z",
+  "usage_limit": 0,
+  "ephemeral": true,
+  "allow_extra_dns_labels": true,
+  "key": "A616097E-FCF0-48FA-9354-CA4A61142761"
+}
+
+Copy
+Copied!
+GET
+/api/setup-keys/{keyId}
+Retrieve a Setup Key
+Get information about a setup key
+
+Path Parameters
+Name
+keyId
+Type
+string
+Required
+required
+Enum
+Description
+The unique identifier of a setup key
+
+Request
+cURL
+JavaScript
+Python
+Go
+Ruby
+Java
+PHP
+GET
+/api/setup-keys/{keyId}
+curl -X GET https://api.netbird.io/api/setup-keys/{keyId} \
+-H 'Accept: application/json' \
+-H 'Authorization: Token <TOKEN>' 
+
+Copy
+Copied!
+Response
+Example
+Schema
+{
+  "id": 2531583362,
+  "name": "Default key",
+  "expires": "2023-06-01T14:47:22.291057Z",
+  "type": "reusable",
+  "valid": true,
+  "revoked": false,
+  "used_times": 2,
+  "last_used": "2023-05-05T09:00:35.477782Z",
+  "state": "valid",
+  "auto_groups": [
+    "ch8i4ug6lnn4g9hqv7m0"
+  ],
+  "updated_at": "2023-05-05T09:00:35.477782Z",
+  "usage_limit": 0,
+  "ephemeral": true,
+  "allow_extra_dns_labels": true,
+  "key": "A6160****"
+}
+
+Copy
+Copied!
+PUT
+/api/setup-keys/{keyId}
+Update a Setup Key
+Update information about a setup key
+
+Path Parameters
+Name
+keyId
+Type
+string
+Required
+required
+Enum
+Description
+The unique identifier of a setup key
+
+Request-Body Parameters
+Name
+revoked
+Type
+boolean
+Required
+required
+Enum
+Description
+Setup key revocation status
+
+Name
+auto_groups
+Type
+string[]
+Required
+required
+Enum
+Description
+List of group IDs to auto-assign to peers registered with this key
+
+Request
+cURL
+JavaScript
+Python
+Go
+Ruby
+Java
+PHP
+PUT
+/api/setup-keys/{keyId}
+curl -X PUT https://api.netbird.io/api/setup-keys/{keyId} \
+-H 'Accept: application/json' \
+-H 'Content-Type: application/json' \
+-H 'Authorization: Token <TOKEN>' \
+--data-raw '{
+  "revoked": false,
+  "auto_groups": [
+    "ch8i4ug6lnn4g9hqv7m0"
+  ]
+}'
+
+Copy
+Copied!
+Response
+Example
+Schema
+{
+  "id": 2531583362,
+  "name": "Default key",
+  "expires": "2023-06-01T14:47:22.291057Z",
+  "type": "reusable",
+  "valid": true,
+  "revoked": false,
+  "used_times": 2,
+  "last_used": "2023-05-05T09:00:35.477782Z",
+  "state": "valid",
+  "auto_groups": [
+    "ch8i4ug6lnn4g9hqv7m0"
+  ],
+  "updated_at": "2023-05-05T09:00:35.477782Z",
+  "usage_limit": 0,
+  "ephemeral": true,
+  "allow_extra_dns_labels": true,
+  "key": "A6160****"
+}
+
+Copy
+Copied!
+DELETE
+/api/setup-keys/{keyId}
+Delete a Setup Key
+Delete a Setup Key
+
+Path Parameters
+Name
+keyId
+Type
+string
+Required
+required
+Enum
+Description
+The unique identifier of a setup key
+
+Request
+cURL
+JavaScript
+Python
+Go
+Ruby
+Java
+PHP
+DELETE
+/api/setup-keys/{keyId}
+curl -X DELETE https://api.netbird.io/api/setup-keys/{keyId} \
+-H 'Authorization: Token <TOKEN>' 
+
+/api/groups
+List all Groups
+Returns a list of all groups
+
+Query Parameters
+Name
+name
+Type
+string
+Required
+optional
+Enum
+Description
+Filter groups by name (exact match)
+
+Request
+cURL
+JavaScript
+Python
+Go
+Ruby
+Java
+PHP
+GET
+/api/groups
+curl -X GET https://api.netbird.io/api/groups \
+-H 'Accept: application/json' \
+-H 'Authorization: Token <TOKEN>' 
+
+Copy
+Copied!
+Response
+Example
+Schema
+[
+  {
+    "id": "ch8i4ug6lnn4g9hqv7m0",
+    "name": "devs",
+    "peers_count": 2,
+    "resources_count": 5,
+    "issued": "api",
+    "peers": [
+      {
+        "id": "chacbco6lnnbn6cg5s90",
+        "name": "stage-host-1"
+      }
+    ],
+    "resources": [
+      {
+        "id": "chacdk86lnnboviihd7g",
+        "type": "host"
+      }
+    ]
+  }
+]
+
+Copy
+Copied!
+POST
+/api/groups
+Create a Group
+Creates a group
+
+Request-Body Parameters
+Name
+name
+Type
+string
+Required
+required
+Enum
+Description
+Group name identifier
+
+Name
+peers
+Type
+string[]
+Required
+optional
+Enum
+Description
+List of peers ids
+
+Name
+resources
+Type
+object[]
+Required
+optional
+Enum
+Description
+More Information
+Name
+id
+Type
+string
+Required
+required
+Enum
+Description
+ID of the resource
+
+Name
+type
+Type
+string
+Required
+required
+Enum
+Description
+Network resource type based of the address
+
+Request
+cURL
+JavaScript
+Python
+Go
+Ruby
+Java
+PHP
+POST
+/api/groups
+curl -X POST https://api.netbird.io/api/groups \
+-H 'Accept: application/json' \
+-H 'Content-Type: application/json' \
+-H 'Authorization: Token <TOKEN>' \
+--data-raw '{
+  "name": "devs",
+  "peers": [
+    "ch8i4ug6lnn4g9hqv7m1"
+  ],
+  "resources": [
+    {
+      "id": "chacdk86lnnboviihd7g",
+      "type": "host"
+    }
+  ]
+}'
+
+Copy
+Copied!
+Response
+Example
+Schema
+{
+  "id": "ch8i4ug6lnn4g9hqv7m0",
+  "name": "devs",
+  "peers_count": 2,
+  "resources_count": 5,
+  "issued": "api",
+  "peers": [
+    {
+      "id": "chacbco6lnnbn6cg5s90",
+      "name": "stage-host-1"
+    }
+  ],
+  "resources": [
+    {
+      "id": "chacdk86lnnboviihd7g",
+      "type": "host"
+    }
+  ]
+}
+
+Copy
+Copied!
+GET
+/api/groups/{groupId}
+Retrieve a Group
+Get information about a group
+
+Path Parameters
+Name
+groupId
+Type
+string
+Required
+required
+Enum
+Description
+The unique identifier of a group
+
+Request
+cURL
+JavaScript
+Python
+Go
+Ruby
+Java
+PHP
+GET
+/api/groups/{groupId}
+curl -X GET https://api.netbird.io/api/groups/{groupId} \
+-H 'Accept: application/json' \
+-H 'Authorization: Token <TOKEN>' 
+
+Copy
+Copied!
+Response
+Example
+Schema
+{
+  "id": "ch8i4ug6lnn4g9hqv7m0",
+  "name": "devs",
+  "peers_count": 2,
+  "resources_count": 5,
+  "issued": "api",
+  "peers": [
+    {
+      "id": "chacbco6lnnbn6cg5s90",
+      "name": "stage-host-1"
+    }
+  ],
+  "resources": [
+    {
+      "id": "chacdk86lnnboviihd7g",
+      "type": "host"
+    }
+  ]
+}
+
+Copy
+Copied!
+PUT
+/api/groups/{groupId}
+Update a Group
+Update/Replace a group
+
+Path Parameters
+Name
+groupId
+Type
+string
+Required
+required
+Enum
+Description
+The unique identifier of a group
+
+Request-Body Parameters
+Name
+name
+Type
+string
+Required
+required
+Enum
+Description
+Group name identifier
+
+Name
+peers
+Type
+string[]
+Required
+optional
+Enum
+Description
+List of peers ids
+
+Name
+resources
+Type
+object[]
+Required
+optional
+Enum
+Description
+More Information
+Name
+id
+Type
+string
+Required
+required
+Enum
+Description
+ID of the resource
+
+Name
+type
+Type
+string
+Required
+required
+Enum
+Description
+Network resource type based of the address
+
+Request
+cURL
+JavaScript
+Python
+Go
+Ruby
+Java
+PHP
+PUT
+/api/groups/{groupId}
+curl -X PUT https://api.netbird.io/api/groups/{groupId} \
+-H 'Accept: application/json' \
+-H 'Content-Type: application/json' \
+-H 'Authorization: Token <TOKEN>' \
+--data-raw '{
+  "name": "devs",
+  "peers": [
+    "ch8i4ug6lnn4g9hqv7m1"
+  ],
+  "resources": [
+    {
+      "id": "chacdk86lnnboviihd7g",
+      "type": "host"
+    }
+  ]
+}'
+
+Copy
+Copied!
+Response
+Example
+Schema
+{
+  "id": "ch8i4ug6lnn4g9hqv7m0",
+  "name": "devs",
+  "peers_count": 2,
+  "resources_count": 5,
+  "issued": "api",
+  "peers": [
+    {
+      "id": "chacbco6lnnbn6cg5s90",
+      "name": "stage-host-1"
+    }
+  ],
+  "resources": [
+    {
+      "id": "chacdk86lnnboviihd7g",
+      "type": "host"
+    }
+  ]
+}
+
+Copy
+Copied!
+DELETE
+/api/groups/{groupId}
+Delete a Group
+Delete a group
+
+Path Parameters
+Name
+groupId
+Type
+string
+Required
+required
+Enum
+Description
+The unique identifier of a group
+
+Request
+cURL
+JavaScript
+Python
+Go
+Ruby
+Java
+PHP
+DELETE
+/api/groups/{groupId}
+curl -X DELETE https://api.netbird.io/api/groups/{groupId} \
+-H 'Authorization: Token <TOKEN>' 
+
+/api/policies
+List all Policies
+Returns a list of all policies
+
+Request
+cURL
+JavaScript
+Python
+Go
+Ruby
+Java
+PHP
+GET
+/api/policies
+curl -X GET https://api.netbird.io/api/policies \
+-H 'Accept: application/json' \
+-H 'Authorization: Token <TOKEN>' 
+
+Copy
+Copied!
+Response
+Example
+Schema
+[
+  {
+    "name": "ch8i4ug6lnn4g9hqv7mg",
+    "description": "This is a default policy that allows connections between all the resources",
+    "enabled": true,
+    "id": "ch8i4ug6lnn4g9hqv7mg",
+    "source_posture_checks": [
+      "chacdk86lnnboviihd70"
+    ],
+    "rules": [
+      {
+        "name": "Default",
+        "description": "This is a default rule that allows connections between all the resources",
+        "enabled": true,
+        "action": "accept",
+        "bidirectional": true,
+        "protocol": "tcp",
+        "ports": [
+          "80"
+        ],
+        "port_ranges": [
+          {
+            "start": 80,
+            "end": 320
+          }
+        ],
+        "authorized_groups": {
+          "description": "Map of user group ids to a list of local users",
+          "type": "object",
+          "additionalProperties": [
+            "group1"
+          ]
+        },
+        "id": "ch8i4ug6lnn4g9hqv7mg",
+        "sources": [
+          {
+            "id": "ch8i4ug6lnn4g9hqv7m0",
+            "name": "devs",
+            "peers_count": 2,
+            "resources_count": 5,
+            "issued": "api"
+          }
+        ],
+        "sourceResource": {
+          "id": "chacdk86lnnboviihd7g",
+          "type": "host"
+        },
+        "destinations": [
+          {
+            "id": "ch8i4ug6lnn4g9hqv7m0",
+            "name": "devs",
+            "peers_count": 2,
+            "resources_count": 5,
+            "issued": "api"
+          }
+        ],
+        "destinationResource": {
+          "id": "chacdk86lnnboviihd7g",
+          "type": "host"
+        }
+      }
+    ]
+  }
+]
+
+Copy
+Copied!
+POST
+/api/policies
+Create a Policy
+Creates a policy
+
+Request-Body Parameters
+Name
+name
+Type
+string
+Required
+required
+Enum
+Description
+Policy name identifier
+
+Name
+description
+Type
+string
+Required
+optional
+Enum
+Description
+Policy friendly description
+
+Name
+enabled
+Type
+boolean
+Required
+required
+Enum
+Description
+Policy status
+
+Name
+source_posture_checks
+Type
+string[]
+Required
+optional
+Enum
+Description
+Posture checks ID's applied to policy source groups
+
+Name
+rules
+Type
+object[]
+Required
+required
+Enum
+Description
+Policy rule object for policy UI editor
+Name
+name
+Type
+string
+Required
+required
+Enum
+Description
+Policy rule name identifier
+
+Name
+description
+Type
+string
+Required
+optional
+Enum
+Description
+Policy rule friendly description
+
+Name
+enabled
+Type
+boolean
+Required
+required
+Enum
+Description
+Policy rule status
+
+Name
+action
+Type
+string
+Required
+required
+Enum
+Description
+Policy rule accept or drops packets
+
+Name
+bidirectional
+Type
+boolean
+Required
+required
+Enum
+Description
+Define if the rule is applicable in both directions, sources, and destinations.
+
+Name
+protocol
+Type
+string
+Required
+required
+Enum
+Description
+Policy rule type of the traffic
+
+Name
+ports
+Type
+string[]
+Required
+optional
+Enum
+Description
+Policy rule affected ports
+
+Name
+port_ranges
+Type
+object[]
+Required
+optional
+Enum
+Description
+Policy rule affected ports ranges list
+Name
+start
+Type
+integer
+Required
+required
+Enum
+Description
+The starting port of the range
+
+Name
+end
+Type
+integer
+Required
+required
+Enum
+Description
+The ending port of the range
+
+Name
+authorized_groups
+Type
+object
+Required
+optional
+Enum
+Description
+Map of user group ids to a list of local users
+
+Name
+id
+Type
+string
+Required
+optional
+Enum
+Description
+Policy rule ID
+
+Name
+sources
+Type
+string[]
+Required
+optional
+Enum
+Description
+Policy rule source group IDs
+
+Name
+sourceResource
+Type
+object
+Required
+optional
+Enum
+Description
+More Information
+Name
+id
+Type
+string
+Required
+required
+Enum
+Description
+ID of the resource
+
+Name
+type
+Type
+string
+Required
+required
+Enum
+Description
+Network resource type based of the address
+
+Name
+destinations
+Type
+string[]
+Required
+optional
+Enum
+Description
+Policy rule destination group IDs
+
+Name
+destinationResource
+Type
+object
+Required
+optional
+Enum
+Description
+More Information
+Name
+id
+Type
+string
+Required
+required
+Enum
+Description
+ID of the resource
+
+Name
+type
+Type
+string
+Required
+required
+Enum
+Description
+Network resource type based of the address
+
+Request
+cURL
+JavaScript
+Python
+Go
+Ruby
+Java
+PHP
+POST
+/api/policies
+curl -X POST https://api.netbird.io/api/policies \
+-H 'Accept: application/json' \
+-H 'Content-Type: application/json' \
+-H 'Authorization: Token <TOKEN>' \
+--data-raw '{
+  "name": "ch8i4ug6lnn4g9hqv7mg",
+  "description": "This is a default policy that allows connections between all the resources",
+  "enabled": true,
+  "source_posture_checks": [
+    "chacdk86lnnboviihd70"
+  ],
+  "rules": [
+    {
+      "name": "Default",
+      "description": "This is a default rule that allows connections between all the resources",
+      "enabled": true,
+      "action": "accept",
+      "bidirectional": true,
+      "protocol": "tcp",
+      "ports": [
+        "80"
+      ],
+      "port_ranges": [
+        {
+          "start": 80,
+          "end": 320
+        }
+      ],
+      "authorized_groups": {
+        "description": "Map of user group ids to a list of local users",
+        "type": "object",
+        "additionalProperties": [
+          "group1"
+        ]
+      },
+      "id": "ch8i4ug6lnn4g9hqv7mg",
+      "sources": [
+        "ch8i4ug6lnn4g9hqv797"
+      ],
+      "sourceResource": {
+        "id": "chacdk86lnnboviihd7g",
+        "type": "host"
+      },
+      "destinations": [
+        "ch8i4ug6lnn4g9h7v7m0"
+      ],
+      "destinationResource": {
+        "id": "chacdk86lnnboviihd7g",
+        "type": "host"
+      }
+    }
+  ]
+}'
+
+Copy
+Copied!
+Response
+Example
+Schema
+{
+  "name": "ch8i4ug6lnn4g9hqv7mg",
+  "description": "This is a default policy that allows connections between all the resources",
+  "enabled": true,
+  "id": "ch8i4ug6lnn4g9hqv7mg",
+  "source_posture_checks": [
+    "chacdk86lnnboviihd70"
+  ],
+  "rules": [
+    {
+      "name": "Default",
+      "description": "This is a default rule that allows connections between all the resources",
+      "enabled": true,
+      "action": "accept",
+      "bidirectional": true,
+      "protocol": "tcp",
+      "ports": [
+        "80"
+      ],
+      "port_ranges": [
+        {
+          "start": 80,
+          "end": 320
+        }
+      ],
+      "authorized_groups": {
+        "description": "Map of user group ids to a list of local users",
+        "type": "object",
+        "additionalProperties": [
+          "group1"
+        ]
+      },
+      "id": "ch8i4ug6lnn4g9hqv7mg",
+      "sources": [
+        {
+          "id": "ch8i4ug6lnn4g9hqv7m0",
+          "name": "devs",
+          "peers_count": 2,
+          "resources_count": 5,
+          "issued": "api"
+        }
+      ],
+      "sourceResource": {
+        "id": "chacdk86lnnboviihd7g",
+        "type": "host"
+      },
+      "destinations": [
+        {
+          "id": "ch8i4ug6lnn4g9hqv7m0",
+          "name": "devs",
+          "peers_count": 2,
+          "resources_count": 5,
+          "issued": "api"
+        }
+      ],
+      "destinationResource": {
+        "id": "chacdk86lnnboviihd7g",
+        "type": "host"
+      }
+    }
+  ]
+}
+
+Copy
+Copied!
+GET
+/api/policies/{policyId}
+Retrieve a Policy
+Get information about a Policies
+
+Path Parameters
+Name
+policyId
+Type
+string
+Required
+required
+Enum
+Description
+The unique identifier of a policy
+
+Request
+cURL
+JavaScript
+Python
+Go
+Ruby
+Java
+PHP
+GET
+/api/policies/{policyId}
+curl -X GET https://api.netbird.io/api/policies/{policyId} \
+-H 'Accept: application/json' \
+-H 'Authorization: Token <TOKEN>' 
+
+Copy
+Copied!
+Response
+Example
+Schema
+{
+  "name": "ch8i4ug6lnn4g9hqv7mg",
+  "description": "This is a default policy that allows connections between all the resources",
+  "enabled": true,
+  "id": "ch8i4ug6lnn4g9hqv7mg",
+  "source_posture_checks": [
+    "chacdk86lnnboviihd70"
+  ],
+  "rules": [
+    {
+      "name": "Default",
+      "description": "This is a default rule that allows connections between all the resources",
+      "enabled": true,
+      "action": "accept",
+      "bidirectional": true,
+      "protocol": "tcp",
+      "ports": [
+        "80"
+      ],
+      "port_ranges": [
+        {
+          "start": 80,
+          "end": 320
+        }
+      ],
+      "authorized_groups": {
+        "description": "Map of user group ids to a list of local users",
+        "type": "object",
+        "additionalProperties": [
+          "group1"
+        ]
+      },
+      "id": "ch8i4ug6lnn4g9hqv7mg",
+      "sources": [
+        {
+          "id": "ch8i4ug6lnn4g9hqv7m0",
+          "name": "devs",
+          "peers_count": 2,
+          "resources_count": 5,
+          "issued": "api"
+        }
+      ],
+      "sourceResource": {
+        "id": "chacdk86lnnboviihd7g",
+        "type": "host"
+      },
+      "destinations": [
+        {
+          "id": "ch8i4ug6lnn4g9hqv7m0",
+          "name": "devs",
+          "peers_count": 2,
+          "resources_count": 5,
+          "issued": "api"
+        }
+      ],
+      "destinationResource": {
+        "id": "chacdk86lnnboviihd7g",
+        "type": "host"
+      }
+    }
+  ]
+}
+
+Copy
+Copied!
+PUT
+/api/policies/{policyId}
+Update a Policy
+Update/Replace a Policy
+
+Path Parameters
+Name
+policyId
+Type
+string
+Required
+required
+Enum
+Description
+The unique identifier of a policy
+
+Request-Body Parameters
+Name
+name
+Type
+string
+Required
+required
+Enum
+Description
+Policy name identifier
+
+Name
+description
+Type
+string
+Required
+optional
+Enum
+Description
+Policy friendly description
+
+Name
+enabled
+Type
+boolean
+Required
+required
+Enum
+Description
+Policy status
+
+Name
+source_posture_checks
+Type
+string[]
+Required
+optional
+Enum
+Description
+Posture checks ID's applied to policy source groups
+
+Name
+rules
+Type
+object[]
+Required
+required
+Enum
+Description
+Policy rule object for policy UI editor
+Name
+name
+Type
+string
+Required
+required
+Enum
+Description
+Policy rule name identifier
+
+Name
+description
+Type
+string
+Required
+optional
+Enum
+Description
+Policy rule friendly description
+
+Name
+enabled
+Type
+boolean
+Required
+required
+Enum
+Description
+Policy rule status
+
+Name
+action
+Type
+string
+Required
+required
+Enum
+Description
+Policy rule accept or drops packets
+
+Name
+bidirectional
+Type
+boolean
+Required
+required
+Enum
+Description
+Define if the rule is applicable in both directions, sources, and destinations.
+
+Name
+protocol
+Type
+string
+Required
+required
+Enum
+Description
+Policy rule type of the traffic
+
+Name
+ports
+Type
+string[]
+Required
+optional
+Enum
+Description
+Policy rule affected ports
+
+Name
+port_ranges
+Type
+object[]
+Required
+optional
+Enum
+Description
+Policy rule affected ports ranges list
+Name
+start
+Type
+integer
+Required
+required
+Enum
+Description
+The starting port of the range
+
+Name
+end
+Type
+integer
+Required
+required
+Enum
+Description
+The ending port of the range
+
+Name
+authorized_groups
+Type
+object
+Required
+optional
+Enum
+Description
+Map of user group ids to a list of local users
+
+Name
+id
+Type
+string
+Required
+optional
+Enum
+Description
+Policy rule ID
+
+Name
+sources
+Type
+string[]
+Required
+optional
+Enum
+Description
+Policy rule source group IDs
+
+Name
+sourceResource
+Type
+object
+Required
+optional
+Enum
+Description
+More Information
+Name
+id
+Type
+string
+Required
+required
+Enum
+Description
+ID of the resource
+
+Name
+type
+Type
+string
+Required
+required
+Enum
+Description
+Network resource type based of the address
+
+Name
+destinations
+Type
+string[]
+Required
+optional
+Enum
+Description
+Policy rule destination group IDs
+
+Name
+destinationResource
+Type
+object
+Required
+optional
+Enum
+Description
+More Information
+Name
+id
+Type
+string
+Required
+required
+Enum
+Description
+ID of the resource
+
+Name
+type
+Type
+string
+Required
+required
+Enum
+Description
+Network resource type based of the address
+
+Request
+cURL
+JavaScript
+Python
+Go
+Ruby
+Java
+PHP
+PUT
+/api/policies/{policyId}
+curl -X PUT https://api.netbird.io/api/policies/{policyId} \
+-H 'Accept: application/json' \
+-H 'Content-Type: application/json' \
+-H 'Authorization: Token <TOKEN>' \
+--data-raw '{
+  "name": "ch8i4ug6lnn4g9hqv7mg",
+  "description": "This is a default policy that allows connections between all the resources",
+  "enabled": true,
+  "source_posture_checks": [
+    "chacdk86lnnboviihd70"
+  ],
+  "rules": [
+    {
+      "name": "Default",
+      "description": "This is a default rule that allows connections between all the resources",
+      "enabled": true,
+      "action": "accept",
+      "bidirectional": true,
+      "protocol": "tcp",
+      "ports": [
+        "80"
+      ],
+      "port_ranges": [
+        {
+          "start": 80,
+          "end": 320
+        }
+      ],
+      "authorized_groups": {
+        "description": "Map of user group ids to a list of local users",
+        "type": "object",
+        "additionalProperties": [
+          "group1"
+        ]
+      },
+      "id": "ch8i4ug6lnn4g9hqv7mg",
+      "sources": [
+        "ch8i4ug6lnn4g9hqv797"
+      ],
+      "sourceResource": {
+        "id": "chacdk86lnnboviihd7g",
+        "type": "host"
+      },
+      "destinations": [
+        "ch8i4ug6lnn4g9h7v7m0"
+      ],
+      "destinationResource": {
+        "id": "chacdk86lnnboviihd7g",
+        "type": "host"
+      }
+    }
+  ]
+}'
+
+Copy
+Copied!
+Response
+Example
+Schema
+{
+  "name": "ch8i4ug6lnn4g9hqv7mg",
+  "description": "This is a default policy that allows connections between all the resources",
+  "enabled": true,
+  "id": "ch8i4ug6lnn4g9hqv7mg",
+  "source_posture_checks": [
+    "chacdk86lnnboviihd70"
+  ],
+  "rules": [
+    {
+      "name": "Default",
+      "description": "This is a default rule that allows connections between all the resources",
+      "enabled": true,
+      "action": "accept",
+      "bidirectional": true,
+      "protocol": "tcp",
+      "ports": [
+        "80"
+      ],
+      "port_ranges": [
+        {
+          "start": 80,
+          "end": 320
+        }
+      ],
+      "authorized_groups": {
+        "description": "Map of user group ids to a list of local users",
+        "type": "object",
+        "additionalProperties": [
+          "group1"
+        ]
+      },
+      "id": "ch8i4ug6lnn4g9hqv7mg",
+      "sources": [
+        {
+          "id": "ch8i4ug6lnn4g9hqv7m0",
+          "name": "devs",
+          "peers_count": 2,
+          "resources_count": 5,
+          "issued": "api"
+        }
+      ],
+      "sourceResource": {
+        "id": "chacdk86lnnboviihd7g",
+        "type": "host"
+      },
+      "destinations": [
+        {
+          "id": "ch8i4ug6lnn4g9hqv7m0",
+          "name": "devs",
+          "peers_count": 2,
+          "resources_count": 5,
+          "issued": "api"
+        }
+      ],
+      "destinationResource": {
+        "id": "chacdk86lnnboviihd7g",
+        "type": "host"
+      }
+    }
+  ]
+}
+
+Copy
+Copied!
+DELETE
+/api/policies/{policyId}
+Delete a Policy
+Delete a policy
+
+Path Parameters
+Name
+policyId
+Type
+string
+Required
+required
+Enum
+Description
+The unique identifier of a policy
+
+Request
+cURL
+JavaScript
+Python
+Go
+Ruby
+Java
+PHP
+DELETE
+/api/policies/{policyId}
+curl -X DELETE https://api.netbird.io/api/policies/{policyId} \
+-H 'Authorization: Token <TOKEN>' 
+
+/api/posture-checks
+List all Posture Checks
+Returns a list of all posture checks
+
+Request
+cURL
+JavaScript
+Python
+Go
+Ruby
+Java
+PHP
+GET
+/api/posture-checks
+curl -X GET https://api.netbird.io/api/posture-checks \
+-H 'Accept: application/json' \
+-H 'Authorization: Token <TOKEN>' 
+
+Copy
+Copied!
+Response
+Example
+Schema
+[
+  {
+    "id": "ch8i4ug6lnn4g9hqv7mg",
+    "name": "Default",
+    "description": "This checks if the peer is running required NetBird's version",
+    "checks": {
+      "nb_version_check": {
+        "min_version": "14.3"
+      },
+      "os_version_check": {
+        "android": {
+          "min_version": "13"
+        },
+        "ios": {
+          "min_version": "17.3.1"
+        },
+        "darwin": {
+          "min_version": "14.2.1"
+        },
+        "linux": {
+          "min_kernel_version": "5.3.3"
+        },
+        "windows": {
+          "min_kernel_version": "10.0.1234"
+        }
+      },
+      "geo_location_check": {
+        "locations": [
+          {
+            "country_code": "DE",
+            "city_name": "Berlin"
+          }
+        ],
+        "action": "allow"
+      },
+      "peer_network_range_check": {
+        "ranges": [
+          "192.168.1.0/24",
+          "10.0.0.0/8",
+          "2001:db8:1234:1a00::/56"
+        ],
+        "action": "allow"
+      },
+      "process_check": {
+        "processes": [
+          {
+            "linux_path": "/usr/local/bin/netbird",
+            "mac_path": "/Applications/NetBird.app/Contents/MacOS/netbird",
+            "windows_path": "C:
+rogramDataetBird\netbird.exe"
+          }
+        ]
+      }
+    }
+  }
+]
+
+Copy
+Copied!
+POST
+/api/posture-checks
+Create a Posture Check
+Creates a posture check
+
+Request-Body Parameters
+Name
+name
+Type
+string
+Required
+required
+Enum
+Description
+Posture check name identifier
+
+Name
+description
+Type
+string
+Required
+required
+Enum
+Description
+Posture check friendly description
+
+Name
+checks
+Type
+object
+Required
+optional
+Enum
+Description
+List of objects that perform the actual checks
+Name
+nb_version_check
+Type
+object
+Required
+optional
+Enum
+Description
+Posture check for the version of operating system
+Name
+min_version
+Type
+string
+Required
+required
+Enum
+Description
+Minimum acceptable version
+
+Name
+os_version_check
+Type
+object
+Required
+optional
+Enum
+Description
+Posture check for the version of operating system
+Name
+android
+Type
+object
+Required
+optional
+Enum
+Description
+Posture check for the version of operating system
+Name
+min_version
+Type
+string
+Required
+required
+Enum
+Description
+Minimum acceptable version
+
+Name
+darwin
+Type
+object
+Required
+optional
+Enum
+Description
+Posture check for the version of operating system
+Name
+min_version
+Type
+string
+Required
+required
+Enum
+Description
+Minimum acceptable version
+
+Name
+ios
+Type
+object
+Required
+optional
+Enum
+Description
+Posture check for the version of operating system
+Name
+min_version
+Type
+string
+Required
+required
+Enum
+Description
+Minimum acceptable version
+
+Name
+linux
+Type
+object
+Required
+optional
+Enum
+Description
+Posture check with the kernel version
+Name
+min_kernel_version
+Type
+string
+Required
+required
+Enum
+Description
+Minimum acceptable version
+
+Name
+windows
+Type
+object
+Required
+optional
+Enum
+Description
+Posture check with the kernel version
+Name
+min_kernel_version
+Type
+string
+Required
+required
+Enum
+Description
+Minimum acceptable version
+
+Name
+geo_location_check
+Type
+object
+Required
+optional
+Enum
+Description
+Posture check for geo location
+Name
+locations
+Type
+object[]
+Required
+required
+Enum
+Description
+List of geo locations to which the policy applies
+Name
+country_code
+Type
+string
+Required
+required
+Enum
+Description
+2-letter ISO 3166-1 alpha-2 code that represents the country
+
+Name
+city_name
+Type
+string
+Required
+optional
+Enum
+Description
+Commonly used English name of the city
+
+Name
+action
+Type
+string
+Required
+required
+Enum
+Description
+Action to take upon policy match
+
+Name
+peer_network_range_check
+Type
+object
+Required
+optional
+Enum
+Description
+Posture check for allow or deny access based on peer local network addresses
+Name
+ranges
+Type
+string[]
+Required
+required
+Enum
+Description
+List of peer network ranges in CIDR notation
+
+Name
+action
+Type
+string
+Required
+required
+Enum
+Description
+Action to take upon policy match
+
+Name
+process_check
+Type
+object
+Required
+optional
+Enum
+Description
+Posture Check for binaries exist and are running in the peer’s system
+Name
+processes
+Type
+object[]
+Required
+required
+Enum
+Description
+More Information
+Name
+linux_path
+Type
+string
+Required
+optional
+Enum
+Description
+Path to the process executable file in a Linux operating system
+
+Name
+mac_path
+Type
+string
+Required
+optional
+Enum
+Description
+Path to the process executable file in a Mac operating system
+
+Name
+windows_path
+Type
+string
+Required
+optional
+Enum
+Description
+Path to the process executable file in a Windows operating system
+
+Request
+cURL
+JavaScript
+Python
+Go
+Ruby
+Java
+PHP
+POST
+/api/posture-checks
+curl -X POST https://api.netbird.io/api/posture-checks \
+-H 'Accept: application/json' \
+-H 'Content-Type: application/json' \
+-H 'Authorization: Token <TOKEN>' \
+--data-raw '{
+  "name": "Default",
+  "description": "This checks if the peer is running required NetBird's version",
+  "checks": {
+    "nb_version_check": {
+      "min_version": "14.3"
+    },
+    "os_version_check": {
+      "android": {
+        "min_version": "13"
+      },
+      "ios": {
+        "min_version": "17.3.1"
+      },
+      "darwin": {
+        "min_version": "14.2.1"
+      },
+      "linux": {
+        "min_kernel_version": "5.3.3"
+      },
+      "windows": {
+        "min_kernel_version": "10.0.1234"
+      }
+    },
+    "geo_location_check": {
+      "locations": [
+        {
+          "country_code": "DE",
+          "city_name": "Berlin"
+        }
+      ],
+      "action": "allow"
+    },
+    "peer_network_range_check": {
+      "ranges": [
+        "192.168.1.0/24",
+        "10.0.0.0/8",
+        "2001:db8:1234:1a00::/56"
+      ],
+      "action": "allow"
+    },
+    "process_check": {
+      "processes": [
+        {
+          "linux_path": "/usr/local/bin/netbird",
+          "mac_path": "/Applications/NetBird.app/Contents/MacOS/netbird",
+          "windows_path": "C:
+rogramDataetBird\netbird.exe"
+        }
+      ]
+    }
+  }
+}'
+
+Copy
+Copied!
+Response
+Example
+Schema
+{
+  "id": "ch8i4ug6lnn4g9hqv7mg",
+  "name": "Default",
+  "description": "This checks if the peer is running required NetBird's version",
+  "checks": {
+    "nb_version_check": {
+      "min_version": "14.3"
+    },
+    "os_version_check": {
+      "android": {
+        "min_version": "13"
+      },
+      "ios": {
+        "min_version": "17.3.1"
+      },
+      "darwin": {
+        "min_version": "14.2.1"
+      },
+      "linux": {
+        "min_kernel_version": "5.3.3"
+      },
+      "windows": {
+        "min_kernel_version": "10.0.1234"
+      }
+    },
+    "geo_location_check": {
+      "locations": [
+        {
+          "country_code": "DE",
+          "city_name": "Berlin"
+        }
+      ],
+      "action": "allow"
+    },
+    "peer_network_range_check": {
+      "ranges": [
+        "192.168.1.0/24",
+        "10.0.0.0/8",
+        "2001:db8:1234:1a00::/56"
+      ],
+      "action": "allow"
+    },
+    "process_check": {
+      "processes": [
+        {
+          "linux_path": "/usr/local/bin/netbird",
+          "mac_path": "/Applications/NetBird.app/Contents/MacOS/netbird",
+          "windows_path": "C:
+rogramDataetBird\netbird.exe"
+        }
+      ]
+    }
+  }
+}
+
+Copy
+Copied!
+GET
+/api/posture-checks/{postureCheckId}
+Retrieve a Posture Check
+Get information about a posture check
+
+Path Parameters
+Name
+postureCheckId
+Type
+string
+Required
+required
+Enum
+Description
+The unique identifier of a posture check
+
+Request
+cURL
+JavaScript
+Python
+Go
+Ruby
+Java
+PHP
+GET
+/api/posture-checks/{postureCheckId}
+curl -X GET https://api.netbird.io/api/posture-checks/{postureCheckId} \
+-H 'Accept: application/json' \
+-H 'Authorization: Token <TOKEN>' 
+
+Copy
+Copied!
+Response
+Example
+Schema
+{
+  "id": "ch8i4ug6lnn4g9hqv7mg",
+  "name": "Default",
+  "description": "This checks if the peer is running required NetBird's version",
+  "checks": {
+    "nb_version_check": {
+      "min_version": "14.3"
+    },
+    "os_version_check": {
+      "android": {
+        "min_version": "13"
+      },
+      "ios": {
+        "min_version": "17.3.1"
+      },
+      "darwin": {
+        "min_version": "14.2.1"
+      },
+      "linux": {
+        "min_kernel_version": "5.3.3"
+      },
+      "windows": {
+        "min_kernel_version": "10.0.1234"
+      }
+    },
+    "geo_location_check": {
+      "locations": [
+        {
+          "country_code": "DE",
+          "city_name": "Berlin"
+        }
+      ],
+      "action": "allow"
+    },
+    "peer_network_range_check": {
+      "ranges": [
+        "192.168.1.0/24",
+        "10.0.0.0/8",
+        "2001:db8:1234:1a00::/56"
+      ],
+      "action": "allow"
+    },
+    "process_check": {
+      "processes": [
+        {
+          "linux_path": "/usr/local/bin/netbird",
+          "mac_path": "/Applications/NetBird.app/Contents/MacOS/netbird",
+          "windows_path": "C:
+rogramDataetBird\netbird.exe"
+        }
+      ]
+    }
+  }
+}
+
+Copy
+Copied!
+PUT
+/api/posture-checks/{postureCheckId}
+Update a Posture Check
+Update/Replace a posture check
+
+Path Parameters
+Name
+postureCheckId
+Type
+string
+Required
+required
+Enum
+Description
+The unique identifier of a posture check
+
+Request-Body Parameters
+Name
+name
+Type
+string
+Required
+required
+Enum
+Description
+Posture check name identifier
+
+Name
+description
+Type
+string
+Required
+required
+Enum
+Description
+Posture check friendly description
+
+Name
+checks
+Type
+object
+Required
+optional
+Enum
+Description
+List of objects that perform the actual checks
+Name
+nb_version_check
+Type
+object
+Required
+optional
+Enum
+Description
+Posture check for the version of operating system
+Name
+min_version
+Type
+string
+Required
+required
+Enum
+Description
+Minimum acceptable version
+
+Name
+os_version_check
+Type
+object
+Required
+optional
+Enum
+Description
+Posture check for the version of operating system
+Name
+android
+Type
+object
+Required
+optional
+Enum
+Description
+Posture check for the version of operating system
+Name
+min_version
+Type
+string
+Required
+required
+Enum
+Description
+Minimum acceptable version
+
+Name
+darwin
+Type
+object
+Required
+optional
+Enum
+Description
+Posture check for the version of operating system
+Name
+min_version
+Type
+string
+Required
+required
+Enum
+Description
+Minimum acceptable version
+
+Name
+ios
+Type
+object
+Required
+optional
+Enum
+Description
+Posture check for the version of operating system
+Name
+min_version
+Type
+string
+Required
+required
+Enum
+Description
+Minimum acceptable version
+
+Name
+linux
+Type
+object
+Required
+optional
+Enum
+Description
+Posture check with the kernel version
+Name
+min_kernel_version
+Type
+string
+Required
+required
+Enum
+Description
+Minimum acceptable version
+
+Name
+windows
+Type
+object
+Required
+optional
+Enum
+Description
+Posture check with the kernel version
+Name
+min_kernel_version
+Type
+string
+Required
+required
+Enum
+Description
+Minimum acceptable version
+
+Name
+geo_location_check
+Type
+object
+Required
+optional
+Enum
+Description
+Posture check for geo location
+Name
+locations
+Type
+object[]
+Required
+required
+Enum
+Description
+List of geo locations to which the policy applies
+Name
+country_code
+Type
+string
+Required
+required
+Enum
+Description
+2-letter ISO 3166-1 alpha-2 code that represents the country
+
+Name
+city_name
+Type
+string
+Required
+optional
+Enum
+Description
+Commonly used English name of the city
+
+Name
+action
+Type
+string
+Required
+required
+Enum
+Description
+Action to take upon policy match
+
+Name
+peer_network_range_check
+Type
+object
+Required
+optional
+Enum
+Description
+Posture check for allow or deny access based on peer local network addresses
+Name
+ranges
+Type
+string[]
+Required
+required
+Enum
+Description
+List of peer network ranges in CIDR notation
+
+Name
+action
+Type
+string
+Required
+required
+Enum
+Description
+Action to take upon policy match
+
+Name
+process_check
+Type
+object
+Required
+optional
+Enum
+Description
+Posture Check for binaries exist and are running in the peer’s system
+Name
+processes
+Type
+object[]
+Required
+required
+Enum
+Description
+More Information
+Name
+linux_path
+Type
+string
+Required
+optional
+Enum
+Description
+Path to the process executable file in a Linux operating system
+
+Name
+mac_path
+Type
+string
+Required
+optional
+Enum
+Description
+Path to the process executable file in a Mac operating system
+
+Name
+windows_path
+Type
+string
+Required
+optional
+Enum
+Description
+Path to the process executable file in a Windows operating system
+
+Request
+cURL
+JavaScript
+Python
+Go
+Ruby
+Java
+PHP
+PUT
+/api/posture-checks/{postureCheckId}
+curl -X PUT https://api.netbird.io/api/posture-checks/{postureCheckId} \
+-H 'Accept: application/json' \
+-H 'Content-Type: application/json' \
+-H 'Authorization: Token <TOKEN>' \
+--data-raw '{
+  "name": "Default",
+  "description": "This checks if the peer is running required NetBird's version",
+  "checks": {
+    "nb_version_check": {
+      "min_version": "14.3"
+    },
+    "os_version_check": {
+      "android": {
+        "min_version": "13"
+      },
+      "ios": {
+        "min_version": "17.3.1"
+      },
+      "darwin": {
+        "min_version": "14.2.1"
+      },
+      "linux": {
+        "min_kernel_version": "5.3.3"
+      },
+      "windows": {
+        "min_kernel_version": "10.0.1234"
+      }
+    },
+    "geo_location_check": {
+      "locations": [
+        {
+          "country_code": "DE",
+          "city_name": "Berlin"
+        }
+      ],
+      "action": "allow"
+    },
+    "peer_network_range_check": {
+      "ranges": [
+        "192.168.1.0/24",
+        "10.0.0.0/8",
+        "2001:db8:1234:1a00::/56"
+      ],
+      "action": "allow"
+    },
+    "process_check": {
+      "processes": [
+        {
+          "linux_path": "/usr/local/bin/netbird",
+          "mac_path": "/Applications/NetBird.app/Contents/MacOS/netbird",
+          "windows_path": "C:
+rogramDataetBird\netbird.exe"
+        }
+      ]
+    }
+  }
+}'
+
+Copy
+Copied!
+Response
+Example
+Schema
+{
+  "id": "ch8i4ug6lnn4g9hqv7mg",
+  "name": "Default",
+  "description": "This checks if the peer is running required NetBird's version",
+  "checks": {
+    "nb_version_check": {
+      "min_version": "14.3"
+    },
+    "os_version_check": {
+      "android": {
+        "min_version": "13"
+      },
+      "ios": {
+        "min_version": "17.3.1"
+      },
+      "darwin": {
+        "min_version": "14.2.1"
+      },
+      "linux": {
+        "min_kernel_version": "5.3.3"
+      },
+      "windows": {
+        "min_kernel_version": "10.0.1234"
+      }
+    },
+    "geo_location_check": {
+      "locations": [
+        {
+          "country_code": "DE",
+          "city_name": "Berlin"
+        }
+      ],
+      "action": "allow"
+    },
+    "peer_network_range_check": {
+      "ranges": [
+        "192.168.1.0/24",
+        "10.0.0.0/8",
+        "2001:db8:1234:1a00::/56"
+      ],
+      "action": "allow"
+    },
+    "process_check": {
+      "processes": [
+        {
+          "linux_path": "/usr/local/bin/netbird",
+          "mac_path": "/Applications/NetBird.app/Contents/MacOS/netbird",
+          "windows_path": "C:
+rogramDataetBird\netbird.exe"
+        }
+      ]
+    }
+  }
+}
+
+Copy
+Copied!
+DELETE
+/api/posture-checks/{postureCheckId}
+Delete a Posture Check
+Delete a posture check
+
+Path Parameters
+Name
+postureCheckId
+Type
+string
+Required
+required
+Enum
+Description
+The unique identifier of a posture check
+
+Request
+cURL
+JavaScript
+Python
+Go
+Ruby
+Java
+PHP
+DELETE
+/api/posture-checks/{postureCheckId}
+curl -X DELETE https://api.netbird.io/api/posture-checks/{postureCheckId} \
+-H 'Authorization: Token <TOKEN>' 
+
+/api/locations/countries
+List all country codes
+Get list of all country in 2-letter ISO 3166-1 alpha-2 codes
+
+Request
+cURL
+JavaScript
+Python
+Go
+Ruby
+Java
+PHP
+GET
+/api/locations/countries
+curl -X GET https://api.netbird.io/api/locations/countries \
+-H 'Accept: application/json' \
+-H 'Authorization: Token <TOKEN>' 
+
+Copy
+Copied!
+Response
+Example
+Schema
+[
+  "DE"
+]
+
+Copy
+Copied!
+GET
+/api/locations/countries/{country}/cities
+List all city names by country
+Get a list of all English city names for a given country code
+
+Path Parameters
+Name
+country
+Type
+string
+Required
+required
+Enum
+Description
+Request
+cURL
+JavaScript
+Python
+Go
+Ruby
+Java
+PHP
+GET
+/api/locations/countries/{country}/cities
+curl -X GET https://api.netbird.io/api/locations/countries/{country}/cities \
+-H 'Accept: application/json' \
+-H 'Authorization: Token <TOKEN>' 
+
+Copy
+Copied!
+Response
+Example
+Schema
+{
+  "geoname_id": 2950158,
+  "city_name": "Berlin"
+}
+
+/api/routes
+List all Routes
+Returns a list of all routes
+
+Request
+cURL
+JavaScript
+Python
+Go
+Ruby
+Java
+PHP
+GET
+/api/routes
+curl -X GET https://api.netbird.io/api/routes \
+-H 'Accept: application/json' \
+-H 'Authorization: Token <TOKEN>' 
+
+Copy
+Copied!
+Response
+Example
+Schema
+[
+  {
+    "id": "chacdk86lnnboviihd7g",
+    "network_type": "IPv4",
+    "description": "My first route",
+    "network_id": "Route 1",
+    "enabled": true,
+    "peer": "chacbco6lnnbn6cg5s91",
+    "peer_groups": [
+      "chacbco6lnnbn6cg5s91"
+    ],
+    "network": "10.64.0.0/24",
+    "domains": [
+      "example.com"
+    ],
+    "metric": 9999,
+    "masquerade": true,
+    "groups": [
+      "chacdk86lnnboviihd70"
+    ],
+    "keep_route": true,
+    "access_control_groups": [
+      "chacbco6lnnbn6cg5s91"
+    ],
+    "skip_auto_apply": false
+  }
+]
+
+Copy
+Copied!
+POST
+/api/routes
+Create a Route
+Creates a Route
+
+Request-Body Parameters
+Name
+description
+Type
+string
+Required
+required
+Enum
+Description
+Route description
+
+Name
+network_id
+Type
+string
+Required
+required
+Enum
+Possible Values: >=1 characters and <=40 characters
+Description
+Route network identifier, to group HA routes
+
+Name
+enabled
+Type
+boolean
+Required
+required
+Enum
+Description
+Route status
+
+Name
+peer
+Type
+string
+Required
+optional
+Enum
+Description
+Peer Identifier associated with route. This property can not be set together with peer_groups
+
+Name
+peer_groups
+Type
+string[]
+Required
+optional
+Enum
+Description
+Peers Group Identifier associated with route. This property can not be set together with peer
+
+Name
+network
+Type
+string
+Required
+optional
+Enum
+Description
+Network range in CIDR format, Conflicts with domains
+
+Name
+domains
+Type
+string[]
+Required
+optional
+Enum
+Description
+Domain list to be dynamically resolved. Max of 32 domains can be added per route configuration. Conflicts with network
+
+Name
+metric
+Type
+integer
+Required
+required
+Enum
+Possible Values: >=1 and <=9999
+Description
+Route metric number. Lowest number has higher priority
+
+Name
+masquerade
+Type
+boolean
+Required
+required
+Enum
+Description
+Indicate if peer should masquerade traffic to this route's prefix
+
+Name
+groups
+Type
+string[]
+Required
+required
+Enum
+Description
+Group IDs containing routing peers
+
+Name
+keep_route
+Type
+boolean
+Required
+required
+Enum
+Description
+Indicate if the route should be kept after a domain doesn't resolve that IP anymore
+
+Name
+access_control_groups
+Type
+string[]
+Required
+optional
+Enum
+Description
+Access control group identifier associated with route.
+
+Name
+skip_auto_apply
+Type
+boolean
+Required
+optional
+Enum
+Description
+Indicate if this exit node route (0.0.0.0/0) should skip auto-application for client routing
+
+Request
+cURL
+JavaScript
+Python
+Go
+Ruby
+Java
+PHP
+POST
+/api/routes
+curl -X POST https://api.netbird.io/api/routes \
+-H 'Accept: application/json' \
+-H 'Content-Type: application/json' \
+-H 'Authorization: Token <TOKEN>' \
+--data-raw '{
+  "description": "My first route",
+  "network_id": "Route 1",
+  "enabled": true,
+  "peer": "chacbco6lnnbn6cg5s91",
+  "peer_groups": [
+    "chacbco6lnnbn6cg5s91"
+  ],
+  "network": "10.64.0.0/24",
+  "domains": [
+    "example.com"
+  ],
+  "metric": 9999,
+  "masquerade": true,
+  "groups": [
+    "chacdk86lnnboviihd70"
+  ],
+  "keep_route": true,
+  "access_control_groups": [
+    "chacbco6lnnbn6cg5s91"
+  ],
+  "skip_auto_apply": false
+}'
+
+Copy
+Copied!
+Response
+Example
+Schema
+{
+  "id": "chacdk86lnnboviihd7g",
+  "network_type": "IPv4",
+  "description": "My first route",
+  "network_id": "Route 1",
+  "enabled": true,
+  "peer": "chacbco6lnnbn6cg5s91",
+  "peer_groups": [
+    "chacbco6lnnbn6cg5s91"
+  ],
+  "network": "10.64.0.0/24",
+  "domains": [
+    "example.com"
+  ],
+  "metric": 9999,
+  "masquerade": true,
+  "groups": [
+    "chacdk86lnnboviihd70"
+  ],
+  "keep_route": true,
+  "access_control_groups": [
+    "chacbco6lnnbn6cg5s91"
+  ],
+  "skip_auto_apply": false
+}
+
+Copy
+Copied!
+GET
+/api/routes/{routeId}
+Retrieve a Route
+Get information about a Routes
+
+Path Parameters
+Name
+routeId
+Type
+string
+Required
+required
+Enum
+Description
+The unique identifier of a route
+
+Request
+cURL
+JavaScript
+Python
+Go
+Ruby
+Java
+PHP
+GET
+/api/routes/{routeId}
+curl -X GET https://api.netbird.io/api/routes/{routeId} \
+-H 'Accept: application/json' \
+-H 'Authorization: Token <TOKEN>' 
+
+Copy
+Copied!
+Response
+Example
+Schema
+{
+  "id": "chacdk86lnnboviihd7g",
+  "network_type": "IPv4",
+  "description": "My first route",
+  "network_id": "Route 1",
+  "enabled": true,
+  "peer": "chacbco6lnnbn6cg5s91",
+  "peer_groups": [
+    "chacbco6lnnbn6cg5s91"
+  ],
+  "network": "10.64.0.0/24",
+  "domains": [
+    "example.com"
+  ],
+  "metric": 9999,
+  "masquerade": true,
+  "groups": [
+    "chacdk86lnnboviihd70"
+  ],
+  "keep_route": true,
+  "access_control_groups": [
+    "chacbco6lnnbn6cg5s91"
+  ],
+  "skip_auto_apply": false
+}
+
+Copy
+Copied!
+PUT
+/api/routes/{routeId}
+Update a Route
+Update/Replace a Route
+
+Path Parameters
+Name
+routeId
+Type
+string
+Required
+required
+Enum
+Description
+The unique identifier of a route
+
+Request-Body Parameters
+Name
+description
+Type
+string
+Required
+required
+Enum
+Description
+Route description
+
+Name
+network_id
+Type
+string
+Required
+required
+Enum
+Possible Values: >=1 characters and <=40 characters
+Description
+Route network identifier, to group HA routes
+
+Name
+enabled
+Type
+boolean
+Required
+required
+Enum
+Description
+Route status
+
+Name
+peer
+Type
+string
+Required
+optional
+Enum
+Description
+Peer Identifier associated with route. This property can not be set together with peer_groups
+
+Name
+peer_groups
+Type
+string[]
+Required
+optional
+Enum
+Description
+Peers Group Identifier associated with route. This property can not be set together with peer
+
+Name
+network
+Type
+string
+Required
+optional
+Enum
+Description
+Network range in CIDR format, Conflicts with domains
+
+Name
+domains
+Type
+string[]
+Required
+optional
+Enum
+Description
+Domain list to be dynamically resolved. Max of 32 domains can be added per route configuration. Conflicts with network
+
+Name
+metric
+Type
+integer
+Required
+required
+Enum
+Possible Values: >=1 and <=9999
+Description
+Route metric number. Lowest number has higher priority
+
+Name
+masquerade
+Type
+boolean
+Required
+required
+Enum
+Description
+Indicate if peer should masquerade traffic to this route's prefix
+
+Name
+groups
+Type
+string[]
+Required
+required
+Enum
+Description
+Group IDs containing routing peers
+
+Name
+keep_route
+Type
+boolean
+Required
+required
+Enum
+Description
+Indicate if the route should be kept after a domain doesn't resolve that IP anymore
+
+Name
+access_control_groups
+Type
+string[]
+Required
+optional
+Enum
+Description
+Access control group identifier associated with route.
+
+Name
+skip_auto_apply
+Type
+boolean
+Required
+optional
+Enum
+Description
+Indicate if this exit node route (0.0.0.0/0) should skip auto-application for client routing
+
+Request
+cURL
+JavaScript
+Python
+Go
+Ruby
+Java
+PHP
+PUT
+/api/routes/{routeId}
+curl -X PUT https://api.netbird.io/api/routes/{routeId} \
+-H 'Accept: application/json' \
+-H 'Content-Type: application/json' \
+-H 'Authorization: Token <TOKEN>' \
+--data-raw '{
+  "description": "My first route",
+  "network_id": "Route 1",
+  "enabled": true,
+  "peer": "chacbco6lnnbn6cg5s91",
+  "peer_groups": [
+    "chacbco6lnnbn6cg5s91"
+  ],
+  "network": "10.64.0.0/24",
+  "domains": [
+    "example.com"
+  ],
+  "metric": 9999,
+  "masquerade": true,
+  "groups": [
+    "chacdk86lnnboviihd70"
+  ],
+  "keep_route": true,
+  "access_control_groups": [
+    "chacbco6lnnbn6cg5s91"
+  ],
+  "skip_auto_apply": false
+}'
+
+Copy
+Copied!
+Response
+Example
+Schema
+{
+  "id": "chacdk86lnnboviihd7g",
+  "network_type": "IPv4",
+  "description": "My first route",
+  "network_id": "Route 1",
+  "enabled": true,
+  "peer": "chacbco6lnnbn6cg5s91",
+  "peer_groups": [
+    "chacbco6lnnbn6cg5s91"
+  ],
+  "network": "10.64.0.0/24",
+  "domains": [
+    "example.com"
+  ],
+  "metric": 9999,
+  "masquerade": true,
+  "groups": [
+    "chacdk86lnnboviihd70"
+  ],
+  "keep_route": true,
+  "access_control_groups": [
+    "chacbco6lnnbn6cg5s91"
+  ],
+  "skip_auto_apply": false
+}
+
+Copy
+Copied!
+DELETE
+/api/routes/{routeId}
+Delete a Route
+Delete a route
+
+Path Parameters
+Name
+routeId
+Type
+string
+Required
+required
+Enum
+Description
+The unique identifier of a route
+
+Request
+cURL
+JavaScript
+Python
+Go
+Ruby
+Java
+PHP
+DELETE
+/api/routes/{routeId}
+curl -X DELETE https://api.netbird.io/api/routes/{routeId} \
+-H 'Authorization: Token <TOKEN>' 
+
+/api/networks
+List all Networks
+Returns a list of all networks
+
+Request
+cURL
+JavaScript
+Python
+Go
+Ruby
+Java
+PHP
+GET
+/api/networks
+curl -X GET https://api.netbird.io/api/networks \
+-H 'Accept: application/json' \
+-H 'Authorization: Token <TOKEN>' 
+
+Copy
+Copied!
+Response
+Example
+Schema
+[
+  {
+    "id": "chacdk86lnnboviihd7g",
+    "routers": [
+      "ch8i4ug6lnn4g9hqv7m0"
+    ],
+    "routing_peers_count": 2,
+    "resources": [
+      "ch8i4ug6lnn4g9hqv7m1"
+    ],
+    "policies": [
+      "ch8i4ug6lnn4g9hqv7m2"
+    ],
+    "name": "Remote Network 1",
+    "description": "A remote network that needs to be accessed"
+  }
+]
+
+Copy
+Copied!
+POST
+/api/networks
+Create a Network
+Creates a Network
+
+Request-Body Parameters
+Name
+name
+Type
+string
+Required
+required
+Enum
+Description
+Network name
+
+Name
+description
+Type
+string
+Required
+optional
+Enum
+Description
+Network description
+
+Request
+cURL
+JavaScript
+Python
+Go
+Ruby
+Java
+PHP
+POST
+/api/networks
+curl -X POST https://api.netbird.io/api/networks \
+-H 'Accept: application/json' \
+-H 'Content-Type: application/json' \
+-H 'Authorization: Token <TOKEN>' \
+--data-raw '{
+  "name": "Remote Network 1",
+  "description": "A remote network that needs to be accessed"
+}'
+
+Copy
+Copied!
+Response
+Example
+Schema
+{
+  "id": "chacdk86lnnboviihd7g",
+  "routers": [
+    "ch8i4ug6lnn4g9hqv7m0"
+  ],
+  "routing_peers_count": 2,
+  "resources": [
+    "ch8i4ug6lnn4g9hqv7m1"
+  ],
+  "policies": [
+    "ch8i4ug6lnn4g9hqv7m2"
+  ],
+  "name": "Remote Network 1",
+  "description": "A remote network that needs to be accessed"
+}
+
+Copy
+Copied!
+GET
+/api/networks/{networkId}
+Retrieve a Network
+Get information about a Network
+
+Path Parameters
+Name
+networkId
+Type
+string
+Required
+required
+Enum
+Description
+The unique identifier of a network
+
+Request
+cURL
+JavaScript
+Python
+Go
+Ruby
+Java
+PHP
+GET
+/api/networks/{networkId}
+curl -X GET https://api.netbird.io/api/networks/{networkId} \
+-H 'Accept: application/json' \
+-H 'Authorization: Token <TOKEN>' 
+
+Copy
+Copied!
+Response
+Example
+Schema
+{
+  "id": "chacdk86lnnboviihd7g",
+  "routers": [
+    "ch8i4ug6lnn4g9hqv7m0"
+  ],
+  "routing_peers_count": 2,
+  "resources": [
+    "ch8i4ug6lnn4g9hqv7m1"
+  ],
+  "policies": [
+    "ch8i4ug6lnn4g9hqv7m2"
+  ],
+  "name": "Remote Network 1",
+  "description": "A remote network that needs to be accessed"
+}
+
+Copy
+Copied!
+PUT
+/api/networks/{networkId}
+Update a Network
+Update/Replace a Network
+
+Path Parameters
+Name
+networkId
+Type
+string
+Required
+required
+Enum
+Description
+The unique identifier of a network
+
+Request-Body Parameters
+Name
+name
+Type
+string
+Required
+required
+Enum
+Description
+Network name
+
+Name
+description
+Type
+string
+Required
+optional
+Enum
+Description
+Network description
+
+Request
+cURL
+JavaScript
+Python
+Go
+Ruby
+Java
+PHP
+PUT
+/api/networks/{networkId}
+curl -X PUT https://api.netbird.io/api/networks/{networkId} \
+-H 'Accept: application/json' \
+-H 'Content-Type: application/json' \
+-H 'Authorization: Token <TOKEN>' \
+--data-raw '{
+  "name": "Remote Network 1",
+  "description": "A remote network that needs to be accessed"
+}'
+
+Copy
+Copied!
+Response
+Example
+Schema
+{
+  "id": "chacdk86lnnboviihd7g",
+  "routers": [
+    "ch8i4ug6lnn4g9hqv7m0"
+  ],
+  "routing_peers_count": 2,
+  "resources": [
+    "ch8i4ug6lnn4g9hqv7m1"
+  ],
+  "policies": [
+    "ch8i4ug6lnn4g9hqv7m2"
+  ],
+  "name": "Remote Network 1",
+  "description": "A remote network that needs to be accessed"
+}
+
+Copy
+Copied!
+DELETE
+/api/networks/{networkId}
+Delete a Network
+Delete a network
+
+Path Parameters
+Name
+networkId
+Type
+string
+Required
+required
+Enum
+Description
+The unique identifier of a network
+
+Request
+cURL
+JavaScript
+Python
+Go
+Ruby
+Java
+PHP
+DELETE
+/api/networks/{networkId}
+curl -X DELETE https://api.netbird.io/api/networks/{networkId} \
+-H 'Authorization: Token <TOKEN>' 
+
+Copy
+Copied!
+GET
+/api/networks/{networkId}/resources
+List all Network Resources
+Returns a list of all resources in a network
+
+Path Parameters
+Name
+networkId
+Type
+string
+Required
+required
+Enum
+Description
+The unique identifier of a network
+
+Request
+cURL
+JavaScript
+Python
+Go
+Ruby
+Java
+PHP
+GET
+/api/networks/{networkId}/resources
+curl -X GET https://api.netbird.io/api/networks/{networkId}/resources \
+-H 'Accept: application/json' \
+-H 'Authorization: Token <TOKEN>' 
+
+Copy
+Copied!
+Response
+Example
+Schema
+[
+  {
+    "id": "chacdk86lnnboviihd7g",
+    "type": "host",
+    "groups": [
+      {
+        "id": "ch8i4ug6lnn4g9hqv7m0",
+        "name": "devs",
+        "peers_count": 2,
+        "resources_count": 5,
+        "issued": "api"
+      }
+    ],
+    "name": "Remote Resource 1",
+    "description": "A remote resource inside network 1",
+    "address": "1.1.1.1",
+    "enabled": true
+  }
+]
+
+Copy
+Copied!
+POST
+/api/networks/{networkId}/resources
+Create a Network Resource
+Creates a Network Resource
+
+Path Parameters
+Name
+networkId
+Type
+string
+Required
+required
+Enum
+Description
+The unique identifier of a network
+
+Request-Body Parameters
+Name
+name
+Type
+string
+Required
+required
+Enum
+Description
+Network resource name
+
+Name
+description
+Type
+string
+Required
+optional
+Enum
+Description
+Network resource description
+
+Name
+address
+Type
+string
+Required
+required
+Enum
+Description
+Network resource address (either a direct host like 1.1.1.1 or 1.1.1.1/32, or a subnet like 192.168.178.0/24, or domains like example.com and *.example.com)
+
+Name
+enabled
+Type
+boolean
+Required
+required
+Enum
+Description
+Network resource status
+
+Name
+groups
+Type
+string[]
+Required
+required
+Enum
+Description
+Group IDs containing the resource
+
+Request
+cURL
+JavaScript
+Python
+Go
+Ruby
+Java
+PHP
+POST
+/api/networks/{networkId}/resources
+curl -X POST https://api.netbird.io/api/networks/{networkId}/resources \
+-H 'Accept: application/json' \
+-H 'Content-Type: application/json' \
+-H 'Authorization: Token <TOKEN>' \
+--data-raw '{
+  "name": "Remote Resource 1",
+  "description": "A remote resource inside network 1",
+  "address": "1.1.1.1",
+  "enabled": true,
+  "groups": [
+    "chacdk86lnnboviihd70"
+  ]
+}'
+
+Copy
+Copied!
+Response
+Example
+Schema
+{
+  "id": "chacdk86lnnboviihd7g",
+  "type": "host",
+  "groups": [
+    {
+      "id": "ch8i4ug6lnn4g9hqv7m0",
+      "name": "devs",
+      "peers_count": 2,
+      "resources_count": 5,
+      "issued": "api"
+    }
+  ],
+  "name": "Remote Resource 1",
+  "description": "A remote resource inside network 1",
+  "address": "1.1.1.1",
+  "enabled": true
+}
+
+Copy
+Copied!
+GET
+/api/networks/{networkId}/resources/{resourceId}
+Retrieve a Network Resource
+Get information about a Network Resource
+
+Path Parameters
+Name
+networkId
+Type
+string
+Required
+required
+Enum
+Description
+The unique identifier of a network
+
+Name
+resourceId
+Type
+string
+Required
+required
+Enum
+Description
+The unique identifier of a network resource
+
+Request
+cURL
+JavaScript
+Python
+Go
+Ruby
+Java
+PHP
+GET
+/api/networks/{networkId}/resources/{resourceId}
+curl -X GET https://api.netbird.io/api/networks/{networkId}/resources/{resourceId} \
+-H 'Accept: application/json' \
+-H 'Authorization: Token <TOKEN>' 
+
+Copy
+Copied!
+Response
+Example
+Schema
+{
+  "id": "chacdk86lnnboviihd7g",
+  "type": "host",
+  "groups": [
+    {
+      "id": "ch8i4ug6lnn4g9hqv7m0",
+      "name": "devs",
+      "peers_count": 2,
+      "resources_count": 5,
+      "issued": "api"
+    }
+  ],
+  "name": "Remote Resource 1",
+  "description": "A remote resource inside network 1",
+  "address": "1.1.1.1",
+  "enabled": true
+}
+
+Copy
+Copied!
+PUT
+/api/networks/{networkId}/resources/{resourceId}
+Update a Network Resource
+Update a Network Resource
+
+Path Parameters
+Name
+networkId
+Type
+string
+Required
+required
+Enum
+Description
+The unique identifier of a network
+
+Name
+resourceId
+Type
+string
+Required
+required
+Enum
+Description
+The unique identifier of a resource
+
+Request-Body Parameters
+Name
+name
+Type
+string
+Required
+required
+Enum
+Description
+Network resource name
+
+Name
+description
+Type
+string
+Required
+optional
+Enum
+Description
+Network resource description
+
+Name
+address
+Type
+string
+Required
+required
+Enum
+Description
+Network resource address (either a direct host like 1.1.1.1 or 1.1.1.1/32, or a subnet like 192.168.178.0/24, or domains like example.com and *.example.com)
+
+Name
+enabled
+Type
+boolean
+Required
+required
+Enum
+Description
+Network resource status
+
+Name
+groups
+Type
+string[]
+Required
+required
+Enum
+Description
+Group IDs containing the resource
+
+Request
+cURL
+JavaScript
+Python
+Go
+Ruby
+Java
+PHP
+PUT
+/api/networks/{networkId}/resources/{resourceId}
+curl -X PUT https://api.netbird.io/api/networks/{networkId}/resources/{resourceId} \
+-H 'Accept: application/json' \
+-H 'Content-Type: application/json' \
+-H 'Authorization: Token <TOKEN>' \
+--data-raw '{
+  "name": "Remote Resource 1",
+  "description": "A remote resource inside network 1",
+  "address": "1.1.1.1",
+  "enabled": true,
+  "groups": [
+    "chacdk86lnnboviihd70"
+  ]
+}'
+
+Copy
+Copied!
+Response
+Example
+Schema
+{
+  "id": "chacdk86lnnboviihd7g",
+  "type": "host",
+  "groups": [
+    {
+      "id": "ch8i4ug6lnn4g9hqv7m0",
+      "name": "devs",
+      "peers_count": 2,
+      "resources_count": 5,
+      "issued": "api"
+    }
+  ],
+  "name": "Remote Resource 1",
+  "description": "A remote resource inside network 1",
+  "address": "1.1.1.1",
+  "enabled": true
+}
+
+Copy
+Copied!
+DELETE
+/api/networks/{networkId}/resources/{resourceId}
+Delete a Network Resource
+Delete a network resource
+
+Path Parameters
+Name
+networkId
+Type
+string
+Required
+required
+Enum
+Description
+Name
+resourceId
+Type
+string
+Required
+required
+Enum
+Description
+Request
+cURL
+JavaScript
+Python
+Go
+Ruby
+Java
+PHP
+DELETE
+/api/networks/{networkId}/resources/{resourceId}
+curl -X DELETE https://api.netbird.io/api/networks/{networkId}/resources/{resourceId} \
+-H 'Authorization: Token <TOKEN>' 
+
+Copy
+Copied!
+GET
+/api/networks/{networkId}/routers
+List all Network Routers
+Returns a list of all routers in a network
+
+Path Parameters
+Name
+networkId
+Type
+string
+Required
+required
+Enum
+Description
+The unique identifier of a network
+
+Request
+cURL
+JavaScript
+Python
+Go
+Ruby
+Java
+PHP
+GET
+/api/networks/{networkId}/routers
+curl -X GET https://api.netbird.io/api/networks/{networkId}/routers \
+-H 'Accept: application/json' \
+-H 'Authorization: Token <TOKEN>' 
+
+Copy
+Copied!
+Response
+Example
+Schema
+[
+  {
+    "id": "chacdk86lnnboviihd7g",
+    "peer": "chacbco6lnnbn6cg5s91",
+    "peer_groups": [
+      "chacbco6lnnbn6cg5s91"
+    ],
+    "metric": 9999,
+    "masquerade": true,
+    "enabled": true
+  }
+]
+
+Copy
+Copied!
+POST
+/api/networks/{networkId}/routers
+Create a Network Router
+Creates a Network Router
+
+Path Parameters
+Name
+networkId
+Type
+string
+Required
+required
+Enum
+Description
+The unique identifier of a network
+
+Request-Body Parameters
+Name
+peer
+Type
+string
+Required
+optional
+Enum
+Description
+Peer Identifier associated with route. This property can not be set together with peer_groups
+
+Name
+peer_groups
+Type
+string[]
+Required
+optional
+Enum
+Description
+Peers Group Identifier associated with route. This property can not be set together with peer
+
+Name
+metric
+Type
+integer
+Required
+required
+Enum
+Possible Values: >=1 and <=9999
+Description
+Route metric number. Lowest number has higher priority
+
+Name
+masquerade
+Type
+boolean
+Required
+required
+Enum
+Description
+Indicate if peer should masquerade traffic to this route's prefix
+
+Name
+enabled
+Type
+boolean
+Required
+required
+Enum
+Description
+Network router status
+
+Request
+cURL
+JavaScript
+Python
+Go
+Ruby
+Java
+PHP
+POST
+/api/networks/{networkId}/routers
+curl -X POST https://api.netbird.io/api/networks/{networkId}/routers \
+-H 'Accept: application/json' \
+-H 'Content-Type: application/json' \
+-H 'Authorization: Token <TOKEN>' \
+--data-raw '{
+  "peer": "chacbco6lnnbn6cg5s91",
+  "peer_groups": [
+    "chacbco6lnnbn6cg5s91"
+  ],
+  "metric": 9999,
+  "masquerade": true,
+  "enabled": true
+}'
+
+Copy
+Copied!
+Response
+Example
+Schema
+{
+  "id": "chacdk86lnnboviihd7g",
+  "peer": "chacbco6lnnbn6cg5s91",
+  "peer_groups": [
+    "chacbco6lnnbn6cg5s91"
+  ],
+  "metric": 9999,
+  "masquerade": true,
+  "enabled": true
+}
+
+Copy
+Copied!
+GET
+/api/networks/{networkId}/routers/{routerId}
+Retrieve a Network Router
+Get information about a Network Router
+
+Path Parameters
+Name
+networkId
+Type
+string
+Required
+required
+Enum
+Description
+The unique identifier of a network
+
+Name
+routerId
+Type
+string
+Required
+required
+Enum
+Description
+The unique identifier of a router
+
+Request
+cURL
+JavaScript
+Python
+Go
+Ruby
+Java
+PHP
+GET
+/api/networks/{networkId}/routers/{routerId}
+curl -X GET https://api.netbird.io/api/networks/{networkId}/routers/{routerId} \
+-H 'Accept: application/json' \
+-H 'Authorization: Token <TOKEN>' 
+
+Copy
+Copied!
+Response
+Example
+Schema
+{
+  "id": "chacdk86lnnboviihd7g",
+  "peer": "chacbco6lnnbn6cg5s91",
+  "peer_groups": [
+    "chacbco6lnnbn6cg5s91"
+  ],
+  "metric": 9999,
+  "masquerade": true,
+  "enabled": true
+}
+
+Copy
+Copied!
+PUT
+/api/networks/{networkId}/routers/{routerId}
+Update a Network Router
+Update a Network Router
+
+Path Parameters
+Name
+networkId
+Type
+string
+Required
+required
+Enum
+Description
+The unique identifier of a network
+
+Name
+routerId
+Type
+string
+Required
+required
+Enum
+Description
+The unique identifier of a router
+
+Request-Body Parameters
+Name
+peer
+Type
+string
+Required
+optional
+Enum
+Description
+Peer Identifier associated with route. This property can not be set together with peer_groups
+
+Name
+peer_groups
+Type
+string[]
+Required
+optional
+Enum
+Description
+Peers Group Identifier associated with route. This property can not be set together with peer
+
+Name
+metric
+Type
+integer
+Required
+required
+Enum
+Possible Values: >=1 and <=9999
+Description
+Route metric number. Lowest number has higher priority
+
+Name
+masquerade
+Type
+boolean
+Required
+required
+Enum
+Description
+Indicate if peer should masquerade traffic to this route's prefix
+
+Name
+enabled
+Type
+boolean
+Required
+required
+Enum
+Description
+Network router status
+
+Request
+cURL
+JavaScript
+Python
+Go
+Ruby
+Java
+PHP
+PUT
+/api/networks/{networkId}/routers/{routerId}
+curl -X PUT https://api.netbird.io/api/networks/{networkId}/routers/{routerId} \
+-H 'Accept: application/json' \
+-H 'Content-Type: application/json' \
+-H 'Authorization: Token <TOKEN>' \
+--data-raw '{
+  "peer": "chacbco6lnnbn6cg5s91",
+  "peer_groups": [
+    "chacbco6lnnbn6cg5s91"
+  ],
+  "metric": 9999,
+  "masquerade": true,
+  "enabled": true
+}'
+
+Copy
+Copied!
+Response
+Example
+Schema
+{
+  "id": "chacdk86lnnboviihd7g",
+  "peer": "chacbco6lnnbn6cg5s91",
+  "peer_groups": [
+    "chacbco6lnnbn6cg5s91"
+  ],
+  "metric": 9999,
+  "masquerade": true,
+  "enabled": true
+}
+
+Copy
+Copied!
+DELETE
+/api/networks/{networkId}/routers/{routerId}
+Delete a Network Router
+Delete a network router
+
+Path Parameters
+Name
+networkId
+Type
+string
+Required
+required
+Enum
+Description
+Name
+routerId
+Type
+string
+Required
+required
+Enum
+Description
+Request
+cURL
+JavaScript
+Python
+Go
+Ruby
+Java
+PHP
+DELETE
+/api/networks/{networkId}/routers/{routerId}
+curl -X DELETE https://api.netbird.io/api/networks/{networkId}/routers/{routerId} \
+-H 'Authorization: Token <TOKEN>' 
+
+Copy
+Copied!
+GET
+/api/networks/routers
+List all Network Routers
+Returns a list of all routers in a network
+
+Request
+cURL
+JavaScript
+Python
+Go
+Ruby
+Java
+PHP
+GET
+/api/networks/routers
+curl -X GET https://api.netbird.io/api/networks/routers \
+-H 'Accept: application/json' \
+-H 'Authorization: Token <TOKEN>' 
+
+Copy
+Copied!
+Response
+Example
+Schema
+[
+  {
+    "id": "chacdk86lnnboviihd7g",
+    "peer": "chacbco6lnnbn6cg5s91",
+    "peer_groups": [
+      "chacbco6lnnbn6cg5s91"
+    ],
+    "metric": 9999,
+    "masquerade": true,
+    "enabled": true
+  }
+]
+
+/api/dns/nameservers
+List all Nameserver Groups
+Returns a list of all Nameserver Groups
+
+Request
+cURL
+JavaScript
+Python
+Go
+Ruby
+Java
+PHP
+GET
+/api/dns/nameservers
+curl -X GET https://api.netbird.io/api/dns/nameservers \
+-H 'Accept: application/json' \
+-H 'Authorization: Token <TOKEN>' 
+
+Copy
+Copied!
+Response
+Example
+Schema
+[
+  {
+    "id": "ch8i4ug6lnn4g9hqv7m0",
+    "name": "Google DNS",
+    "description": "Google DNS servers",
+    "nameservers": [
+      {
+        "ip": "8.8.8.8",
+        "ns_type": "udp",
+        "port": 53
+      }
+    ],
+    "enabled": true,
+    "groups": [
+      "ch8i4ug6lnn4g9hqv7m0"
+    ],
+    "primary": true,
+    "domains": [
+      "example.com"
+    ],
+    "search_domains_enabled": true
+  }
+]
+
+Copy
+Copied!
+POST
+/api/dns/nameservers
+Create a Nameserver Group
+Creates a Nameserver Group
+
+Request-Body Parameters
+Name
+name
+Type
+string
+Required
+required
+Enum
+Possible Values: >=1 characters and <=40 characters
+Description
+Name of nameserver group name
+
+Name
+description
+Type
+string
+Required
+required
+Enum
+Description
+Description of the nameserver group
+
+Name
+nameservers
+Type
+object[]
+Required
+required
+Enum
+Possible Values: >=1 objects and <=3 objects
+Description
+Nameserver list
+Name
+ip
+Type
+string
+Required
+required
+Enum
+Description
+Nameserver IP
+
+Name
+ns_type
+Type
+string
+Required
+required
+Enum
+Description
+Nameserver Type
+
+Name
+port
+Type
+integer
+Required
+required
+Enum
+Description
+Nameserver Port
+
+Name
+enabled
+Type
+boolean
+Required
+required
+Enum
+Description
+Nameserver group status
+
+Name
+groups
+Type
+string[]
+Required
+required
+Enum
+Description
+Distribution group IDs that defines group of peers that will use this nameserver group
+
+Name
+primary
+Type
+boolean
+Required
+required
+Enum
+Description
+Defines if a nameserver group is primary that resolves all domains. It should be true only if domains list is empty.
+
+Name
+domains
+Type
+string[]
+Required
+required
+Enum
+Description
+Match domain list. It should be empty only if primary is true.
+
+Name
+search_domains_enabled
+Type
+boolean
+Required
+required
+Enum
+Description
+Search domain status for match domains. It should be true only if domains list is not empty.
+
+Request
+cURL
+JavaScript
+Python
+Go
+Ruby
+Java
+PHP
+POST
+/api/dns/nameservers
+curl -X POST https://api.netbird.io/api/dns/nameservers \
+-H 'Accept: application/json' \
+-H 'Content-Type: application/json' \
+-H 'Authorization: Token <TOKEN>' \
+--data-raw '{
+  "name": "Google DNS",
+  "description": "Google DNS servers",
+  "nameservers": [
+    {
+      "ip": "8.8.8.8",
+      "ns_type": "udp",
+      "port": 53
+    }
+  ],
+  "enabled": true,
+  "groups": [
+    "ch8i4ug6lnn4g9hqv7m0"
+  ],
+  "primary": true,
+  "domains": [
+    "example.com"
+  ],
+  "search_domains_enabled": true
+}'
+
+Copy
+Copied!
+Response
+Example
+Schema
+{
+  "id": "ch8i4ug6lnn4g9hqv7m0",
+  "name": "Google DNS",
+  "description": "Google DNS servers",
+  "nameservers": [
+    {
+      "ip": "8.8.8.8",
+      "ns_type": "udp",
+      "port": 53
+    }
+  ],
+  "enabled": true,
+  "groups": [
+    "ch8i4ug6lnn4g9hqv7m0"
+  ],
+  "primary": true,
+  "domains": [
+    "example.com"
+  ],
+  "search_domains_enabled": true
+}
+
+Copy
+Copied!
+GET
+/api/dns/nameservers/{nsgroupId}
+Retrieve a Nameserver Group
+Get information about a Nameserver Groups
+
+Path Parameters
+Name
+nsgroupId
+Type
+string
+Required
+required
+Enum
+Description
+The unique identifier of a Nameserver Group
+
+Request
+cURL
+JavaScript
+Python
+Go
+Ruby
+Java
+PHP
+GET
+/api/dns/nameservers/{nsgroupId}
+curl -X GET https://api.netbird.io/api/dns/nameservers/{nsgroupId} \
+-H 'Accept: application/json' \
+-H 'Authorization: Token <TOKEN>' 
+
+Copy
+Copied!
+Response
+Example
+Schema
+{
+  "id": "ch8i4ug6lnn4g9hqv7m0",
+  "name": "Google DNS",
+  "description": "Google DNS servers",
+  "nameservers": [
+    {
+      "ip": "8.8.8.8",
+      "ns_type": "udp",
+      "port": 53
+    }
+  ],
+  "enabled": true,
+  "groups": [
+    "ch8i4ug6lnn4g9hqv7m0"
+  ],
+  "primary": true,
+  "domains": [
+    "example.com"
+  ],
+  "search_domains_enabled": true
+}
+
+Copy
+Copied!
+PUT
+/api/dns/nameservers/{nsgroupId}
+Update a Nameserver Group
+Update/Replace a Nameserver Group
+
+Path Parameters
+Name
+nsgroupId
+Type
+string
+Required
+required
+Enum
+Description
+The unique identifier of a Nameserver Group
+
+Request-Body Parameters
+Name
+name
+Type
+string
+Required
+required
+Enum
+Possible Values: >=1 characters and <=40 characters
+Description
+Name of nameserver group name
+
+Name
+description
+Type
+string
+Required
+required
+Enum
+Description
+Description of the nameserver group
+
+Name
+nameservers
+Type
+object[]
+Required
+required
+Enum
+Possible Values: >=1 objects and <=3 objects
+Description
+Nameserver list
+Name
+ip
+Type
+string
+Required
+required
+Enum
+Description
+Nameserver IP
+
+Name
+ns_type
+Type
+string
+Required
+required
+Enum
+Description
+Nameserver Type
+
+Name
+port
+Type
+integer
+Required
+required
+Enum
+Description
+Nameserver Port
+
+Name
+enabled
+Type
+boolean
+Required
+required
+Enum
+Description
+Nameserver group status
+
+Name
+groups
+Type
+string[]
+Required
+required
+Enum
+Description
+Distribution group IDs that defines group of peers that will use this nameserver group
+
+Name
+primary
+Type
+boolean
+Required
+required
+Enum
+Description
+Defines if a nameserver group is primary that resolves all domains. It should be true only if domains list is empty.
+
+Name
+domains
+Type
+string[]
+Required
+required
+Enum
+Description
+Match domain list. It should be empty only if primary is true.
+
+Name
+search_domains_enabled
+Type
+boolean
+Required
+required
+Enum
+Description
+Search domain status for match domains. It should be true only if domains list is not empty.
+
+Request
+cURL
+JavaScript
+Python
+Go
+Ruby
+Java
+PHP
+PUT
+/api/dns/nameservers/{nsgroupId}
+curl -X PUT https://api.netbird.io/api/dns/nameservers/{nsgroupId} \
+-H 'Accept: application/json' \
+-H 'Content-Type: application/json' \
+-H 'Authorization: Token <TOKEN>' \
+--data-raw '{
+  "name": "Google DNS",
+  "description": "Google DNS servers",
+  "nameservers": [
+    {
+      "ip": "8.8.8.8",
+      "ns_type": "udp",
+      "port": 53
+    }
+  ],
+  "enabled": true,
+  "groups": [
+    "ch8i4ug6lnn4g9hqv7m0"
+  ],
+  "primary": true,
+  "domains": [
+    "example.com"
+  ],
+  "search_domains_enabled": true
+}'
+
+Copy
+Copied!
+Response
+Example
+Schema
+{
+  "id": "ch8i4ug6lnn4g9hqv7m0",
+  "name": "Google DNS",
+  "description": "Google DNS servers",
+  "nameservers": [
+    {
+      "ip": "8.8.8.8",
+      "ns_type": "udp",
+      "port": 53
+    }
+  ],
+  "enabled": true,
+  "groups": [
+    "ch8i4ug6lnn4g9hqv7m0"
+  ],
+  "primary": true,
+  "domains": [
+    "example.com"
+  ],
+  "search_domains_enabled": true
+}
+
+Copy
+Copied!
+DELETE
+/api/dns/nameservers/{nsgroupId}
+Delete a Nameserver Group
+Delete a Nameserver Group
+
+Path Parameters
+Name
+nsgroupId
+Type
+string
+Required
+required
+Enum
+Description
+The unique identifier of a Nameserver Group
+
+Request
+cURL
+JavaScript
+Python
+Go
+Ruby
+Java
+PHP
+DELETE
+/api/dns/nameservers/{nsgroupId}
+curl -X DELETE https://api.netbird.io/api/dns/nameservers/{nsgroupId} \
+-H 'Authorization: Token <TOKEN>' 
+
+Copy
+Copied!
+GET
+/api/dns/settings
+Retrieve DNS settings
+Returns a DNS settings object
+
+Request
+cURL
+JavaScript
+Python
+Go
+Ruby
+Java
+PHP
+GET
+/api/dns/settings
+curl -X GET https://api.netbird.io/api/dns/settings \
+-H 'Accept: application/json' \
+-H 'Authorization: Token <TOKEN>' 
+
+Copy
+Copied!
+Response
+Example
+Schema
+{
+  "items": {
+    "disabled_management_groups": [
+      "ch8i4ug6lnn4g9hqv7m0"
+    ]
+  }
+}
+
+Copy
+Copied!
+PUT
+/api/dns/settings
+Update DNS Settings
+Updates a DNS settings object
+
+Request-Body Parameters
+Name
+disabled_management_groups
+Type
+string[]
+Required
+required
+Enum
+Description
+Groups whose DNS management is disabled
+
+Request
+cURL
+JavaScript
+Python
+Go
+Ruby
+Java
+PHP
+PUT
+/api/dns/settings
+curl -X PUT https://api.netbird.io/api/dns/settings \
+-H 'Accept: application/json' \
+-H 'Content-Type: application/json' \
+-H 'Authorization: Token <TOKEN>' \
+--data-raw '{
+  "disabled_management_groups": [
+    "ch8i4ug6lnn4g9hqv7m0"
+  ]
+}'
+
+Copy
+Copied!
+Response
+Example
+Schema
+{
+  "disabled_management_groups": [
+    "ch8i4ug6lnn4g9hqv7m0"
+  ]
+}
+
+/api/events/audit
+List all Audit Events
+Returns a list of all audit events
+
+Request
+cURL
+JavaScript
+Python
+Go
+Ruby
+Java
+PHP
+GET
+/api/events/audit
+curl -X GET https://api.netbird.io/api/events/audit \
+-H 'Accept: application/json' \
+-H 'Authorization: Token <TOKEN>' 
+
+Copy
+Copied!
+Response
+Example
+Schema
+[
+  {
+    "id": 10,
+    "timestamp": "2023-05-05T10:04:37.473542Z",
+    "activity": "Route created",
+    "activity_code": "route.add",
+    "initiator_id": "google-oauth2|123456789012345678901",
+    "initiator_name": "John Doe",
+    "initiator_email": "demo@netbird.io",
+    "target_id": "chad9d86lnnc59g18ou0",
+    "meta": {
+      "name": "my route",
+      "network_range": "10.64.0.0/24",
+      "peer_id": "chacbco6lnnbn6cg5s91"
+    }
+  }
+]
+
+Copy
+Copied!
+GET
+/api/events/network-traffic
+List all Traffic Events cloud-only experimental
+Returns a list of all network traffic events
+
+Query Parameters
+Name
+page
+Type
+integer
+Required
+optional
+Enum
+Description
+Page number
+
+Name
+page_size
+Type
+integer
+Required
+optional
+Enum
+Description
+Number of items per page
+
+Name
+user_id
+Type
+string
+Required
+optional
+Enum
+Description
+Filter by user ID
+
+Name
+reporter_id
+Type
+string
+Required
+optional
+Enum
+Description
+Filter by reporter ID
+
+Name
+protocol
+Type
+integer
+Required
+optional
+Enum
+Description
+Filter by protocol
+
+Name
+type
+Type
+string
+Required
+optional
+Enum
+Description
+Filter by event type
+
+Name
+connection_type
+Type
+string
+Required
+optional
+Enum
+Description
+Filter by connection type
+
+Name
+direction
+Type
+string
+Required
+optional
+Enum
+Description
+Filter by direction
+
+Name
+search
+Type
+string
+Required
+optional
+Enum
+Description
+Case-insensitive partial match on user email, source/destination names, and source/destination addresses
+
+Name
+start_date
+Type
+string
+Required
+optional
+Enum
+Description
+Start date for filtering events (ISO 8601 format, e.g., 2024-01-01T00:00:00Z).
+
+Name
+end_date
+Type
+string
+Required
+optional
+Enum
+Description
+End date for filtering events (ISO 8601 format, e.g., 2024-01-31T23:59:59Z).
+
+Request
+cURL
+JavaScript
+Python
+Go
+Ruby
+Java
+PHP
+GET
+/api/events/network-traffic
+curl -X GET https://api.netbird.io/api/events/network-traffic \
+-H 'Accept: application/json' \
+-H 'Authorization: Token <TOKEN>' 
+
+Copy
+Copied!
+Response
+Example
+Schema
+{
+  "data": [
+    {
+      "flow_id": "61092452-b17c-4b14-b7cf-a2158c549826",
+      "reporter_id": "ch8i4ug6lnn4g9hqv7m0",
+      "source": {
+        "id": "ch8i4ug6lnn4g9hqv7m0",
+        "type": "PEER",
+        "name": "My Peer",
+        "geo_location": {
+          "city_name": "Berlin",
+          "country_code": "DE"
+        },
+        "os": "Linux",
+        "address": "100.64.0.10:51820",
+        "dns_label": "*.mydomain.com"
+      },
+      "destination": {
+        "id": "ch8i4ug6lnn4g9hqv7m0",
+        "type": "PEER",
+        "name": "My Peer",
+        "geo_location": {
+          "city_name": "Berlin",
+          "country_code": "DE"
+        },
+        "os": "Linux",
+        "address": "100.64.0.10:51820",
+        "dns_label": "*.mydomain.com"
+      },
+      "user": {
+        "id": "google-oauth2|123456789012345678901",
+        "email": "alice@netbird.io",
+        "name": "Alice Smith"
+      },
+      "policy": {
+        "id": "ch8i4ug6lnn4g9hqv7m0",
+        "name": "All to All"
+      },
+      "icmp": {
+        "type": 8,
+        "code": 0
+      },
+      "protocol": 6,
+      "direction": "INGRESS",
+      "rx_bytes": 1234,
+      "rx_packets": 5,
+      "tx_bytes": 1234,
+      "tx_packets": 5,
+      "events": [
+        {
+          "type": "TYPE_START",
+          "timestamp": {}
+        }
+      ]
+    }
+  ],
+  "page": {
+    "type": "integer",
+    "description": "Current page number"
+  },
+  "page_size": {
+    "type": "integer",
+    "description": "Number of items per page"
+  },
+  "total_records": {
+    "type": "integer",
+    "description": "Total number of event records available"
+  },
+  "total_pages": {
+    "type": "integer",
+    "description": "Total number of pages available"
+  }
+}
+

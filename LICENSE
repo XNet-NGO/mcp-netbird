@@ -186,7 +186,8 @@
       same "printed page" as the copyright notice for easier
       identification within third-party archives.
 
-   Copyright 2025 Grafana Labs
+   Copyright 2025-2026 XNet Inc.
+   Copyright 2025-2026 Joshua S. Doucette
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -199,3 +200,10 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
+
+   ATTRIBUTION NOTICE:
+   
+   This project was originally derived from the MCP Server for Grafana
+   (https://github.com/grafana/mcp-grafana) by Grafana Labs, licensed
+   under Apache License 2.0. The current codebase has been substantially
+   modified and extended by XNet Inc. and Joshua S. Doucette.

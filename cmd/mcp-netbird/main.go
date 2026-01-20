@@ -1,3 +1,20 @@
+// Copyright 2025-2026 XNet Inc.
+// Copyright 2025-2026 Joshua S. Doucette
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+// Originally derived from MCP Server for Grafana by Grafana Labs.
+
 package main
 
 import (
@@ -22,9 +39,15 @@ func newServer() *server.MCPServer {
 	tools.AddNetbirdGroupTools(s)
 	tools.AddNetbirdPolicyTools(s)
 	tools.AddNetbirdNetworkTools(s)
+	tools.AddNetbirdNetworkResourceTools(s)
+	tools.AddNetbirdNetworkRouterTools(s)
 	tools.AddNetbirdPostureCheckTools(s)
 	tools.AddNetbirdPortAllocationTools(s)
 	tools.AddNetbirdNameserverTools(s)
+	tools.AddNetbirdRouteTools(s)
+	tools.AddNetbirdSetupKeyTools(s)
+	tools.AddNetbirdUserTools(s)
+	tools.AddNetbirdAccountTools(s)
 	return s
 }
 

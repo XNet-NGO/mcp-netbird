@@ -1,0 +1,51 @@
+# Authors and Contributors
+
+## Primary Authors
+
+**XNet Inc.**  
+**Joshua S. Doucette** - Lead Developer and Architect
+
+## Project History
+
+This project was originally derived from the MCP Server for Grafana
+(https://github.com/grafana/mcp-grafana) developed by Grafana Labs
+and licensed under Apache License 2.0.
+
+The current codebase has been substantially modified and extended by
+XNet Inc. and Joshua S. Doucette, including:
+
+- Complete CRUD operations for all NetBird API resources
+- Advanced policy management with validation and formatting
+- Group consolidation and dependency workflows
+- Helper functions for common administrative tasks
+- Comprehensive error handling and retry strategies
+- Property-based testing with 100+ iterations
+- Extensive documentation (1200+ lines)
+- Network resources and routing management
+- Port allocation management
+- Posture check management
+
+## Third-Party Software
+
+This project uses the following third-party software:
+
+- **MCP Go** (https://github.com/mark3labs/mcp-go)
+  Developed by Mark III Labs
+  Licensed under Apache License 2.0
+
+## License
+
+Copyright 2025-2026 XNet Inc.
+Copyright 2025-2026 Joshua S. Doucette
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.

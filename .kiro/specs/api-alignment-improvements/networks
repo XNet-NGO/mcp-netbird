@@ -1,0 +1,652 @@
+Networks
+NetBird provides a fast and secure peer-to-peer mesh network with end-to-end encryption, enabling devices and machines running the NetBird agent to connect directly. This setup allows for precise network segmentation, isolation of individual machines, and secure remote access without the need to open ports or expose resources to the internet. However, there are situations where installing the agent on every machine is not feasible or hasn't been completed, requiring access to entire LANs, office networks, or cloud VPCs instead.
+
+Starting from version 0.35.0, NetBird introduces Networks, a new concept that allows you to map your internal networks such as LANs, VPCs, or office networks, and manage access to internal resources without installing NetBird agent.
+
+high-level-dia
+
+Networks replace the old Network Routes concept, which is now deprecated. Existing Network routes will continue to work as before, but we recommend migrating to Networks for better access management to your resources.
+
+Concepts
+Networks
+Networks are configuration containers that map your on-premise or cloud networks in a logical set of configurations, making it easier to visualise and manage access to your internal resources. You can create multiple networks to represent your different environments, such as office networks, cloud VPCs, or on-premise LANs.
+
+high-level-dia
+
+Routing peers
+To access your internal resources, you need to route traffic from your NetBird peers to your internal networks. Routing peers are machines that connect your NetBird peers and your internal networks. You can add as many routing peers as you need using single peers or groups to ensure high availability and load balancing. You can define masquerading and priority for each routing peer.
+
+high-level-dia
+
+Resources
+Resources are individual machines, services, or subnets within your internal network. You can define resources as single IP addresses, IP ranges, domain names, or wildcard domains (e.g., *.company.internal) when enabling DNS wildcard routing.
+
+resources
+
+Support to exit nodes and site-2-site VPNs may become available in future releases. In the meantime you can use Network routes add your exit-node routes and site-2-site routes.
+
+Domain Resources
+In addition to routing IP addresses, NetBird also supports routing domain names. In the Dashboard you can just pass a domain name (eg: example.com) or a wildcard domain (eg: *.example.com) in place where you would normally put an IP address range. Then NetBird clients will start responding to and routing the given domain.
+
+Please consult the Debugging access to Domain Resources documentation to troubleshoot common issues with this type of resources yourself.
+
+Due to a mix of a bug and initial design choice clients running 0.59.0 & 0.59.1 might not be able to resolve domain Resources served by Routing Peers running versions 0.59.0 to 0.59.9 in case when all the Peers in the NetBird organization are running versions 0.59.0 or newer.
+
+Installing client in versions <= 0.58.2 or >= 0.59.2 or upgrading a Routing Peer to version 0.59.10+ will resolve this issue.
+
+On a technical level the feature works as follows:
+
+Initially (when NetBird connects) the operating system is instructed to use NetBird to resolve the requested domain(s). No routing rules are configured yet.
+An Application (could be a web browser) requests a domain example.com from the Operating System
+the Operating System requests a name from NetBird's Local DNS Forwarder, by default running on port 53 of:
+for MacOS & Windows: the highest available IP address in your NetBird range, usually 100.xxx.255.254:53
+for other systems: local NetBird client's IP address, eg: 100.xxx.123.45
+the Local DNS Forwarder forwards the query to Remote DNS Resolver running on Routing Peer's address and the following port:
+22054 for version 0.59.0 and newer
+5353 for versions below 0.58.x and older
+the Routing Peer resolves the domain name using its local configuration (often independent of NetBird) and returns the result.
+the Local DNS Forwarder sets up routing rules for IP addresses returned from the query, before returning them to the Application
+see Trigger the Domain Resource to observe this behaviour "in action".
+the Application receives the result "as usual", except for a slight delay before all of the above takes place the first time a domain name is requested,
+all subsequent requests to example.com will be served instantly from the Local DNS Forwarder's cache
+NetBird tries its best to automatically open up DNS forwarder ports on Routing Peer's firewalls, but might fail on some system configurations and you might need to open up above 2 ports manually.
+
+You can verify that firewall allows the DNS request in using following command issued from the clients device nslookup -port=22054 <routed-domain> <routing-peer-ip>, eg: nslookup -port=22054 example.com 100.123.45.67.
+
+This is by far the most common cause of issues with domain Resources.
+
+Manage access to resources
+To manage access to resources, you should assign them to groups and create access control policies to grant access from the specific peer groups. A peer will "see" the resource only after a policy allows access from one of peer's (source) groups to one of the resource's (destination) groups.
+
+See the image below with an example resource CRM:
+
+resource-group
+
+Access control policies are rules that define which peers can access the resources in your network. You can create policies based on the source and destination groups, and the type of traffic allowed (e.g., TCP, UDP, ICMP). The groups assigned to resources should always be placed in the destination input field of the policy. The peers belonging to the source groups will receive the resources linked to the policy and the firewall rules will be applied according to what is defined.
+
+Unlike peers, resources are not members of the built-in All group by default. If you want to utilize All group rules with resources, you must explicitly add them to this group.
+
+See the example below with a policy that allows the group Berlin Office to access the internal CRM system:
+
+resource-acl
+
+Policies for domains or wildcard domains applied to peers with IP ranges might influence access control for those peers, as their destination ranges include any IPs. Therefore, we recommend creating networks with routing peers dedicated to domain and wildcard domains to prevent unwanted access. In upcoming releases, we will provide a fix for this behavior.
+
+Enable DNS wildcard routing
+When you configure wildcard domains as resources, you need to enable DNS wildcard routing. Which has an additional effect in comparison to the previous DNS routes behavior from Network routes; it switches the DNS resolution to the routing peer instead of the local client system. This is also useful for regular DNS routes when you want to resolve the domain names using the routing peer's IP infrastructure, which will allow for more restricted access control rules in newer versions of the clients (1) and for the traffic to go to a near routing peer service.
+
+(1) Support for more restricted rules will be available in future releases.
+
+You can enable DNS resolution on the routing peer by accessing your account Settings > Networks > Enable DNS wildcard routing. See example below:
+
+settings-acl
+
+The Enable DNS wildcard routing is supported by routing peers and routing clients running version 0.35.0 or later. Once the feature is enabled, you may need to restart your routing peers and clients to apply the changes.
+
+DNS Forwarder port change: starting with NetBird v0.59.0, the local DNS forwarder used for routed DNS routes switches from port 5353 to 22054 to avoid collisions on client devices. For backward compatibility, the Management Service applies the new port only when all peers in the account run v0.59.0 or newer. If any peer is below v0.59.0, port 5353 will be used for all peers in that account.
+
+Differences between Networks and Network Routes
+Networks	Network routes
+Requires extra policy connecting routing peers to distribution peers?	No, the connection is implied when a policy is added to control access to resources	Yes, the routing peers need to have a policy that connects them to peers in the distribution groups
+Needs distribution groups?	No, the source groups in the policies define the distribution groups	Yes, they need to be explicitly defined per network route configured
+Requires adding full sets of configurations per routed resource?	No, the routing peers in a Network are used to route all resources in that network	Yes, every network route needs to have a routing peer, distribution group, access control group, and the network range or DNS route
+Allows edit routed resources?	Yes, you can edit ranges or domains	No, you can't edit IP ranges or DNS routes once created
+Allows edit names?	Yes, names are editable	No, names are defined once while creating the route
+Support to wildcard domains?	Yes, wildcard domains are supported	No, network routes are limited to individual domains
+Support for exit-nodes?	No, even though that exit-nodes can be linked to on-premises or cloud networks, they invalidate other resources	Yes, but the same note is valid when using an exit-node to route other traffic to the same resources
+Support for site-2-site IP ranges routing?	No, but support is planned	Yes, when you create a network route without access control groups
+
+Routing traffic to multiple IP resources
+Adding routes to resources within on-premises or cloud is a common scenario for DevOps and Platform teams. In this guide, we will show you how to route traffic to multiple IP resources using NetBird's Networks using IP resources.
+
+Example
+In the following scenario, we will cover the case where all users have restricted access to internal DNS servers in the internal network, and the DevOps team has full access to the entire network. The network address is 172.16.0.0/15 and DNS servers has the IPs 172.16.30.2 and 172.17.100.2. These IP ranges will be routed using Routing peers running in the network.
+
+Create a Network
+To create a Network, navigate to the Networks > Networks section in the NetBird dashboard:
+
+new-net-1
+
+Click on Add Network to follow a Wizard that will guide you through the steps to create a network and add resources to it.
+
+First, we fill out the network Name and Description as shown in the image below and click Continue:
+
+new-net2
+
+Add a routing peer
+Next we are asked to add a routing peer to the network. Let's click on Add routing peer and select a node from that VPC:
+
+new-example-routing-peer-1
+
+Click on Continue and then accept the defaults to add a routing peer by clicking on Add Routing Peer:
+
+new-routing-peer-2
+
+Add the network resource
+Following the guide, we are asked to add a new resource.
+
+Click on Add Resource and enter the Office network name and use the IP range 172.16.0.0/15 as the address:
+
+new-example-resource-1
+
+We can also assign a group to this resource; in this example, we will assign the group office-network to it. This way, we can create a policy that allows the DevOps team to access the entire IP range.
+
+Add an access control policy for the network resource
+Next, in the guide, we will be asked to create an access control policy. Here, we will create a policy that allows all access to the office-network group of the IP range 172.16.0.0/15 resource to peers in the DevOps group.
+
+Click on Create Policy and fill out the fields as shown in the image below:
+
+new-resource-acl-1
+
+Click on Continue 2 times and then click on Add Policy to save the policy:
+
+new-resource-acl-2
+
+Add the DNS server resources
+Now, let's add the DNS servers resources to the network. Click on Add Resource and enter the IP address of the first DNS server:
+
+new-example-resource-2
+
+We will use the same group, office-dns-servers, for both resources, allowing all users to access the DNS servers.
+
+This time, when asked to create a policy, we will click on Later to skip it since we will create one more resource for this configuration.
+
+Now, let's add another resource for the second DNS server:
+
+new-example-resource-3
+
+Add an access control policy for the DNS server resource
+This time, we will create a policy that allows access to the office-dns-servers group of DNS IP resources to peers in the All users group. They will be granted access only to the UDP port 53 of these servers.
+
+Click on Create Policy and fill out the fields as shown in the image below:
+
+new-resource-acl-3
+
+Click on Continue 2 times and then click on Add Policy to save the policy:
+
+new-resource-acl-4
+
+This time, we made the Policy name a bit more generic to cover both DNS server addresses.
+
+View the network
+After completing the wizard, you will be able to see the network you just created in the Networks list:
+
+view-example-network-1
+
+To access a detailed view of the network, click on the network name:
+
+view-example-network-2
+
+You can edit or add more resources or routing peers to the network by clicking on the Edit buttons of each section in the detailed view.
+
+With the steps above, we created resources that allow different levels of access to multiple user groups within a single organization network.
+
+Accessing restricted website domain resources
+It is very common to find scenarios where you need to access restricted websites or services. This can be due to company policies, geographical restrictions, or even to avoid tracking. These resources are often located behind a cloud load balancer, which changes IP addresses frequently, making it hard to whitelist them. NetBird can help you access these resources by routing your traffic through a routing peer configured with Networks using Domain resources.
+
+Example Use Case Scenario
+Imagine a company that runs its accounting application at the subdomain accounting.example.com. The website is behind a load balancer and hosted on an EC2 instance within the company's AWS infrastructure in the EU Central region. To enhance security, the company decided to follow zero-trust principles by giving differentiated access to the finance and support teams tailored to their specific responsibilities and operational needs.
+
+To this end, the company deployed NetBird clients on the devices used by both the finance and support teams. Complementing this, NetBird routing peers were configured within the AWS VPC using setup keys. This configuration guarantees a solid foundation for streamlined and secure connectivity.
+
+More importantly, this setup allows the company to use NetBird's Networks and Access Policies, to ensure that only authorized finance and support team members access the restricted website domain as follows:
+
+Finance Team: HTTP and HTTPS access to the website frontend at accounting.example.com over ports 80 and 443, respectively.
+Support Team: SSH access to backend resources at example.com over port 22, enabling server management, troubleshooting, and support tasks.
+This configuration adds another layer of security within the AWS environment, thus reinforcing the company network security framework and enhancing operational efficiency.
+
+Creating a Network for the Restricted Website Domain
+To create a new network for the accounting website subdomain:
+
+Go to Networks > Networks in NetBird's dashboard.
+Click the Add Network button.
+Give a memorable name to the network, such as AWS EU Network. Optionally, add a description.
+Click Add Network to proceed.
+Create Restricted Website Domain Network
+
+Adding Routing Peers
+Continue the process by clicking Add Routing Peer. This step is necessary to enable the network's resources to be accessible to other peers.
+
+Add Routing Peers Window
+
+In the next window, you will see two tabs: Routing Peers and Peer Group.
+
+Choose Routing Peers to add a single peer to the network, e.g., aws-router.
+Alternatively, you can select Peer Group to add multiple peers simultaneously for high availability.
+Click Continue once ready.
+Local Routing Peers
+
+In the Advanced Settings tab:
+
+Set Masquerade if you want to access private networks without configuring local routers or other devices.
+Set the Metric to prioritize routers. Lower values indicate higher priority.
+Click Add Routing Peer.
+Masquerade and Metric
+
+Adding Network Resources
+Next, click Add Resource to add the accounting website resource.
+
+Add Network Resource
+
+Give the network resource an appropriate name, e.g., Accounting restricted subdomain
+Enter the restricted website domain for the accounting website, in this example, accounting.example.com.
+Under Assigned Groups, select or create a group, like Accounting Subdomain. This group will be used to create an access policy to allow the finance team access to the restricted subdomain.
+Click Add Resource when done.
+Add Accounting Website Restricted Subdomain Resource
+
+Creating Access Policies
+The last step consists of creating an access control policy. Click Create Policy to create a new policy for the finance team.
+
+Add Policy
+
+Since the finance team only needs access to the web-based app at accounting.example.com, this policy will restrict access to ports: TCP/80 for HTTP traffic and TCP/443 for encrypted HTTPS traffic.
+
+Under Protocol, select TCP.
+Under Source choose the group corresponding to the finance team, e.g., Finance.
+The Destination is automatically set to the group of the newly created resource, e.g., Accounting Subdomain.
+Under Ports, enter 80 and 443, the default ports for HTTP and HTTPS traffic.
+Finance Policy
+
+Click Continue to move to the Posture Checks tab, where you can optionally create or select posture checks for this policy.
+Click Continue again, and provide a descriptive name for the policy, e.g., Accounting subdomain Policy.
+Click Add Policy to finish.
+Finance Policy Name
+
+Setting Up Additional Resources and Access Policies
+Contrary to the finance team, the support team does not need access to the front end of the restricted accounting app but to the back end of the top-level domain: example.com, meaning you must add a new network resource and access policy for this team.
+
+To set up a new network resource:
+
+In the AWS EU Network screen, click Add Resource.
+Give the resource a descriptive name, for example, Restricted Website TLD.
+Enter the domain, in our case, example.com.
+Under Assigned Groups, select or create the appropriate group such as Webserver. This group will be used to create a policy allowing the support team to access the TLD example.com.
+Add TLD Resource
+
+Next, create an access policy for the support team. Usually, support teams only need SSH access to the website backend, meaning that they only need access to the TCP/22 port:
+
+Click Add Policy next to the Restricted Website TLD resource.
+Under Protocol, select TCP.
+Set Source to Support and Destination to Webserver. This allows the support team to access the restricted website backend over SSH.
+Under Ports, enter 22, the default port for SSH.
+Click Continue.
+Add Support Team Policy
+
+Optionally, select or create posture checks for this policy. Click Continue.
+Give a name to the policy on the final tab, such as Restricted Website TLD Policy.
+Name Support Team Policy
+
+This completes the network setup. You have configured two network resources, their respective access policies, and routing peers.
+
+AWS EU Network
+
+Now, you can review, select, or deselect available networks using NetBird's CLI.
+
+Here's the output of the netbird networks list command from a Finance team client:
+
+$ netbird networks list
+Available Networks:
+
+  - ID: Accounting restricted subdomain
+    Domains: accounting.example.com
+    Status: Selected
+    Resolved IPs: -
+
+  - ID: Internal Web Services
+    Domains: *.company.internal
+    Status: Selected
+    Resolved IPs: -
+
+Copy
+Copied!
+As expected, finance members only have access to accounting.example.com.
+
+Here's the output from a support team workstation:
+
+$ netbird networks list
+Available Networks:
+
+  - ID: Internal Web Services
+    Domains: *.company.internal
+    Status: Selected
+    Resolved IPs: -
+
+  - ID: Restricted Website TLD
+    Domains: example.com
+    Status: Selected
+    Resolved IPs:
+      [example.com]: 93.184.215.14, 2606:2800:21f:cb07:6820:80da:af6b:8b2c
+
+Copy
+Copied!
+As you can see, the support team only has access to the TLD example.com
+
+That's it! Using NetBird's Networks feature, you can efficiently create and manage custom network traffic routes and access policies for restricted website domain resources.
+
+Accessing entire domains within networks
+Companies often operate internal environments using assigned domains that remain inaccessible to the public for security and compliance reasons. Creating routing resources for these environments can quickly become a problem for DevOps and Platform teams, especially as different stakeholders frequently request new resources. Moreover, when these resources span across different networks, managing them becomes even more challenging.
+
+NetBird's Networks streamlines this process, allowing organizations to configure secure access to internal resources efficiently using Wildcard domain resources. This reduces the administrative burden on IT teams and enhances overall productivity.
+
+Example Use Case Scenario
+In this scenario, an AI software company needs secure access to its internal domains, encompassing both development and AI model training environments. This integration is vital for maintaining robust internal network security while ensuring seamless domain access across the entire network infrastructure.
+
+Configuration Overview
+Development Environment:
+
+Wildcard Domain: *.dev.example.com
+Purpose: Provides developers with access to a shared workspace for code development, testing, and collaboration.
+AI Model Training Environment:
+
+Wildcard Domain: *.ai.example.com
+Purpose: Houses sensitive AI models and datasets, requiring restricted access to ensure security and integrity.
+Implementation Steps
+Network Setup: Using NetBird's Networks you can configure a secure network that connects local and remote users to these internal environments through routing peers. This involves configuring wildcard domains for both environments to enable seamless access while accommodating future growth.
+Access Control: NetBird's Access Policies allow you to implement stringent policies that enforce zero trust principles, assigning different access permissions to developers and data scientists. For instance, you can grant developers access to *.dev.example.com, while data scientists gain access to *.ai.example.com. This clear separation ensures that team members only access the resources essential to their roles, maintaining a robust security posture.
+Operational Benefits: This configuration supports uninterrupted workflows, allowing developers and data scientists to work efficiently without connectivity issues. Furthermore, NetBird's centralized management of routing peers simplifies handling resources distributed across different networks, ensuring seamless connectivity and reducing complexity. Additionally, the process of creating new resources is streamlined, reducing administrative overhead and accelerating responses to frequent resource requests.
+Pre-requisites
+To effectively access entire domains within your internal networks using NetBird, ensure the following pre-requisites are met:
+
+NetBird Clients: Install NetBird clients on all devices used by developers and data scientists. This is essential to establish secure connectivity to your internal resources.
+Routing Peers: Configure NetBird routing peers within your network infrastructure using setup keys. Routing peers facilitate traffic routing across different network segments, ensuring seamless access to both internal domains.
+Nameserver Configuration: Ensure that your Nameservers are properly configured within your NetBird account to resolve all domain queries. This step is critical for enabling seamless domain name resolution across your network, facilitating efficient connectivity to both your development and AI model training environments. For detailed instructions, refer to the Manage DNS in Your Network.
+Enabling DNS Wildcard Routing
+Enabling DNS wildcard routing is crucial for handling sub-domain requests across your development and AI model training environments, ensuring seamless access for developers and data scientists to all necessary subdomains without requiring additional configuration.
+
+Note that enabling DNS wildcard routing shifts the DNS resolution responsibility from the local client system to the routing peer. Compared to the previous behavior of DNS routes via network routes, this transition facilitates enhanced access control rules available in newer NetBird client versions and optimizes traffic management by directing queries to the nearest routing peer service. This setup simplifies the DNS management process and bolsters security and network efficiency.
+
+(1) Support for more restricted rules will be available in future releases.
+
+To enable DNS wildcard routing in your NetBird account, follow these steps:
+
+Navigate to Settings > Networks within your NetBird account.
+Enable DNS wildcard routing by toggling the appropriate setting. This will allow your network to resolve all subdomains under a specified domain.
+Enabling DNS wildcard routing
+
+The Enable DNS wildcard routing is supported by routing peers and routing clients running version 0.35.0 or later. Once the feature is enabled, you may need to restart your routing peers and clients to apply the changes.
+
+DNS Forwarder port change: starting with NetBird v0.59.0, the local DNS forwarder used for routed DNS routes switches from port 5353 to 22054 to avoid collisions on client devices. For backward compatibility, the Management Service applies the new port only when all peers in the account run v0.59.0 or newer. If any peer is below v0.59.0, port 5353 will be used for all peers in that account.
+
+Setting Up Developers' Network Environment
+To create a network for the developer environment:
+
+Navigate to Networks > Networks in NetBird's dashboard.
+Click the Add Network button.
+Give a descriptive name to the network, e.g., Development Network. Optionally, add a description.
+Click Add Network to continue.
+Creating Developers Domain Network
+
+Adding Routing Peers
+Click Add Routing Peer to make accessible the resources within this network to the developers.
+
+Add Routing Peers Window
+
+You will see two tabs: Routing Peers and Peer Group.
+
+Select Routing Peers to add one peer at a time to the network.
+Select Peer Group to enable high availability by adding multiple peers to the network.
+Click Continue once ready.
+Local Routing Peers
+
+In the Advanced Settings tab:
+
+Set Masquerade if you want to access private networks without configuring local routers or other devices.
+Set the Metric to prioritize routers, using lower values for higher priority peers.
+When ready, click Add Routing Peer.
+Masquerade and Metric
+
+Adding a Wildcard Domain Resource
+Click Add Resource to create the wildcard domain resource.
+
+Add Domain Resource
+
+Give the resource a descriptive name, e.g., Development Wildcard Domain
+Enter the wildcard domain for this environment, e.g., *.dev.example.com.
+Under Assigned Groups, select or create a group, e.g., Development Domain. This group will be used to create an access policy to allow developers access to all subdomains ending with .dev.example.com.
+Click Add Resource when ready.
+Add Accounting Website Restricted Subdomain Resource
+
+Creating an Access Policy
+Click Create Policy to grant developers access to *.dev.example.com.
+
+Add Policy
+
+Under Protocol, leave ALL.
+Under Source choose the group corresponding to developers, e.g., Developers.
+The Destination is automatically set to the group you used when creating the resource, e.g., Development Domain.
+Developers Policy
+
+Click Continue to set Posture Checks. This step is optional, meaning you can click Continue for this example.
+Provide a descriptive name for the policy, e.g., Development Wildcard Domain Policy.
+Click Add Policy to finish.
+Developers Policy Name
+
+Now that the development environment is set up, you can streamline the process of creating new resources using NetBird.
+
+Adding a Regular Domain Resource
+The wildcard domain you configured, *.dev.example.com, only covers subdomains following the . (dot). Therefore, you need to configure a primary domain alongside your wildcard domain within your network settings. This dual approach guarantees that all levels of your domain hierarchy are adequately resolved and accessible.
+
+Suppose you want to create the regular domain dev.example.com.
+
+Navigate to Networks > Development Network and click Add Resource.
+Development Network
+
+Provide an appropriate name for the resource, such as Development Regular Domain.
+In the Address field, enter the regular domain dev.example.com.
+Under Assigned Groups select the same group used for the wildcard domain, e.g., Development Domain.
+Click Add Resource to continue.
+Regular Domain Resource
+
+That's it! Since you used the group Development Domain, NetBird will automatically configure for you routing peers and access policies, granting your developers the necessary access permissions.
+
+Development Network Resources
+
+You can confirm the configuration by listing the available networks using the command netbird networks ls from any developer workstation. The output should resemble the following:
+
+$ netbird networks ls
+Available Networks:
+
+  - ID: Development Regular Domain
+    Domains: dev.example.com
+    Status: Selected
+    Resolved IPs:
+      [example.com]: 93.184.215.14, 2606:2800:21f:cb07:6820:80da:af6b:8b2c
+
+  - ID: Development Wildcard Domain
+    Domains: *.dev.example.com
+    Status: Selected
+    Resolved IPs: -
+
+Copy
+Copied!
+Creating AI Model Training Network
+For our use case, data scientists operate from different network segments or diverse geographical locations. Using the same steps previously outlined, you can overcome the challenges associated with this scenario by creating a new network with its corresponding routing peers, resources, and access policies.
+
+From the Networks screen, click Add Network to set up an appropriate network for your data scientists:
+
+AI Network
+
+As with developers, you can configure a single routing peer or a group of routing peers for high availability:
+
+AI Routing Peers
+
+You can also set up a wildcard domain resource for this environment:
+
+AI Wildcard Domain Resource
+
+And establish an access policy tailored to your data scientists:
+
+AI Team Access Policy
+
+You will need a regular domain, too; simply create the corresponding resource. The overview of your new network might resemble the following:
+
+AI Network
+
+Need a new subdomain for testing the latest model? From NetBird's Networks screen, just click Add Resource, name it, enter the desired subdomain, and assign it to the appropriate group for this environment:
+
+New AI Model Resource
+
+In summary, you can easily add, remove, and edit network resources from the Networks dashboard.
+
+AI Training Model Network
+
+With this setup, all members of the Data Scientists group have access to ai.example.com and its subdomains:
+
+$ netbird networks ls
+Available Networks:
+
+  - ID: AI Model Training Wildcard Domain
+    Domains: *.ai.example.com
+    Status: Selected
+    Resolved IPs: -
+
+  - ID: AI Regular Domain
+    Domains: ai.example.com
+    Status: Selected
+    Resolved IPs: -
+
+  - ID: DataSage Model
+    Domains: datasage.ai.example.com
+    Status: Selected
+    Resolved IPs: -
+
+  - ID: NeuroPulse Model
+    Domains: neuropulse.ai.example.com
+    Status: Selected
+    Resolved IPs: -
+
+  - ID: QuantumNet Model
+    Domains: quantumnet.ai.example.com
+    Status: Selected
+    Resolved IPs: -
+
+Copy
+Copied!
+However, using your newly acquired knowledge, you can create access policies for each subdomain or organize data scientists into teams with varied permissions. With NetBird, the possibilities are endless.
+
+How to Set up NetBird to Access Your Home Network
+This step-by-step guide describes how to quickly get started with NetBird and access your home network remotely. You will achieve a secure connection between your entire home network and NetBird, enabling remote devices to access local network resources through a routing peer using the NetBird Networks feature.
+
+Download and Install NetBird
+
+Download NetBird
+Connect Your Laptop
+NetBird comes with a Desktop UI application that can be found in the systray. If it hasn't automatically started, look for NetBird in the application list, run it, and click Connect:
+
+login-to-netbird
+
+Alternatively, you can run the netbird up command in the terminal.
+
+At this point a browser window pops up starting an interactive SSO login session that will register your laptop. You will be prompt to sign up and confirm your device registration:
+
+login-to-netbird
+
+After the registration is complete, proceed to the NetBird dashboard to confirm that your laptop is in the network. You will see it in the Peers view.
+
+Create a New NetBird Network
+Go to the Networks tab in the side bar
+Click Add Network and give it a name such as “Home LAN", and optionally add a description.
+add-network-home-lan
+
+Identify Your Local Subnet
+Use the steps below to quickly identify your local subnet for use as a Network Resource.
+
+Windows
+Open Command Prompt.
+Run:
+ipconfig
+
+Copy
+Copied!
+Look for your active network adapter.
+Note the values for:
+IPv4 Address
+Subnet Mask Example:
+IPv4 Address. . . . . . . . . . . : 192.168.1.10
+Subnet Mask  . . . . . . . . . . : 255.255.255.0
+
+Copy
+Copied!
+The subnet is 192.168.1.0/24.
+Linux
+Open Terminal.
+Run:
+ip -c a
+
+Copy
+Copied!
+or
+ip route
+
+Copy
+Copied!
+Identify the active interface (e.g., eth0, wlan0) and note the IP with CIDR suffix: Example:
+inet 192.168.1.10/24
+
+Copy
+Copied!
+The subnet is 192.168.1.0/24.
+macOS
+Open Terminal.
+Run:
+ifconfig
+
+Copy
+Copied!
+Locate the active interface (en0, en1, etc.).
+Look for:
+inet (IP address)
+netmask (in hex) Example:
+inet 192.168.1.10 netmask 0xffffff00
+
+Copy
+Copied!
+Hex 0xffffff00 = 255.255.255.0, which is /24. The subnet is 192.168.1.0/24.
+Define Your LAN as a Network Resource
+Click Add Resource.
+Enter a name like "Home Subnet" and the CIDR of your home network into the Address field (e.g., 192.168.1.0/24).
+Assign it to a Destination Group, create one called "home-lan" so you can write access policies using this group.
+Click Add Resource.
+add-resource-home-network
+
+Alternatively, if you do not want to allow access your entire home subnet, you can get more granular by only allowing access to a single static IP address for your added resource (e.g., 192.168.1.50/32).
+
+Create an Access Control Policy
+To allow access to resources in your home network, you need to create an access control policy that defines which peers can access the network.
+
+After adding your resource, click Create Policy.
+Set Source to the group of NetBird peers you want to allow access (e.g., "All Users" or a specific group like "Home Users").
+Set Destination to the "home-lan" group you made.
+For Protocol, choose All.
+Name it "Home LAN Access" and click Add Policy.
+add-policy-home-lan
+
+Add Your User to the Home User Group
+In order to access your home network, you need to add your users to a group that is used in the access control policy, you've previously created.
+
+Go to the Team tab in the side bar.
+Find your user row and click on the GROUPS column in the table.
+Add "Home Users" by typing it in the input box and pressing Enter.
+add-network-home-lan
+
+Choose or Add a Routing Peer in Your LAN
+Click Add Routing Peer.
+Pick any always-on machine on your home network (Windows, Linux, Mac, Docker, Raspberry Pi).
+Install the NetBird agent on it using a one-off setup key using the CLI installer.
+Ensure this machine has access to both the internet and your LAN subnet.
+Choose this machine as your routing peer and click Continue and Add Routing Peer.
+add-routing-peer-home-network
+
+add-routing-peer-home-network
+
+Test the Connection
+Pick any IP within your Home LAN, such as the IP of your NAS, printer, or another service and run:
+
+  ping 192.168.x.x
+
+Copy
+Copied!
+A successful ping response confirms that your routing peer is correctly routing traffic to resources in your home network.
+
+That’s it! You’ve successfully mapped your entire home LAN into a NetBird Network. Any peer included in your access policy can now securely access resources in your home subnet via your designated routing peer, without the need to open router ports or install software on every device.
+

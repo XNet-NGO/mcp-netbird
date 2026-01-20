@@ -1,3 +1,20 @@
+// Copyright 2025-2026 XNet Inc.
+// Copyright 2025-2026 Joshua S. Doucette
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+// Originally derived from MCP Server for Grafana by Grafana Labs.
+
 package mcpnetbird
 
 import (
@@ -73,7 +90,7 @@ func (c *NetbirdClient) do(ctx context.Context, method, path string, body, v any
 		return fmt.Errorf("creating request: %w", err)
 	}
 
-	req.Header.Set("Authorization", "Bearer "+token)
+	req.Header.Set("Authorization", "Token "+token)
 	if body != nil {
 		req.Header.Set("Content-Type", "application/json")
 	}
@@ -84,12 +101,12 @@ func (c *NetbirdClient) do(ctx context.Context, method, path string, body, v any
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode != http.StatusOK {
+	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
 		body, _ := io.ReadAll(resp.Body)
 		return fmt.Errorf("unexpected status code: %d, body: %s", resp.StatusCode, string(body))
 	}
 
-	if v != nil {
+	if v != nil && resp.StatusCode != http.StatusNoContent {
 		if err := json.NewDecoder(resp.Body).Decode(v); err != nil {
 			return fmt.Errorf("decoding response: %w", err)
 		}
@@ -103,9 +120,19 @@ func (c *NetbirdClient) Get(ctx context.Context, path string, v any) error {
 	return c.do(ctx, http.MethodGet, path, nil, v)
 }
 
+// Post performs a POST request to the Netbird API
+func (c *NetbirdClient) Post(ctx context.Context, path string, body, v any) error {
+	return c.do(ctx, http.MethodPost, path, body, v)
+}
+
 // Put performs a PUT request to the Netbird API
 func (c *NetbirdClient) Put(ctx context.Context, path string, body, v any) error {
 	return c.do(ctx, http.MethodPut, path, body, v)
+}
+
+// Delete performs a DELETE request to the Netbird API
+func (c *NetbirdClient) Delete(ctx context.Context, path string) error {
+	return c.do(ctx, http.MethodDelete, path, nil, nil)
 }
 
 type netbirdAPIKeyKey struct{}

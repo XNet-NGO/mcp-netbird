@@ -38,16 +38,6 @@ make install
 go install github.com/XNet-NGO/mcp-netbird/cmd/mcp-netbird@latest
 ```
 
-### Installing via Smithery
-
-[![smithery badge](https://smithery.ai/badge/@aantti/mcp-netbird)](https://smithery.ai/server/@aantti/mcp-netbird)
-
-To install Netbird MCP Server for Claude Desktop automatically via [Smithery](https://smithery.ai/server/@aantti/mcp-netbird):
-
-```bash
-npx -y @smithery/cli install @aantti/mcp-netbird --client claude
-```
-
 ## Configuration
 
 The server requires the following environment variables:

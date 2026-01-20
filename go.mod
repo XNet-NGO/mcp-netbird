@@ -1,4 +1,4 @@
-module github.com/aantti/mcp-netbird
+module github.com/XNet-NGO/mcp-netbird
 
 go 1.24.0
 

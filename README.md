@@ -22,7 +22,7 @@ Originally derived from the MCP Server for Grafana by Grafana Labs, this project
 #### Clone the repository
 
 ```bash
-git clone https://github.com/aantti/mcp-netbird
+git clone https://github.com/XNet-NGO/mcp-netbird
 ```
 
 #### Build and install
@@ -35,7 +35,7 @@ make install
 ### Installing from GitHub
 
 ```bash
-go install github.com/aantti/mcp-netbird/cmd/mcp-netbird@latest
+go install github.com/XNet-NGO/mcp-netbird/cmd/mcp-netbird@latest
 ```
 
 ### Installing via Smithery

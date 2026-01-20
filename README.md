@@ -108,12 +108,15 @@ To add new tools:
          "command": "mcp-netbird",
          "args": [],
          "env": {
-           "NETBIRD_API_TOKEN": "<your-api-token>"
+           "NETBIRD_API_TOKEN": "<your-api-token>",
+           "NETBIRD_HOST": "api.netbird.io"
          }
        }
      }
    }
    ```
+
+   **Note**: `NETBIRD_HOST` defaults to `api.netbird.io` if not specified. For self-hosted instances, set it to your NetBird API host (e.g., `api.yourdomain.com`).
 
 For more information on how to add a similar configuration to Claude Desktop, see [here](https://modelcontextprotocol.io/quickstart/user).
 

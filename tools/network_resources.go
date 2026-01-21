@@ -3,7 +3,7 @@ package tools
 import (
 	"context"
 
-	mcpnetbird "github.com/aantti/mcp-netbird"
+	mcpnetbird "github.com/XNet-NGO/mcp-netbird"
 	"github.com/mark3labs/mcp-go/server"
 )
 
@@ -36,7 +36,7 @@ func listNetbirdNetworkResources(ctx context.Context, args ListNetbirdNetworkRes
 	if mcpnetbird.TestNetbirdClient != nil {
 		client = mcpnetbird.TestNetbirdClient
 	} else {
-		client = mcpnetbird.NewNetbirdClient()
+		client = mcpnetbird.NewNetbirdClient(ctx)
 	}
 
 	var resources []NetbirdNetworkResource
@@ -63,7 +63,7 @@ func getNetbirdNetworkResource(ctx context.Context, args GetNetbirdNetworkResour
 	if mcpnetbird.TestNetbirdClient != nil {
 		client = mcpnetbird.TestNetbirdClient
 	} else {
-		client = mcpnetbird.NewNetbirdClient()
+		client = mcpnetbird.NewNetbirdClient(ctx)
 	}
 	var resource NetbirdNetworkResource
 	if err := client.Get(ctx, "/networks/"+args.NetworkID+"/resources/"+args.ResourceID, &resource); err != nil {
@@ -92,7 +92,7 @@ func createNetbirdNetworkResource(ctx context.Context, args CreateNetbirdNetwork
 	if mcpnetbird.TestNetbirdClient != nil {
 		client = mcpnetbird.TestNetbirdClient
 	} else {
-		client = mcpnetbird.NewNetbirdClient()
+		client = mcpnetbird.NewNetbirdClient(ctx)
 	}
 	
 	// Create request body without network_id
@@ -134,7 +134,7 @@ func updateNetbirdNetworkResource(ctx context.Context, args UpdateNetbirdNetwork
 	if mcpnetbird.TestNetbirdClient != nil {
 		client = mcpnetbird.TestNetbirdClient
 	} else {
-		client = mcpnetbird.NewNetbirdClient()
+		client = mcpnetbird.NewNetbirdClient(ctx)
 	}
 	
 	// Create request body without network_id and resource_id
@@ -178,7 +178,7 @@ func deleteNetbirdNetworkResource(ctx context.Context, args DeleteNetbirdNetwork
 	if mcpnetbird.TestNetbirdClient != nil {
 		client = mcpnetbird.TestNetbirdClient
 	} else {
-		client = mcpnetbird.NewNetbirdClient()
+		client = mcpnetbird.NewNetbirdClient(ctx)
 	}
 	if err := client.Delete(ctx, "/networks/"+args.NetworkID+"/resources/"+args.ResourceID); err != nil {
 		return nil, err
@@ -199,3 +199,4 @@ func AddNetbirdNetworkResourceTools(mcp *server.MCPServer) {
 	UpdateNetbirdNetworkResource.Register(mcp)
 	DeleteNetbirdNetworkResource.Register(mcp)
 }
+

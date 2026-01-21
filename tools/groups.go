@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	mcpnetbird "github.com/aantti/mcp-netbird"
+	mcpnetbird "github.com/XNet-NGO/mcp-netbird"
 	"github.com/mark3labs/mcp-go/server"
 )
 
@@ -31,7 +31,7 @@ type NetbirdGroup struct {
 type ListNetbirdGroupsParams struct{}
 
 func listNetbirdGroups(ctx context.Context, args ListNetbirdGroupsParams) ([]NetbirdGroup, error) {
-	client := mcpnetbird.NewNetbirdClient()
+	client := mcpnetbird.NewNetbirdClient(ctx)
 
 	var groups []NetbirdGroup
 	if err := client.Get(ctx, "/groups", &groups); err != nil {
@@ -52,7 +52,7 @@ type GetNetbirdGroupParams struct {
 }
 
 func getNetbirdGroup(ctx context.Context, args GetNetbirdGroupParams) (*NetbirdGroup, error) {
-	client := mcpnetbird.NewNetbirdClient()
+	client := mcpnetbird.NewNetbirdClient(ctx)
 	var group NetbirdGroup
 	if err := client.Get(ctx, "/groups/"+args.GroupID, &group); err != nil {
 		return nil, err
@@ -73,7 +73,7 @@ type CreateNetbirdGroupParams struct {
 }
 
 func createNetbirdGroup(ctx context.Context, args CreateNetbirdGroupParams) (*NetbirdGroup, error) {
-	client := mcpnetbird.NewNetbirdClient()
+	client := mcpnetbird.NewNetbirdClient(ctx)
 	var group NetbirdGroup
 	if err := client.Post(ctx, "/groups", args, &group); err != nil {
 		return nil, err
@@ -95,7 +95,7 @@ type UpdateNetbirdGroupParams struct {
 }
 
 func updateNetbirdGroup(ctx context.Context, args UpdateNetbirdGroupParams) (*NetbirdGroup, error) {
-	client := mcpnetbird.NewNetbirdClient()
+	client := mcpnetbird.NewNetbirdClient(ctx)
 	var group NetbirdGroup
 	if err := client.Put(ctx, "/groups/"+args.GroupID, args, &group); err != nil {
 		return nil, err
@@ -124,7 +124,7 @@ func DeleteGroupForce(ctx context.Context, groupID string) (*ForceDeleteResult, 
 	if mcpnetbird.TestNetbirdClient != nil {
 		client = mcpnetbird.TestNetbirdClient
 	} else {
-		client = mcpnetbird.NewNetbirdClient()
+		client = mcpnetbird.NewNetbirdClient(ctx)
 	}
 	
 	result := &ForceDeleteResult{
@@ -266,7 +266,7 @@ func deleteNetbirdGroup(ctx context.Context, args DeleteNetbirdGroupParams) (map
 	if mcpnetbird.TestNetbirdClient != nil {
 		client = mcpnetbird.TestNetbirdClient
 	} else {
-		client = mcpnetbird.NewNetbirdClient()
+		client = mcpnetbird.NewNetbirdClient(ctx)
 	}
 	
 	// If force is true, use DeleteGroupForce
@@ -381,7 +381,7 @@ func ListPoliciesByGroup(ctx context.Context, groupID string) ([]PolicyReference
 	if mcpnetbird.TestNetbirdClient != nil {
 		client = mcpnetbird.TestNetbirdClient
 	} else {
-		client = mcpnetbird.NewNetbirdClient()
+		client = mcpnetbird.NewNetbirdClient(ctx)
 	}
 	
 	// Fetch all policies
@@ -458,7 +458,7 @@ func ReplaceGroupInPolicies(ctx context.Context, oldGroupID, newGroupID string) 
 	if mcpnetbird.TestNetbirdClient != nil {
 		client = mcpnetbird.TestNetbirdClient
 	} else {
-		client = mcpnetbird.NewNetbirdClient()
+		client = mcpnetbird.NewNetbirdClient(ctx)
 	}
 	
 	// Find all policies that reference the old group
@@ -561,3 +561,4 @@ func ReplaceGroupInPolicies(ctx context.Context, oldGroupID, newGroupID string) 
 	
 	return result, nil
 }
+

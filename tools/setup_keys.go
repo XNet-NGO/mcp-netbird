@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	mcpnetbird "github.com/aantti/mcp-netbird"
+	mcpnetbird "github.com/XNet-NGO/mcp-netbird"
 	"github.com/mark3labs/mcp-go/server"
 )
 
@@ -29,7 +29,7 @@ type NetbirdSetupKey struct {
 type ListNetbirdSetupKeysParams struct{}
 
 func listNetbirdSetupKeys(ctx context.Context, args ListNetbirdSetupKeysParams) ([]NetbirdSetupKey, error) {
-	client := mcpnetbird.NewNetbirdClient()
+	client := mcpnetbird.NewNetbirdClient(ctx)
 	var keys []NetbirdSetupKey
 	if err := client.Get(ctx, "/setup-keys", &keys); err != nil {
 		return nil, err
@@ -48,7 +48,7 @@ type GetNetbirdSetupKeyParams struct {
 }
 
 func getNetbirdSetupKey(ctx context.Context, args GetNetbirdSetupKeyParams) (*NetbirdSetupKey, error) {
-	client := mcpnetbird.NewNetbirdClient()
+	client := mcpnetbird.NewNetbirdClient(ctx)
 	var key NetbirdSetupKey
 	if err := client.Get(ctx, "/setup-keys/"+args.KeyID, &key); err != nil {
 		return nil, err
@@ -73,7 +73,7 @@ type CreateNetbirdSetupKeyParams struct {
 }
 
 func createNetbirdSetupKey(ctx context.Context, args CreateNetbirdSetupKeyParams) (*NetbirdSetupKey, error) {
-	client := mcpnetbird.NewNetbirdClient()
+	client := mcpnetbird.NewNetbirdClient(ctx)
 	var key NetbirdSetupKey
 	if err := client.Post(ctx, "/setup-keys", args, &key); err != nil {
 		return nil, err
@@ -95,7 +95,7 @@ type UpdateNetbirdSetupKeyParams struct {
 }
 
 func updateNetbirdSetupKey(ctx context.Context, args UpdateNetbirdSetupKeyParams) (*NetbirdSetupKey, error) {
-	client := mcpnetbird.NewNetbirdClient()
+	client := mcpnetbird.NewNetbirdClient(ctx)
 	var key NetbirdSetupKey
 	if err := client.Put(ctx, "/setup-keys/"+args.KeyID, args, &key); err != nil {
 		return nil, err
@@ -114,7 +114,7 @@ type DeleteNetbirdSetupKeyParams struct {
 }
 
 func deleteNetbirdSetupKey(ctx context.Context, args DeleteNetbirdSetupKeyParams) (map[string]string, error) {
-	client := mcpnetbird.NewNetbirdClient()
+	client := mcpnetbird.NewNetbirdClient(ctx)
 	if err := client.Delete(ctx, "/setup-keys/"+args.KeyID); err != nil {
 		return nil, err
 	}

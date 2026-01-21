@@ -3,7 +3,7 @@ package tools
 import (
 	"context"
 
-	mcpnetbird "github.com/aantti/mcp-netbird"
+	mcpnetbird "github.com/XNet-NGO/mcp-netbird"
 	"github.com/mark3labs/mcp-go/server"
 )
 
@@ -61,7 +61,7 @@ func getNetbirdAccount(ctx context.Context, args GetNetbirdAccountParams) (*Netb
 	if mcpnetbird.TestNetbirdClient != nil {
 		client = mcpnetbird.TestNetbirdClient
 	} else {
-		client = mcpnetbird.NewNetbirdClient()
+		client = mcpnetbird.NewNetbirdClient(ctx)
 	}
 	var accounts []NetbirdAccount
 	if err := client.Get(ctx, "/accounts", &accounts); err != nil {
@@ -88,7 +88,7 @@ func updateNetbirdAccount(ctx context.Context, args UpdateNetbirdAccountParams) 
 	if mcpnetbird.TestNetbirdClient != nil {
 		client = mcpnetbird.TestNetbirdClient
 	} else {
-		client = mcpnetbird.NewNetbirdClient()
+		client = mcpnetbird.NewNetbirdClient(ctx)
 	}
 	var accounts []NetbirdAccount
 	if err := client.Put(ctx, "/accounts", args, &accounts); err != nil {
@@ -110,3 +110,4 @@ func AddNetbirdAccountTools(mcp *server.MCPServer) {
 	GetNetbirdAccount.Register(mcp)
 	UpdateNetbirdAccount.Register(mcp)
 }
+

@@ -3,7 +3,7 @@ package tools
 import (
 	"context"
 
-	mcpnetbird "github.com/aantti/mcp-netbird"
+	mcpnetbird "github.com/XNet-NGO/mcp-netbird"
 	"github.com/mark3labs/mcp-go/server"
 )
 
@@ -45,7 +45,7 @@ type ListNetbirdPortAllocationsParams struct {
 }
 
 func listNetbirdPortAllocations(ctx context.Context, args ListNetbirdPortAllocationsParams) ([]NetbirdPortAllocations, error) {
-	client := mcpnetbird.NewNetbirdClient()
+	client := mcpnetbird.NewNetbirdClient(ctx)
 
 	var allocations []NetbirdPortAllocations
 	if err := client.Get(ctx, "/peers/"+args.PeerID+"/ingress/ports", &allocations); err != nil {
@@ -70,7 +70,7 @@ type CreateNetbirdPortAllocationParams struct {
 }
 
 func createNetbirdPortAllocation(ctx context.Context, args CreateNetbirdPortAllocationParams) (*NetbirdPortAllocations, error) {
-	client := mcpnetbird.NewNetbirdClient()
+	client := mcpnetbird.NewNetbirdClient(ctx)
 
 	// Create request body without peer_id
 	requestBody := map[string]interface{}{
@@ -104,7 +104,7 @@ type GetNetbirdPortAllocationParams struct {
 }
 
 func getNetbirdPortAllocation(ctx context.Context, args GetNetbirdPortAllocationParams) (*NetbirdPortAllocations, error) {
-	client := mcpnetbird.NewNetbirdClient()
+	client := mcpnetbird.NewNetbirdClient(ctx)
 
 	var allocation NetbirdPortAllocations
 	if err := client.Get(ctx, "/peers/"+args.PeerID+"/ingress/ports/"+args.AllocationID, &allocation); err != nil {
@@ -130,7 +130,7 @@ type UpdateNetbirdPortAllocationParams struct {
 }
 
 func updateNetbirdPortAllocation(ctx context.Context, args UpdateNetbirdPortAllocationParams) (*NetbirdPortAllocations, error) {
-	client := mcpnetbird.NewNetbirdClient()
+	client := mcpnetbird.NewNetbirdClient(ctx)
 
 	// Create request body without peer_id and allocation_id
 	requestBody := make(map[string]interface{})
@@ -167,7 +167,7 @@ type DeleteNetbirdPortAllocationParams struct {
 }
 
 func deleteNetbirdPortAllocation(ctx context.Context, args DeleteNetbirdPortAllocationParams) (map[string]string, error) {
-	client := mcpnetbird.NewNetbirdClient()
+	client := mcpnetbird.NewNetbirdClient(ctx)
 
 	if err := client.Delete(ctx, "/peers/"+args.PeerID+"/ingress/ports/"+args.AllocationID); err != nil {
 		return nil, err

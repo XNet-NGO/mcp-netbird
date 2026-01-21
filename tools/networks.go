@@ -3,7 +3,7 @@ package tools
 import (
 	"context"
 
-	mcpnetbird "github.com/aantti/mcp-netbird"
+	mcpnetbird "github.com/XNet-NGO/mcp-netbird"
 	"github.com/mark3labs/mcp-go/server"
 )
 
@@ -25,7 +25,7 @@ func listNetbirdNetworks(ctx context.Context, args ListNetbirdNetworksParams) ([
 	if mcpnetbird.TestNetbirdClient != nil {
 		client = mcpnetbird.TestNetbirdClient
 	} else {
-		client = mcpnetbird.NewNetbirdClient()
+		client = mcpnetbird.NewNetbirdClient(ctx)
 	}
 
 	var networks []NetbirdNetwork
@@ -51,7 +51,7 @@ func getNetbirdNetwork(ctx context.Context, args GetNetbirdNetworkParams) (*Netb
 	if mcpnetbird.TestNetbirdClient != nil {
 		client = mcpnetbird.TestNetbirdClient
 	} else {
-		client = mcpnetbird.NewNetbirdClient()
+		client = mcpnetbird.NewNetbirdClient(ctx)
 	}
 	var network NetbirdNetwork
 	if err := client.Get(ctx, "/networks/"+args.NetworkID, &network); err != nil {
@@ -76,7 +76,7 @@ func createNetbirdNetwork(ctx context.Context, args CreateNetbirdNetworkParams) 
 	if mcpnetbird.TestNetbirdClient != nil {
 		client = mcpnetbird.TestNetbirdClient
 	} else {
-		client = mcpnetbird.NewNetbirdClient()
+		client = mcpnetbird.NewNetbirdClient(ctx)
 	}
 	var network NetbirdNetwork
 	if err := client.Post(ctx, "/networks", args, &network); err != nil {
@@ -102,7 +102,7 @@ func updateNetbirdNetwork(ctx context.Context, args UpdateNetbirdNetworkParams) 
 	if mcpnetbird.TestNetbirdClient != nil {
 		client = mcpnetbird.TestNetbirdClient
 	} else {
-		client = mcpnetbird.NewNetbirdClient()
+		client = mcpnetbird.NewNetbirdClient(ctx)
 	}
 	var network NetbirdNetwork
 	if err := client.Put(ctx, "/networks/"+args.NetworkID, args, &network); err != nil {
@@ -126,7 +126,7 @@ func deleteNetbirdNetwork(ctx context.Context, args DeleteNetbirdNetworkParams) 
 	if mcpnetbird.TestNetbirdClient != nil {
 		client = mcpnetbird.TestNetbirdClient
 	} else {
-		client = mcpnetbird.NewNetbirdClient()
+		client = mcpnetbird.NewNetbirdClient(ctx)
 	}
 	if err := client.Delete(ctx, "/networks/"+args.NetworkID); err != nil {
 		return nil, err
@@ -147,3 +147,4 @@ func AddNetbirdNetworkTools(mcp *server.MCPServer) {
 	UpdateNetbirdNetwork.Register(mcp)
 	DeleteNetbirdNetwork.Register(mcp)
 }
+

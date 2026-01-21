@@ -1,0 +1,45 @@
+{
+  "mcpServers": {
+    "netbird-stateless": {
+      "url": "http://localhost:8001",
+      "transport": "sse",
+      "headers": {
+        "X-Netbird-API-Token": "your-netbird-api-token-here",
+        "X-Netbird-Host": "api.netbird.io"
+      },
+      "description": "Stateless NetBird MCP Server - credentials provided via HTTP headers"
+    },
+    "netbird-with-cli-args": {
+      "command": "docker",
+      "args": [
+        "run",
+        "--rm",
+        "-i",
+        "mcp-netbird-sse:latest",
+        "--transport",
+        "stdio",
+        "--api-token",
+        "your-netbird-api-token-here",
+        "--api-host",
+        "api.netbird.io"
+      ],
+      "description": "NetBird MCP Server with CLI arguments"
+    },
+    "netbird-with-env-vars": {
+      "command": "docker",
+      "args": [
+        "run",
+        "--rm",
+        "-i",
+        "mcp-netbird-sse:latest",
+        "--transport",
+        "stdio"
+      ],
+      "env": {
+        "NETBIRD_API_TOKEN": "your-netbird-api-token-here",
+        "NETBIRD_HOST": "api.netbird.io"
+      },
+      "description": "NetBird MCP Server with environment variables (backward compatible)"
+    }
+  }
+}

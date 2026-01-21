@@ -3,7 +3,7 @@ package tools
 import (
 	"context"
 
-	mcpnetbird "github.com/aantti/mcp-netbird"
+	mcpnetbird "github.com/XNet-NGO/mcp-netbird"
 	"github.com/mark3labs/mcp-go/server"
 )
 
@@ -32,7 +32,7 @@ func listNetbirdRoutes(ctx context.Context, args ListNetbirdRoutesParams) ([]Net
 	if mcpnetbird.TestNetbirdClient != nil {
 		client = mcpnetbird.TestNetbirdClient
 	} else {
-		client = mcpnetbird.NewNetbirdClient()
+		client = mcpnetbird.NewNetbirdClient(ctx)
 	}
 
 	var routes []NetbirdRoute
@@ -71,7 +71,7 @@ func updateNetbirdRoute(ctx context.Context, args UpdateNetbirdRouteParams) (*Ne
 	if mcpnetbird.TestNetbirdClient != nil {
 		client = mcpnetbird.TestNetbirdClient
 	} else {
-		client = mcpnetbird.NewNetbirdClient()
+		client = mcpnetbird.NewNetbirdClient(ctx)
 	}
 
 	var route NetbirdRoute
@@ -109,7 +109,7 @@ func createNetbirdRoute(ctx context.Context, args CreateNetbirdRouteParams) (*Ne
 	if mcpnetbird.TestNetbirdClient != nil {
 		client = mcpnetbird.TestNetbirdClient
 	} else {
-		client = mcpnetbird.NewNetbirdClient()
+		client = mcpnetbird.NewNetbirdClient(ctx)
 	}
 
 	var route NetbirdRoute
@@ -135,7 +135,7 @@ func deleteNetbirdRoute(ctx context.Context, args DeleteNetbirdRouteParams) (map
 	if mcpnetbird.TestNetbirdClient != nil {
 		client = mcpnetbird.TestNetbirdClient
 	} else {
-		client = mcpnetbird.NewNetbirdClient()
+		client = mcpnetbird.NewNetbirdClient(ctx)
 	}
 
 	if err := client.Delete(ctx, "/routes/"+args.RouteID); err != nil {
@@ -160,7 +160,7 @@ func getNetbirdRoute(ctx context.Context, args GetNetbirdRouteParams) (*NetbirdR
 	if mcpnetbird.TestNetbirdClient != nil {
 		client = mcpnetbird.TestNetbirdClient
 	} else {
-		client = mcpnetbird.NewNetbirdClient()
+		client = mcpnetbird.NewNetbirdClient(ctx)
 	}
 	var route NetbirdRoute
 	if err := client.Get(ctx, "/routes/"+args.RouteID, &route); err != nil {

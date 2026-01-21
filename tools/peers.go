@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	mcpnetbird "github.com/aantti/mcp-netbird"
+	mcpnetbird "github.com/XNet-NGO/mcp-netbird"
 	"github.com/mark3labs/mcp-go/server"
 )
 
@@ -68,7 +68,7 @@ func listNetbirdPeers(ctx context.Context, args ListNetbirdPeersParams) ([]Netbi
 	if mcpnetbird.TestNetbirdClient != nil {
 		client = mcpnetbird.TestNetbirdClient
 	} else {
-		client = mcpnetbird.NewNetbirdClient()
+		client = mcpnetbird.NewNetbirdClient(ctx)
 	}
 
 	var peers []NetbirdPeer
@@ -94,7 +94,7 @@ func getNetbirdPeer(ctx context.Context, args GetNetbirdPeerParams) (*NetbirdPee
 	if mcpnetbird.TestNetbirdClient != nil {
 		client = mcpnetbird.TestNetbirdClient
 	} else {
-		client = mcpnetbird.NewNetbirdClient()
+		client = mcpnetbird.NewNetbirdClient(ctx)
 	}
 	var peer NetbirdPeer
 	if err := client.Get(ctx, "/peers/"+args.PeerID, &peer); err != nil {
@@ -120,7 +120,7 @@ func updateNetbirdPeer(ctx context.Context, args UpdateNetbirdPeerParams) (*Netb
 	if mcpnetbird.TestNetbirdClient != nil {
 		client = mcpnetbird.TestNetbirdClient
 	} else {
-		client = mcpnetbird.NewNetbirdClient()
+		client = mcpnetbird.NewNetbirdClient(ctx)
 	}
 	var peer NetbirdPeer
 	if err := client.Put(ctx, "/peers/"+args.PeerID, args, &peer); err != nil {
@@ -144,7 +144,7 @@ func deleteNetbirdPeer(ctx context.Context, args DeleteNetbirdPeerParams) (map[s
 	if mcpnetbird.TestNetbirdClient != nil {
 		client = mcpnetbird.TestNetbirdClient
 	} else {
-		client = mcpnetbird.NewNetbirdClient()
+		client = mcpnetbird.NewNetbirdClient(ctx)
 	}
 	if err := client.Delete(ctx, "/peers/"+args.PeerID); err != nil {
 		return nil, err

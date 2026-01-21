@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	mcpnetbird "github.com/aantti/mcp-netbird"
+	mcpnetbird "github.com/XNet-NGO/mcp-netbird"
 	"github.com/mark3labs/mcp-go/server"
 )
 
@@ -276,7 +276,7 @@ func listNetbirdPolicies(ctx context.Context, args ListNetbirdPoliciesParams) ([
 	if mcpnetbird.TestNetbirdClient != nil {
 		client = mcpnetbird.TestNetbirdClient
 	} else {
-		client = mcpnetbird.NewNetbirdClient()
+		client = mcpnetbird.NewNetbirdClient(ctx)
 	}
 
 	var policies []NetbirdPolicy
@@ -302,7 +302,7 @@ func getNetbirdPolicy(ctx context.Context, args GetNetbirdPolicyParams) (*Netbir
 	if mcpnetbird.TestNetbirdClient != nil {
 		client = mcpnetbird.TestNetbirdClient
 	} else {
-		client = mcpnetbird.NewNetbirdClient()
+		client = mcpnetbird.NewNetbirdClient(ctx)
 	}
 	var policy NetbirdPolicy
 	if err := client.Get(ctx, "/policies/"+args.PolicyID, &policy); err != nil {
@@ -342,7 +342,7 @@ func createNetbirdPolicy(ctx context.Context, args CreateNetbirdPolicyParams) (*
 	if mcpnetbird.TestNetbirdClient != nil {
 		client = mcpnetbird.TestNetbirdClient
 	} else {
-		client = mcpnetbird.NewNetbirdClient()
+		client = mcpnetbird.NewNetbirdClient(ctx)
 	}
 	
 	// If rules are provided, validate and format them
@@ -418,7 +418,7 @@ func updateNetbirdPolicy(ctx context.Context, args UpdateNetbirdPolicyParams) (*
 	if mcpnetbird.TestNetbirdClient != nil {
 		client = mcpnetbird.TestNetbirdClient
 	} else {
-		client = mcpnetbird.NewNetbirdClient()
+		client = mcpnetbird.NewNetbirdClient(ctx)
 	}
 	
 	// If rules are provided, validate and format them
@@ -492,7 +492,7 @@ func deleteNetbirdPolicy(ctx context.Context, args DeleteNetbirdPolicyParams) (m
 	if mcpnetbird.TestNetbirdClient != nil {
 		client = mcpnetbird.TestNetbirdClient
 	} else {
-		client = mcpnetbird.NewNetbirdClient()
+		client = mcpnetbird.NewNetbirdClient(ctx)
 	}
 	if err := client.Delete(ctx, "/policies/"+args.PolicyID); err != nil {
 		return nil, err

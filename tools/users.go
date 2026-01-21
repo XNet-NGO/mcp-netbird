@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	mcpnetbird "github.com/aantti/mcp-netbird"
+	mcpnetbird "github.com/XNet-NGO/mcp-netbird"
 	"github.com/mark3labs/mcp-go/server"
 )
 
@@ -24,7 +24,7 @@ type NetbirdUser struct {
 type ListNetbirdUsersParams struct{}
 
 func listNetbirdUsers(ctx context.Context, args ListNetbirdUsersParams) ([]NetbirdUser, error) {
-	client := mcpnetbird.NewNetbirdClient()
+	client := mcpnetbird.NewNetbirdClient(ctx)
 	var users []NetbirdUser
 	if err := client.Get(ctx, "/users", &users); err != nil {
 		return nil, err
@@ -43,7 +43,7 @@ type GetNetbirdUserParams struct {
 }
 
 func getNetbirdUser(ctx context.Context, args GetNetbirdUserParams) (*NetbirdUser, error) {
-	client := mcpnetbird.NewNetbirdClient()
+	client := mcpnetbird.NewNetbirdClient(ctx)
 	var user NetbirdUser
 	if err := client.Get(ctx, "/users/"+args.UserID, &user); err != nil {
 		return nil, err
@@ -65,7 +65,7 @@ type InviteNetbirdUserParams struct {
 }
 
 func inviteNetbirdUser(ctx context.Context, args InviteNetbirdUserParams) (*NetbirdUser, error) {
-	client := mcpnetbird.NewNetbirdClient()
+	client := mcpnetbird.NewNetbirdClient(ctx)
 	var user NetbirdUser
 	if err := client.Post(ctx, "/users", args, &user); err != nil {
 		return nil, err
@@ -87,7 +87,7 @@ type UpdateNetbirdUserParams struct {
 }
 
 func updateNetbirdUser(ctx context.Context, args UpdateNetbirdUserParams) (*NetbirdUser, error) {
-	client := mcpnetbird.NewNetbirdClient()
+	client := mcpnetbird.NewNetbirdClient(ctx)
 	var user NetbirdUser
 	if err := client.Put(ctx, "/users/"+args.UserID, args, &user); err != nil {
 		return nil, err
@@ -106,7 +106,7 @@ type DeleteNetbirdUserParams struct {
 }
 
 func deleteNetbirdUser(ctx context.Context, args DeleteNetbirdUserParams) (map[string]string, error) {
-	client := mcpnetbird.NewNetbirdClient()
+	client := mcpnetbird.NewNetbirdClient(ctx)
 	if err := client.Delete(ctx, "/users/"+args.UserID); err != nil {
 		return nil, err
 	}

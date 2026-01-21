@@ -9,7 +9,7 @@ import (
 	"strings"
 	"testing"
 
-	mcpnetbird "github.com/aantti/mcp-netbird"
+	mcpnetbird "github.com/XNet-NGO/mcp-netbird"
 )
 
 func TestGroupResourceMarshaling(t *testing.T) {

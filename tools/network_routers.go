@@ -3,7 +3,7 @@ package tools
 import (
 	"context"
 
-	mcpnetbird "github.com/aantti/mcp-netbird"
+	mcpnetbird "github.com/XNet-NGO/mcp-netbird"
 	"github.com/mark3labs/mcp-go/server"
 )
 
@@ -26,7 +26,7 @@ func listNetbirdNetworkRouters(ctx context.Context, args ListNetbirdNetworkRoute
 	if mcpnetbird.TestNetbirdClient != nil {
 		client = mcpnetbird.TestNetbirdClient
 	} else {
-		client = mcpnetbird.NewNetbirdClient()
+		client = mcpnetbird.NewNetbirdClient(ctx)
 	}
 
 	var routers []NetbirdNetworkRouter
@@ -53,7 +53,7 @@ func getNetbirdNetworkRouter(ctx context.Context, args GetNetbirdNetworkRouterPa
 	if mcpnetbird.TestNetbirdClient != nil {
 		client = mcpnetbird.TestNetbirdClient
 	} else {
-		client = mcpnetbird.NewNetbirdClient()
+		client = mcpnetbird.NewNetbirdClient(ctx)
 	}
 	var router NetbirdNetworkRouter
 	if err := client.Get(ctx, "/networks/"+args.NetworkID+"/routers/"+args.RouterID, &router); err != nil {
@@ -82,7 +82,7 @@ func createNetbirdNetworkRouter(ctx context.Context, args CreateNetbirdNetworkRo
 	if mcpnetbird.TestNetbirdClient != nil {
 		client = mcpnetbird.TestNetbirdClient
 	} else {
-		client = mcpnetbird.NewNetbirdClient()
+		client = mcpnetbird.NewNetbirdClient(ctx)
 	}
 	
 	// Create request body without network_id
@@ -126,7 +126,7 @@ func updateNetbirdNetworkRouter(ctx context.Context, args UpdateNetbirdNetworkRo
 	if mcpnetbird.TestNetbirdClient != nil {
 		client = mcpnetbird.TestNetbirdClient
 	} else {
-		client = mcpnetbird.NewNetbirdClient()
+		client = mcpnetbird.NewNetbirdClient(ctx)
 	}
 	
 	// Create request body without network_id and router_id
@@ -170,7 +170,7 @@ func deleteNetbirdNetworkRouter(ctx context.Context, args DeleteNetbirdNetworkRo
 	if mcpnetbird.TestNetbirdClient != nil {
 		client = mcpnetbird.TestNetbirdClient
 	} else {
-		client = mcpnetbird.NewNetbirdClient()
+		client = mcpnetbird.NewNetbirdClient(ctx)
 	}
 	if err := client.Delete(ctx, "/networks/"+args.NetworkID+"/routers/"+args.RouterID); err != nil {
 		return nil, err
@@ -191,3 +191,4 @@ func AddNetbirdNetworkRouterTools(mcp *server.MCPServer) {
 	UpdateNetbirdNetworkRouter.Register(mcp)
 	DeleteNetbirdNetworkRouter.Register(mcp)
 }
+

@@ -3,7 +3,7 @@ package tools
 import (
 	"context"
 
-	mcpnetbird "github.com/aantti/mcp-netbird"
+	mcpnetbird "github.com/XNet-NGO/mcp-netbird"
 	"github.com/mark3labs/mcp-go/server"
 )
 
@@ -67,7 +67,7 @@ type NetbirdPostureCheck struct {
 type ListNetbirdPostureChecksParams struct{}
 
 func listNetbirdPostureChecks(ctx context.Context, args ListNetbirdPostureChecksParams) ([]NetbirdPostureCheck, error) {
-	client := mcpnetbird.NewNetbirdClient()
+	client := mcpnetbird.NewNetbirdClient(ctx)
 
 	var checks []NetbirdPostureCheck
 	if err := client.Get(ctx, "/posture-checks", &checks); err != nil {
@@ -88,7 +88,7 @@ type GetNetbirdPostureCheckParams struct {
 }
 
 func getNetbirdPostureCheck(ctx context.Context, args GetNetbirdPostureCheckParams) (*NetbirdPostureCheck, error) {
-	client := mcpnetbird.NewNetbirdClient()
+	client := mcpnetbird.NewNetbirdClient(ctx)
 	var check NetbirdPostureCheck
 	if err := client.Get(ctx, "/posture-checks/"+args.PostureCheckID, &check); err != nil {
 		return nil, err
@@ -109,7 +109,7 @@ type CreateNetbirdPostureCheckParams struct {
 }
 
 func createNetbirdPostureCheck(ctx context.Context, args CreateNetbirdPostureCheckParams) (*NetbirdPostureCheck, error) {
-	client := mcpnetbird.NewNetbirdClient()
+	client := mcpnetbird.NewNetbirdClient(ctx)
 	var check NetbirdPostureCheck
 	if err := client.Post(ctx, "/posture-checks", args, &check); err != nil {
 		return nil, err
@@ -131,7 +131,7 @@ type UpdateNetbirdPostureCheckParams struct {
 }
 
 func updateNetbirdPostureCheck(ctx context.Context, args UpdateNetbirdPostureCheckParams) (*NetbirdPostureCheck, error) {
-	client := mcpnetbird.NewNetbirdClient()
+	client := mcpnetbird.NewNetbirdClient(ctx)
 	var check NetbirdPostureCheck
 	if err := client.Put(ctx, "/posture-checks/"+args.PostureCheckID, args, &check); err != nil {
 		return nil, err
@@ -150,7 +150,7 @@ type DeleteNetbirdPostureCheckParams struct {
 }
 
 func deleteNetbirdPostureCheck(ctx context.Context, args DeleteNetbirdPostureCheckParams) (map[string]string, error) {
-	client := mcpnetbird.NewNetbirdClient()
+	client := mcpnetbird.NewNetbirdClient(ctx)
 	if err := client.Delete(ctx, "/posture-checks/"+args.PostureCheckID); err != nil {
 		return nil, err
 	}

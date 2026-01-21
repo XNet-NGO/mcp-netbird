@@ -3,7 +3,7 @@ package tools
 import (
 	"context"
 
-	mcpnetbird "github.com/aantti/mcp-netbird"
+	mcpnetbird "github.com/XNet-NGO/mcp-netbird"
 	"github.com/mark3labs/mcp-go/server"
 )
 
@@ -32,7 +32,7 @@ func listNetbirdNameservers(ctx context.Context, args ListNetbirdNameserversPara
 	if mcpnetbird.TestNetbirdClient != nil {
 		client = mcpnetbird.TestNetbirdClient
 	} else {
-		client = mcpnetbird.NewNetbirdClient()
+		client = mcpnetbird.NewNetbirdClient(ctx)
 	}
 
 	var nameservers []NetbirdNameservers
@@ -58,7 +58,7 @@ func getNetbirdNameserver(ctx context.Context, args GetNetbirdNameserverParams) 
 	if mcpnetbird.TestNetbirdClient != nil {
 		client = mcpnetbird.TestNetbirdClient
 	} else {
-		client = mcpnetbird.NewNetbirdClient()
+		client = mcpnetbird.NewNetbirdClient(ctx)
 	}
 	var nameserver NetbirdNameservers
 	if err := client.Get(ctx, "/dns/nameservers/"+args.NameserverID, &nameserver); err != nil {
@@ -89,7 +89,7 @@ func createNetbirdNameserver(ctx context.Context, args CreateNetbirdNameserverPa
 	if mcpnetbird.TestNetbirdClient != nil {
 		client = mcpnetbird.TestNetbirdClient
 	} else {
-		client = mcpnetbird.NewNetbirdClient()
+		client = mcpnetbird.NewNetbirdClient(ctx)
 	}
 	var nameserver NetbirdNameservers
 	if err := client.Post(ctx, "/dns/nameservers", args, &nameserver); err != nil {
@@ -121,7 +121,7 @@ func updateNetbirdNameserver(ctx context.Context, args UpdateNetbirdNameserverPa
 	if mcpnetbird.TestNetbirdClient != nil {
 		client = mcpnetbird.TestNetbirdClient
 	} else {
-		client = mcpnetbird.NewNetbirdClient()
+		client = mcpnetbird.NewNetbirdClient(ctx)
 	}
 	var nameserver NetbirdNameservers
 	if err := client.Put(ctx, "/dns/nameservers/"+args.NameserverID, args, &nameserver); err != nil {
@@ -145,7 +145,7 @@ func deleteNetbirdNameserver(ctx context.Context, args DeleteNetbirdNameserverPa
 	if mcpnetbird.TestNetbirdClient != nil {
 		client = mcpnetbird.TestNetbirdClient
 	} else {
-		client = mcpnetbird.NewNetbirdClient()
+		client = mcpnetbird.NewNetbirdClient(ctx)
 	}
 	if err := client.Delete(ctx, "/dns/nameservers/"+args.NameserverID); err != nil {
 		return nil, err
@@ -166,3 +166,4 @@ func AddNetbirdNameserverTools(mcp *server.MCPServer) {
 	UpdateNetbirdNameserver.Register(mcp)
 	DeleteNetbirdNameserver.Register(mcp)
 }
+

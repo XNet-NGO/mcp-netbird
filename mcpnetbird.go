@@ -26,6 +26,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/mark3labs/mcp-go/server"
 )
@@ -39,6 +40,126 @@ const (
 	netbirdAPIEnvVar  = "NETBIRD_API_TOKEN"
 )
 
+// Config holds the Netbird API configuration
+type Config struct {
+	APIToken string
+	APIHost  string
+}
+
+// ConfigLoader loads configuration from multiple sources with priority order
+type ConfigLoader struct {
+	cliToken string
+	cliHost  string
+}
+
+// GlobalConfigLoader is the global configuration loader instance
+var GlobalConfigLoader *ConfigLoader
+
+// NewConfigLoader creates a new configuration loader with CLI arguments
+func NewConfigLoader(cliToken, cliHost string) *ConfigLoader {
+	return &ConfigLoader{
+		cliToken: cliToken,
+		cliHost:  cliHost,
+	}
+}
+
+// LoadConfig loads configuration with priority: CLI > HTTP headers > env vars
+func (cl *ConfigLoader) LoadConfig(httpToken, httpHost string) (*Config, error) {
+	cfg := &Config{}
+
+	// Load API token with priority order
+	if cl.cliToken != "" {
+		cfg.APIToken = cl.cliToken
+	} else if httpToken != "" {
+		cfg.APIToken = httpToken
+	} else {
+		cfg.APIToken = os.Getenv(netbirdAPIEnvVar)
+	}
+
+	// Load API host with priority order
+	if cl.cliHost != "" {
+		cfg.APIHost = stripProtocolPrefix(cl.cliHost)
+	} else if httpHost != "" {
+		cfg.APIHost = stripProtocolPrefix(httpHost)
+	} else {
+		envHost := os.Getenv(netbirdHostEnvVar)
+		if envHost != "" {
+			cfg.APIHost = stripProtocolPrefix(envHost)
+		} else {
+			cfg.APIHost = defaultNetbirdHost
+		}
+	}
+
+	return cfg, nil
+}
+
+// stripProtocolPrefix removes http:// or https:// prefix from hostname
+func stripProtocolPrefix(host string) string {
+	// Remove http:// prefix
+	if strings.HasPrefix(host, "http://") {
+		return strings.TrimPrefix(host, "http://")
+	}
+	// Remove https:// prefix
+	if strings.HasPrefix(host, "https://") {
+		return strings.TrimPrefix(host, "https://")
+	}
+	return host
+}
+
+// ValidateConfig validates the configuration and returns descriptive errors
+func ValidateConfig(cfg *Config) error {
+	// Validate API token
+	if cfg.APIToken == "" {
+		return fmt.Errorf("API token is required but not provided")
+	}
+	if strings.TrimSpace(cfg.APIToken) == "" {
+		return fmt.Errorf("API token cannot be empty or whitespace-only")
+	}
+
+	// Validate API host
+	if cfg.APIHost == "" {
+		return fmt.Errorf("API host is required but not provided")
+	}
+	if strings.TrimSpace(cfg.APIHost) == "" {
+		return fmt.Errorf("API host cannot be empty or whitespace-only")
+	}
+
+	// Check for protocol prefix (should have been stripped already, but validate)
+	if strings.HasPrefix(cfg.APIHost, "http://") || strings.HasPrefix(cfg.APIHost, "https://") {
+		return fmt.Errorf("API host '%s' should not contain protocol prefix (http:// or https://)", cfg.APIHost)
+	}
+
+	// Validate URL format - check for invalid characters and basic structure
+	// A valid hostname should not contain spaces, and should have valid characters
+	if strings.Contains(cfg.APIHost, " ") {
+		return fmt.Errorf("API host '%s' is not a valid URL format: contains spaces", cfg.APIHost)
+	}
+
+	// Check for other invalid URL characters
+	invalidChars := []string{"<", ">", "\"", "{", "}", "|", "\\", "^", "`"}
+	for _, char := range invalidChars {
+		if strings.Contains(cfg.APIHost, char) {
+			return fmt.Errorf("API host '%s' is not a valid URL format: contains invalid character '%s'", cfg.APIHost, char)
+		}
+	}
+
+	// Basic check: hostname should have at least one character that's not just special chars
+	// Allow alphanumeric, dots, hyphens, colons (for ports), and forward slashes (for paths)
+	validHostChars := "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.-:/"
+	hasValidChar := false
+	for _, char := range cfg.APIHost {
+		if strings.ContainsRune(validHostChars, char) {
+			hasValidChar = true
+			break
+		}
+	}
+	if !hasValidChar {
+		return fmt.Errorf("API host '%s' is not a valid URL format: no valid hostname characters", cfg.APIHost)
+	}
+
+	return nil
+}
+
 // NetbirdClient provides methods to interact with the Netbird API
 type NetbirdClient struct {
 	baseURL string
@@ -48,9 +169,18 @@ type NetbirdClient struct {
 // Single global variable for testing
 var TestNetbirdClient *NetbirdClient
 
-// NewNetbirdClient creates a new NetbirdClient with the given API key
-func NewNetbirdClient() *NetbirdClient {
-	host := os.Getenv(netbirdHostEnvVar)
+// NewNetbirdClient creates a new NetbirdClient with configuration from context.
+// If context doesn't contain API host, falls back to environment variable for backward compatibility.
+func NewNetbirdClient(ctx context.Context) *NetbirdClient {
+	// Try to get host from context first
+	host := NetbirdAPIHostFromContext(ctx)
+	
+	// Fall back to environment variable for backward compatibility
+	if host == "" {
+		host = os.Getenv(netbirdHostEnvVar)
+	}
+	
+	// Use default if still empty
 	if host == "" {
 		host = defaultNetbirdHost
 	}
@@ -136,32 +266,87 @@ func (c *NetbirdClient) Delete(ctx context.Context, path string) error {
 }
 
 type netbirdAPIKeyKey struct{}
+type netbirdAPIHostKey struct{}
 
 // ExtractNetbirdInfoFromEnv is a StdioContextFunc that extracts Netbird configuration
-// from environment variables and injects it into the context.
+// from CLI arguments and environment variables (no HTTP headers in stdio mode).
 var ExtractNetbirdInfoFromEnv server.StdioContextFunc = func(ctx context.Context) context.Context {
-	apiKey := os.Getenv(netbirdAPIEnvVar)
-	if apiKey == "" {
-		log.Printf("Warning: %s environment variable not found", netbirdAPIEnvVar)
-	} else {
-		log.Printf("Found %s environment variable", netbirdAPIEnvVar)
+	// Ensure GlobalConfigLoader is initialized
+	if GlobalConfigLoader == nil {
+		log.Printf("Warning: GlobalConfigLoader not initialized, using empty CLI arguments")
+		GlobalConfigLoader = NewConfigLoader("", "")
 	}
-	return WithNetbirdAPIKey(ctx, apiKey)
+
+	// Load configuration from CLI arguments and environment variables only
+	// No HTTP headers in stdio mode (httpToken and httpHost are empty strings)
+	cfg, err := GlobalConfigLoader.LoadConfig("", "")
+	if err != nil {
+		log.Printf("Warning: Failed to load configuration: %v", err)
+		return WithNetbirdConfig(ctx, "", "")
+	}
+
+	// Validate the configuration
+	if err := ValidateConfig(cfg); err != nil {
+		log.Printf("Warning: Configuration validation failed: %v", err)
+		// Still inject the configuration even if validation fails, to maintain backward compatibility
+		// The actual API calls will fail with authentication errors if the token is invalid
+	} else {
+		log.Printf("Successfully loaded and validated Netbird configuration from CLI arguments and environment variables")
+	}
+
+	// Inject validated configuration into context
+	return WithNetbirdConfig(ctx, cfg.APIToken, cfg.APIHost)
 }
 
 // ExtractNetbirdInfoFromEnvSSE is an SSEContextFunc that extracts Netbird configuration
-// from environment variables and injects it into the context.
+// from CLI arguments, HTTP headers, and environment variables.
 var ExtractNetbirdInfoFromEnvSSE server.SSEContextFunc = func(ctx context.Context, req *http.Request) context.Context {
-	apiKey := os.Getenv(netbirdAPIEnvVar)
-	if apiKey == "" {
-		log.Printf("SSE MODE - Warning: %s environment variable not found", netbirdAPIEnvVar)
-	} else {
-		log.Printf("SSE MODE - Found %s environment variable with length %d", netbirdAPIEnvVar, len(apiKey))
+	// Ensure GlobalConfigLoader is initialized
+	if GlobalConfigLoader == nil {
+		log.Printf("SSE MODE - Warning: GlobalConfigLoader not initialized, using empty CLI arguments")
+		GlobalConfigLoader = NewConfigLoader("", "")
 	}
-	return WithNetbirdAPIKey(ctx, apiKey)
+
+	// Extract HTTP headers
+	httpToken := req.Header.Get("X-Netbird-API-Token")
+	httpHost := req.Header.Get("X-Netbird-Host")
+
+	// Load configuration from CLI arguments, HTTP headers, and environment variables
+	cfg, err := GlobalConfigLoader.LoadConfig(httpToken, httpHost)
+	if err != nil {
+		log.Printf("SSE MODE - Failed to load configuration: %v", err)
+		return WithNetbirdConfig(ctx, "", "")
+	}
+
+	// Validate the configuration
+	if err := ValidateConfig(cfg); err != nil {
+		// Return HTTP 401 for missing API token
+		if cfg.APIToken == "" || strings.TrimSpace(cfg.APIToken) == "" {
+			log.Printf("SSE MODE - Missing API token from all sources")
+			// Note: We can't directly return HTTP 401 from here, but we inject empty token
+			// which will cause authentication to fail at the API call level
+			return WithNetbirdConfig(ctx, "", "")
+		}
+		log.Printf("SSE MODE - Configuration validation failed: %v", err)
+		// For other validation errors, still inject the configuration
+		// The actual API calls will fail with appropriate errors
+	} else {
+		log.Printf("SSE MODE - Successfully loaded and validated Netbird configuration")
+	}
+
+	// Inject validated configuration into context
+	return WithNetbirdConfig(ctx, cfg.APIToken, cfg.APIHost)
+}
+
+// WithNetbirdConfig adds the Netbird API token and host to the context.
+func WithNetbirdConfig(ctx context.Context, apiKey, apiHost string) context.Context {
+	ctx = context.WithValue(ctx, netbirdAPIKeyKey{}, apiKey)
+	ctx = context.WithValue(ctx, netbirdAPIHostKey{}, apiHost)
+	return ctx
 }
 
 // WithNetbirdAPIKey adds the Netbird API key to the context.
+// Deprecated: Use WithNetbirdConfig instead for full configuration support.
 func WithNetbirdAPIKey(ctx context.Context, apiKey string) context.Context {
 	return context.WithValue(ctx, netbirdAPIKeyKey{}, apiKey)
 }
@@ -169,6 +354,14 @@ func WithNetbirdAPIKey(ctx context.Context, apiKey string) context.Context {
 // NetbirdAPIKeyFromContext extracts the Netbird API key from the context.
 func NetbirdAPIKeyFromContext(ctx context.Context) string {
 	if v := ctx.Value(netbirdAPIKeyKey{}); v != nil {
+		return v.(string)
+	}
+	return ""
+}
+
+// NetbirdAPIHostFromContext extracts the Netbird API host from the context.
+func NetbirdAPIHostFromContext(ctx context.Context) string {
+	if v := ctx.Value(netbirdAPIHostKey{}); v != nil {
 		return v.(string)
 	}
 	return ""

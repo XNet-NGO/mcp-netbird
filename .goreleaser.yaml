@@ -1,45 +1,199 @@
 # yaml-language-server: $schema=https://goreleaser.com/static/schema.json
+# GoReleaser configuration for mcp-netbird
+# Copyright 2025-2026 XNet Inc.
+# Copyright 2025-2026 Joshua S. Doucette
 
 version: 2
 
 before:
   hooks:
     - go mod tidy
+    - go test ./...
 
 builds:
-  - env:
+  - id: mcp-netbird
+    binary: mcp-netbird
+    env:
       - CGO_ENABLED=0
     main: ./cmd/mcp-netbird
+    ldflags:
+      - -s -w
+      - -X main.version={{.Version}}
+      - -X main.commit={{.Commit}}
+      - -X main.date={{.Date}}
     goos:
       - linux
       - windows
       - darwin
+    goarch:
+      - amd64
+      - arm64
+    ignore:
+      - goos: windows
+        goarch: arm64
 
 archives:
-  - formats: tar.gz
-    # this name template makes the OS and Arch compatible with the results of `uname`.
+  - id: default
+    format: tar.gz
     name_template: >-
       {{ .ProjectName }}_
+      {{- .Version }}_
       {{- title .Os }}_
       {{- if eq .Arch "amd64" }}x86_64
       {{- else if eq .Arch "386" }}i386
       {{- else }}{{ .Arch }}{{ end }}
       {{- if .Arm }}v{{ .Arm }}{{ end }}
-    # use zip for windows archives
     format_overrides:
       - goos: windows
-        formats: zip
+        format: zip
+    files:
+      - LICENSE
+      - NOTICE
+      - AUTHORS
+      - README.md
+      - CONTRIBUTING.md
+
+# Debian/Ubuntu packages
+nfpms:
+  - id: mcp-netbird-deb
+    package_name: mcp-netbird
+    vendor: XNet Inc.
+    homepage: https://github.com/XNet-NGO/mcp-netbird
+    maintainer: Joshua S. Doucette <joshua@xnet.company>
+    description: |
+      NetBird MCP Server - Comprehensive Model Context Protocol server for NetBird
+      Provides full CRUD operations for all NetBird API resources, policy management,
+      group workflows, and helper functions.
+    license: Apache-2.0
+    formats:
+      - deb
+    bindir: /usr/bin
+    contents:
+      - src: LICENSE
+        dst: /usr/share/doc/mcp-netbird/LICENSE
+      - src: NOTICE
+        dst: /usr/share/doc/mcp-netbird/NOTICE
+      - src: AUTHORS
+        dst: /usr/share/doc/mcp-netbird/AUTHORS
+      - src: README.md
+        dst: /usr/share/doc/mcp-netbird/README.md
+    dependencies:
+      - ca-certificates
+    recommends:
+      - docker.io
+    file_name_template: >-
+      {{ .ProjectName }}_
+      {{- .Version }}_
+      {{- .Os }}_
+      {{- if eq .Arch "amd64" }}x86_64
+      {{- else }}{{ .Arch }}{{ end }}
+
+checksum:
+  name_template: 'checksums.txt'
+  algorithm: sha256
+
+snapshot:
+  name_template: "{{ incpatch .Version }}-next"
 
 changelog:
   sort: asc
+  use: github
   filters:
     exclude:
-      - "^docs:"
-      - "^test:"
+      - '^docs:'
+      - '^test:'
+      - '^chore:'
+      - '^ci:'
+  groups:
+    - title: Features
+      regexp: '^feat:'
+      order: 0
+    - title: Bug Fixes
+      regexp: '^fix:'
+      order: 1
+    - title: Others
+      order: 999
 
 release:
-  footer: >-
-
+  github:
+    owner: XNet-NGO
+    name: mcp-netbird
+  draft: false
+  prerelease: auto
+  mode: append
+  header: |
+    ## mcp-netbird {{ .Tag }}
+    
+    **Released by XNet Inc. and Joshua S. Doucette**
+    
+    ### Supported Platforms
+    
+    - **Linux**: x86_64, ARM64 (with Debian packages)
+    - **Windows**: x64
+    - **macOS**: x64 (Intel), ARM64 (Apple Silicon)
+    
+    ### Installation
+    
+    #### Linux (Debian/Ubuntu)
+    ```bash
+    # Download the .deb package for your architecture
+    wget https://github.com/XNet-NGO/mcp-netbird/releases/download/{{ .Tag }}/mcp-netbird_{{ .Version }}_linux_x86_64.deb
+    sudo dpkg -i mcp-netbird_{{ .Version }}_linux_x86_64.deb
+    ```
+    
+    #### Linux (Other Distributions)
+    ```bash
+    # Download and extract the tarball
+    wget https://github.com/XNet-NGO/mcp-netbird/releases/download/{{ .Tag }}/mcp-netbird_{{ .Version }}_Linux_x86_64.tar.gz
+    tar -xzf mcp-netbird_{{ .Version }}_Linux_x86_64.tar.gz
+    sudo mv mcp-netbird /usr/local/bin/
+    ```
+    
+    #### macOS
+    ```bash
+    # Intel Macs
+    wget https://github.com/XNet-NGO/mcp-netbird/releases/download/{{ .Tag }}/mcp-netbird_{{ .Version }}_Darwin_x86_64.tar.gz
+    tar -xzf mcp-netbird_{{ .Version }}_Darwin_x86_64.tar.gz
+    sudo mv mcp-netbird /usr/local/bin/
+    
+    # Apple Silicon Macs
+    wget https://github.com/XNet-NGO/mcp-netbird/releases/download/{{ .Tag }}/mcp-netbird_{{ .Version }}_Darwin_arm64.tar.gz
+    tar -xzf mcp-netbird_{{ .Version }}_Darwin_arm64.tar.gz
+    sudo mv mcp-netbird /usr/local/bin/
+    ```
+    
+    #### Windows
+    ```powershell
+    # Download the zip file and extract it
+    # Add the directory to your PATH
+    ```
+    
+    ### Docker
+    ```bash
+    docker pull ghcr.io/xnet-ngo/mcp-netbird:{{ .Tag }}
+    ```
+    
+    ### What's Changed
+    
+  footer: |
+    
     ---
-
-    Released by [GoReleaser](https://github.com/goreleaser/goreleaser).
+    
+    **Full Changelog**: https://github.com/XNet-NGO/mcp-netbird/compare/{{ .PreviousTag }}...{{ .Tag }}
+    
+    ### License
+    
+    Copyright 2025-2026 XNet Inc.  
+    Copyright 2025-2026 Joshua S. Doucette
+    
+    Licensed under the Apache License, Version 2.0
+    
+    ### Attribution
+    
+    This project was originally derived from the MCP Server for Grafana by Grafana Labs.
+    The current codebase has been substantially modified and extended.
+    
+    ---
+    
+    **Maintained by XNet Inc.**  
+    **Lead Developer: Joshua S. Doucette**

@@ -7,7 +7,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	mcpnetbird "github.com/aantti/mcp-netbird"
+	mcpnetbird "github.com/XNet-NGO/mcp-netbird"
 )
 
 // TestAccountSettingsMarshaling tests JSON marshaling/unmarshaling of NetbirdAccountSettings

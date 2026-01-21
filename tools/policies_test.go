@@ -8,7 +8,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	mcpnetbird "github.com/aantti/mcp-netbird"
+	mcpnetbird "github.com/XNet-NGO/mcp-netbird"
 )
 
 func TestListNetbirdPolicies(t *testing.T) {

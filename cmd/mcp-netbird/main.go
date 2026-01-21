@@ -26,8 +26,8 @@ import (
 
 	"github.com/mark3labs/mcp-go/server"
 
-	mcpnetbird "github.com/aantti/mcp-netbird"
-	"github.com/aantti/mcp-netbird/tools"
+	mcpnetbird "github.com/XNet-NGO/mcp-netbird"
+	"github.com/XNet-NGO/mcp-netbird/tools"
 )
 
 func newServer() *server.MCPServer {
@@ -78,6 +78,9 @@ func run(transport, addr string) error {
 
 func main() {
 	var transport string
+	var apiToken string
+	var apiHost string
+	
 	flag.StringVar(&transport, "t", "stdio", "Transport type (stdio or sse)")
 	flag.StringVar(
 		&transport,
@@ -86,7 +89,12 @@ func main() {
 		"Transport type (stdio or sse)",
 	)
 	addr := flag.String("sse-address", "localhost:8001", "The host and port to start the sse server on")
+	flag.StringVar(&apiToken, "api-token", "", "Netbird API token")
+	flag.StringVar(&apiHost, "api-host", "", "Netbird API host (without protocol)")
 	flag.Parse()
+
+	// Create global ConfigLoader instance with CLI flag values
+	mcpnetbird.GlobalConfigLoader = mcpnetbird.NewConfigLoader(apiToken, apiHost)
 
 	if err := run(transport, *addr); err != nil {
 		panic(err)

@@ -36,6 +36,39 @@ Thumbs.db
 .env.local
 .env.*.local
 
+# NetBird credentials (NEVER COMMIT)
+.netbird-test-user
+.netbird-setup-key
+.netbird-setup-keys
+
+# Internal documentation and status files (not for public repo)
+NETBIRD_*.md
+MCP_*.md
+MESH_*.md
+LANDING_*.md
+DEPLOYMENT_*.md
+RECOVERY_*.md
+TEST_*.md
+NEXT_*.md
+QUICK_*.md
+RELEASE_*.md
+DOCKER_*.md
+BRANDING_*.md
+DEMO_*.md
+STATELESS_*.md
+TASK_*.md
+PROJECT_STRUCTURE.md
+smithery.yaml
+
+# Keep important docs
+!docs/
+!CONTRIBUTING.md
+!CHANGELOG.md
+!README.md
+!LICENSE
+!NOTICE
+!AUTHORS
+
 # Build directories
 build/
 dist/

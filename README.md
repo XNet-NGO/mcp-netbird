@@ -1,6 +1,6 @@
 # NetBird MCP Server
 
-A comprehensive [Model Context Protocol](https://modelcontextprotocol.io) (MCP) server for [NetBird](https://netbird.io/) providing full CRUD operations, policy management, and automation workflows.
+A comprehensive [Model Context Protocol](https://modelcontextprotocol.io) (MCP) server for [NetBird](https://netbird.io/) providing 50+ tools for complete VPN infrastructure management through AI assistants.
 
 **Maintained by XNet Inc.**  
 **Lead Developer: Joshua S. Doucette**
@@ -8,512 +8,577 @@ A comprehensive [Model Context Protocol](https://modelcontextprotocol.io) (MCP) 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 [![Go Version](https://img.shields.io/github/go-mod/go-version/XNet-NGO/mcp-netbird)](go.mod)
 [![Release](https://img.shields.io/github/v/release/XNet-NGO/mcp-netbird)](https://github.com/XNet-NGO/mcp-netbird/releases)
+[![Docker Hub](https://img.shields.io/docker/pulls/xnetadmin/mcp-netbird)](https://hub.docker.com/r/xnetadmin/mcp-netbird)
 
 ## About
 
-This MCP server provides complete management capabilities for NetBird networks, including:
-- Full CRUD operations for all NetBird resources
-- Advanced policy management with validation
-- Group consolidation and dependency workflows
-- Helper functions for common administrative tasks
-- Comprehensive error handling and documentation
+This MCP server enables AI assistants like Kiro, Claude Desktop, and other MCP clients to programmatically manage NetBird VPN infrastructure. It provides:
 
-Originally derived from the MCP Server for Grafana by Grafana Labs, this project has been substantially extended and enhanced.
+- **50+ Management Tools**: Complete CRUD operations for all NetBird resources
+- **Multiple Deployment Options**: Local STDIO, Remote SSE, or Docker MCP Gateway
+- **Advanced Policy Management**: Validation, dependency tracking, and bulk operations
+- **Helper Functions**: Group consolidation, policy templates, and common workflows
+- **Production Ready**: Comprehensive error handling, logging, and security features
 
-## Installing
+Originally derived from the MCP Server for Grafana by Grafana Labs, this project has been substantially extended and enhanced for NetBird infrastructure management.
 
-### Official Releases
+## Quick Start
+
+### Docker (Recommended)
+
+The easiest way to get started is using Docker with the Docker MCP Gateway:
+
+```bash
+# Pull the latest image
+docker pull xnetadmin/mcp-netbird:latest
+
+# Run in SSE mode for remote access
+docker run -d \
+  --name mcp-netbird \
+  -p 8001:8001 \
+  -e NETBIRD_API_TOKEN=your_token_here \
+  -e NETBIRD_API_HOST=api.netbird.io \
+  xnetadmin/mcp-netbird:latest \
+  -t sse -sse-address 0.0.0.0:8001
+```
+
+Then configure your MCP client (see [Configuration](#configuration) below).
+
+### Installing from Releases
 
 Download pre-built binaries for your platform from the [releases page](https://github.com/XNet-NGO/mcp-netbird/releases).
 
-#### Linux (Debian/Ubuntu)
-
+**Linux (Debian/Ubuntu)**:
 ```bash
-# Download the .deb package for your architecture
 wget https://github.com/XNet-NGO/mcp-netbird/releases/latest/download/mcp-netbird_VERSION_linux_x86_64.deb
 sudo dpkg -i mcp-netbird_VERSION_linux_x86_64.deb
 ```
 
-#### Linux (Other Distributions)
-
+**Linux (Other)**:
 ```bash
-# Download and extract the tarball
 wget https://github.com/XNet-NGO/mcp-netbird/releases/latest/download/mcp-netbird_VERSION_Linux_x86_64.tar.gz
 tar -xzf mcp-netbird_VERSION_Linux_x86_64.tar.gz
 sudo mv mcp-netbird /usr/local/bin/
 ```
 
-#### macOS
-
+**macOS**:
 ```bash
 # Intel Macs
 wget https://github.com/XNet-NGO/mcp-netbird/releases/latest/download/mcp-netbird_VERSION_Darwin_x86_64.tar.gz
 tar -xzf mcp-netbird_VERSION_Darwin_x86_64.tar.gz
 sudo mv mcp-netbird /usr/local/bin/
 
-# Apple Silicon Macs
+# Apple Silicon
 wget https://github.com/XNet-NGO/mcp-netbird/releases/latest/download/mcp-netbird_VERSION_Darwin_arm64.tar.gz
 tar -xzf mcp-netbird_VERSION_Darwin_arm64.tar.gz
 sudo mv mcp-netbird /usr/local/bin/
 ```
 
-#### Windows
+**Windows**: Download the ZIP from [releases](https://github.com/XNet-NGO/mcp-netbird/releases), extract, and add to PATH.
 
-Download the ZIP file from the [releases page](https://github.com/XNet-NGO/mcp-netbird/releases), extract it, and add the directory to your PATH.
-
-### Installing from source
-
-#### Clone the repository
+### Building from Source
 
 ```bash
 git clone https://github.com/XNet-NGO/mcp-netbird
-```
-
-#### Build and install
-
-```bash
-cd mcp-netbird && \
+cd mcp-netbird
 make install
 ```
 
-### Installing from GitHub
-
+Or install directly from GitHub:
 ```bash
 go install github.com/XNet-NGO/mcp-netbird/cmd/mcp-netbird@latest
 ```
 
 ## Configuration
 
-The NetBird MCP server supports three configuration methods with a clear priority order. This enables flexible deployment in various environments, including stateless containers.
+The NetBird MCP server supports three deployment modes. Choose the one that best fits your use case.
 
-### Configuration Methods
+### Getting a NetBird API Token
 
-The server accepts configuration through three methods (in priority order):
+Before configuring, you'll need a NetBird API token:
 
-1. **Command-Line Arguments** (highest priority)
-2. **HTTP Headers** (SSE mode only, medium priority)
-3. **Environment Variables** (lowest priority)
+1. Login to your NetBird dashboard (https://app.netbird.io or your self-hosted instance)
+2. Go to **Settings → Access Tokens**
+3. Create a **Service User** (recommended for production) or use a personal token
+4. Assign appropriate role: **admin** (full access) or **network_admin** (network management only)
+5. Generate and copy the API token (starts with `nbp_`)
 
-#### 1. Command-Line Arguments
+### Deployment Options
 
-Pass configuration directly via CLI flags:
+#### Option 1: Docker MCP Gateway (Recommended)
 
-```bash
-mcp-netbird --api-token "your-token" --api-host "api.netbird.io"
+The Docker MCP Gateway provides the best experience for remote MCP servers, handling protocol translation between local STDIO and remote SSE.
+
+**1. Enable the NetBird MCP Server**
+
+Create or update `~/.docker/mcp/config.yaml`:
+```yaml
+netbird-mcp-server:
+  netbird_host: api.netbird.io  # or your self-hosted domain
+  enabled: true
 ```
 
-**Available Flags:**
-- `--api-token`: Your Netbird API token
-- `--api-host`: The Netbird API host without protocol (e.g., `api.netbird.io`)
-- `--transport`: Transport mode - `stdio` (default) or `sse`
-- `--sse-address`: Address for SSE mode (default: `:8001`)
+**2. Set Your API Token**
 
-**Example - Stdio Mode:**
+Create or update `~/.docker/mcp/.env`:
 ```bash
-mcp-netbird \
-  --api-token "nb_1234567890abcdef" \
-  --api-host "api.netbird.io"
+NETBIRD_API_TOKEN=nbp_your_token_here
 ```
 
-**Example - SSE Mode:**
-```bash
-mcp-netbird \
-  --transport sse \
-  --sse-address :8001 \
-  --api-token "nb_1234567890abcdef" \
-  --api-host "api.netbird.io"
-```
+**3. Configure Your MCP Client**
 
-#### 2. HTTP Headers (SSE Mode Only)
-
-When running in SSE mode, you can pass configuration via HTTP headers with each request:
-
-**Available Headers:**
-- `X-Netbird-API-Token`: Your Netbird API token
-- `X-Netbird-Host`: The Netbird API host without protocol
-
-**Example - Using curl:**
-```bash
-curl -X POST http://localhost:8001/sse \
-  -H "X-Netbird-API-Token: nb_1234567890abcdef" \
-  -H "X-Netbird-Host: api.netbird.io" \
-  -H "Content-Type: application/json" \
-  -d '{"method": "tools/list"}'
-```
-
-**Example - Docker MCP Toolkit:**
+For **Kiro** (`~/.kiro/settings/mcp.json`):
 ```json
 {
   "mcpServers": {
-    "netbird": {
-      "url": "http://localhost:8001/sse",
-      "headers": {
-        "X-Netbird-API-Token": "nb_1234567890abcdef",
-        "X-Netbird-Host": "api.netbird.io"
-      }
+    "MCP_DOCKER": {
+      "command": "docker",
+      "args": [
+        "mcp",
+        "gateway",
+        "run",
+        "--servers=netbird-mcp-server"
+      ],
+      "disabled": false,
+      "autoApprove": ["*"]
     }
   }
 }
 ```
 
-**Note:** HTTP headers are only used in SSE mode. In stdio mode, only CLI arguments and environment variables are available.
-
-#### 3. Environment Variables
-
-Set configuration via environment variables (traditional method):
-
-```bash
-export NETBIRD_API_TOKEN="nb_1234567890abcdef"
-export NETBIRD_HOST="api.netbird.io"
-mcp-netbird
+For **Claude Desktop** (`~/Library/Application Support/Claude/claude_desktop_config.json` on macOS):
+```json
+{
+  "mcpServers": {
+    "MCP_DOCKER": {
+      "command": "docker",
+      "args": [
+        "mcp",
+        "gateway",
+        "run",
+        "--servers=netbird-mcp-server"
+      ]
+    }
+  }
+}
 ```
 
-**Available Variables:**
-- `NETBIRD_API_TOKEN`: Your Netbird API token (required)
-- `NETBIRD_HOST`: The Netbird API host (default: `api.netbird.io`)
+**4. Verify Setup**
 
-**Example - MCP Client Configuration:**
+```bash
+# Check server is enabled
+docker mcp server list | grep netbird
+
+# Restart your MCP client (Kiro/Claude Desktop)
+# Tools will appear with mcp_MCP_DOCKER_ prefix
+```
+
+#### Option 2: Local STDIO Mode
+
+Run the MCP server locally for development or single-user scenarios.
+
+**For Kiro** (`~/.kiro/settings/mcp.json`):
 ```json
 {
   "mcpServers": {
     "netbird": {
-      "command": "mcp-netbird",
-      "args": [],
+      "command": "docker",
+      "args": [
+        "run",
+        "--rm",
+        "-i",
+        "xnetadmin/mcp-netbird:latest",
+        "-t",
+        "stdio"
+      ],
       "env": {
-        "NETBIRD_API_TOKEN": "nb_1234567890abcdef",
-        "NETBIRD_HOST": "api.netbird.io"
+        "NETBIRD_API_TOKEN": "nbp_your_token_here",
+        "NETBIRD_API_HOST": "api.netbird.io"
+      },
+      "disabled": false
+    }
+  }
+}
+```
+
+**For Claude Desktop**:
+```json
+{
+  "mcpServers": {
+    "netbird": {
+      "command": "docker",
+      "args": [
+        "run",
+        "--rm",
+        "-i",
+        "xnetadmin/mcp-netbird:latest",
+        "-t",
+        "stdio"
+      ],
+      "env": {
+        "NETBIRD_API_TOKEN": "nbp_your_token_here",
+        "NETBIRD_API_HOST": "api.netbird.io"
       }
     }
   }
 }
 ```
 
-### Configuration Priority Order
+#### Option 3: Remote SSE Server
 
-When multiple configuration sources provide the same value, the priority order is:
+Deploy the MCP server as a remote service for team collaboration or production use.
+
+**1. Deploy MCP Server**
+
+Create `docker-compose.yml`:
+```yaml
+version: '3.8'
+
+services:
+  mcp-netbird:
+    image: xnetadmin/mcp-netbird:latest
+    container_name: mcp-netbird-server
+    restart: unless-stopped
+    command: ["-t", "sse", "-sse-address", "0.0.0.0:8001"]
+    environment:
+      - NETBIRD_API_TOKEN=nbp_your_token_here
+      - NETBIRD_API_HOST=api.netbird.io
+    ports:
+      - "8001:8001"
+```
+
+Deploy:
+```bash
+docker compose up -d
+```
+
+**2. Configure Reverse Proxy (Optional but Recommended)**
+
+**Caddy** (`Caddyfile`):
+```caddyfile
+mcp.example.com {
+    reverse_proxy /sse localhost:8001 {
+        flush_interval -1  # Required for SSE
+    }
+    redir / /sse
+}
+```
+
+**Nginx**:
+```nginx
+server {
+    listen 443 ssl http2;
+    server_name mcp.example.com;
+    
+    location /sse {
+        proxy_pass http://localhost:8001;
+        proxy_http_version 1.1;
+        proxy_set_header Connection "";
+        proxy_buffering off;  # Required for SSE
+        proxy_cache off;
+        chunked_transfer_encoding off;
+    }
+}
+```
+
+**3. Configure Docker MCP Gateway**
+
+Update `~/.docker/mcp/config.yaml`:
+```yaml
+netbird-mcp-server:
+  url: https://mcp.example.com/sse
+  transport: sse
+  enabled: true
+```
+
+Then add to your MCP client configuration as shown in Option 1.
+
+### Configuration Priority
+
+When multiple configuration sources provide the same value:
 
 **CLI Arguments > HTTP Headers > Environment Variables**
 
-**Example:**
+Example:
 ```bash
 # Environment variable
 export NETBIRD_API_TOKEN="token-from-env"
 
-# CLI argument overrides environment variable
+# CLI argument overrides environment
 mcp-netbird --api-token "token-from-cli"
 # Result: Uses "token-from-cli"
 ```
 
-**Example - SSE Mode with Multiple Sources:**
-```bash
-# Environment variable
-export NETBIRD_API_TOKEN="token-from-env"
+### Self-Hosted NetBird
 
-# Start server with CLI argument
-mcp-netbird --transport sse --api-token "token-from-cli"
+For self-hosted NetBird instances, set the API host to your domain:
 
-# Make request with HTTP header
-curl -H "X-Netbird-API-Token: token-from-header" http://localhost:8001/sse
-# Result: Uses "token-from-cli" (CLI has highest priority)
+```yaml
+# Docker MCP Gateway
+netbird-mcp-server:
+  netbird_host: api.yourdomain.com
+  enabled: true
 ```
 
-### Configuration Validation
-
-The server validates all configuration values:
-
-- **API Token**: Must not be empty or whitespace-only
-- **API Host**: Must not be empty or whitespace-only
-- **Protocol Prefix**: Automatically stripped if present (e.g., `https://api.netbird.io` → `api.netbird.io`)
-
-**Invalid configurations will result in descriptive error messages:**
-```
-Error: API token is required but not provided
-Error: API token cannot be empty or whitespace-only
-Error: API host cannot be empty or whitespace-only
-Error: API host 'invalid host!' is not a valid URL format
+Or for STDIO mode:
+```json
+{
+  "env": {
+    "NETBIRD_API_TOKEN": "your_token",
+    "NETBIRD_API_HOST": "api.yourdomain.com"
+  }
+}
 ```
 
 ### Troubleshooting
 
-#### Common Configuration Errors
+**Tools not appearing**: Restart your MCP client after configuration changes.
 
-**1. Missing API Token**
+**Connection timeout**: Verify API token is valid and has appropriate permissions.
 
-**Error:** `API token is required but not provided`
+**401 Unauthorized**: Check that your API token hasn't expired.
 
-**Solution:** Provide the API token via one of the three methods:
-```bash
-# Option 1: CLI argument
-mcp-netbird --api-token "your-token"
-
-# Option 2: Environment variable
-export NETBIRD_API_TOKEN="your-token"
-mcp-netbird
-
-# Option 3: HTTP header (SSE mode only)
-curl -H "X-Netbird-API-Token: your-token" http://localhost:8001/sse
-```
-
-**2. Empty or Whitespace-Only Values**
-
-**Error:** `API token cannot be empty or whitespace-only`
-
-**Solution:** Ensure your token/host values are not empty strings or only whitespace:
-```bash
-# Bad
-mcp-netbird --api-token "   "
-
-# Good
-mcp-netbird --api-token "nb_1234567890abcdef"
-```
-
-**3. Invalid API Host Format**
-
-**Error:** `API host 'invalid host!' is not a valid URL format`
-
-**Solution:** Use a valid hostname without protocol:
-```bash
-# Bad
-mcp-netbird --api-host "https://api.netbird.io"
-mcp-netbird --api-host "invalid host!"
-
-# Good
-mcp-netbird --api-host "api.netbird.io"
-mcp-netbird --api-host "api.yourdomain.com"
-```
-
-**Note:** If you include a protocol prefix (`http://` or `https://`), it will be automatically stripped.
-
-**4. HTTP 401 Unauthorized (SSE Mode)**
-
-**Error:** HTTP 401 response when making SSE requests
-
-**Solution:** Ensure API token is provided via CLI argument, HTTP header, or environment variable:
-```bash
-# Start server with token
-mcp-netbird --transport sse --api-token "your-token"
-
-# Or provide token in request header
-curl -H "X-Netbird-API-Token: your-token" http://localhost:8001/sse
-```
-
-**5. Configuration Not Taking Effect**
-
-**Issue:** Your configuration seems to be ignored
-
-**Solution:** Check the priority order. CLI arguments override HTTP headers, which override environment variables:
-```bash
-# If you have an environment variable set
-export NETBIRD_API_TOKEN="old-token"
-
-# But pass a CLI argument
-mcp-netbird --api-token "new-token"
-
-# The CLI argument "new-token" will be used (higher priority)
-```
-
-**6. Stdio Mode Not Reading HTTP Headers**
-
-**Issue:** HTTP headers are not being used in stdio mode
-
-**Solution:** HTTP headers are only available in SSE mode. Use CLI arguments or environment variables for stdio mode:
-```bash
-# Stdio mode (default) - use CLI args or env vars
-mcp-netbird --api-token "your-token"
-
-# SSE mode - can use HTTP headers
-mcp-netbird --transport sse --api-token "your-token"
-```
-
-### Use Cases
-
-#### Stateless Docker Containers
-
-For Docker MCP Toolkit or other stateless container environments, use HTTP headers:
-
-```dockerfile
-# Dockerfile
-FROM golang:1.21-alpine
-WORKDIR /app
-COPY . .
-RUN go build -o mcp-netbird cmd/mcp-netbird/main.go
-EXPOSE 8001
-CMD ["./mcp-netbird", "--transport", "sse", "--sse-address", ":8001"]
-```
-
-```bash
-# Run without environment variables
-docker run -p 8001:8001 mcp-netbird-sse:v1
-
-# Pass credentials via HTTP headers
-curl -H "X-Netbird-API-Token: your-token" http://localhost:8001/sse
-```
-
-#### Development and Testing
-
-Use CLI arguments for quick testing without modifying environment:
-
-```bash
-# Test with different tokens quickly
-mcp-netbird --api-token "test-token-1"
-mcp-netbird --api-token "test-token-2"
-
-# Test with self-hosted instance
-mcp-netbird --api-token "your-token" --api-host "api.yourdomain.com"
-```
-
-#### Production Deployment
-
-Use environment variables for traditional deployments:
-
-```bash
-# Set once in your deployment configuration
-export NETBIRD_API_TOKEN="production-token"
-export NETBIRD_HOST="api.netbird.io"
-
-# Start server
-mcp-netbird --transport sse --sse-address :8001
-```
-
-#### Multi-Tenant SSE Server
-
-Use HTTP headers to support multiple tenants with different credentials:
-
-```bash
-# Start server without credentials
-mcp-netbird --transport sse
-
-# Each tenant provides their own credentials
-curl -H "X-Netbird-API-Token: tenant1-token" http://localhost:8001/sse
-curl -H "X-Netbird-API-Token: tenant2-token" http://localhost:8001/sse
-```
+**For detailed setup instructions**, see [docs/MCP_SETUP_GUIDE.md](docs/MCP_SETUP_GUIDE.md).
 
 ## Features
 
-This server uses the Netbird API to provide LLMs information about Netbird network. Currently it's a 1:1 mapping of select read-only Netbird API resources to tools.
+### Complete NetBird API Coverage
 
-- [x] Uses Netbird API to access configuration and status
-- [x] Configurable API endpoint
-- [x] Secure token-based authentication for Netbird API
+The MCP server provides 50+ tools covering all NetBird resources:
 
-### Tools
-
-The MCP-NetBird server provides comprehensive CRUD operations for all NetBird resources:
-
-#### Resource Management Tools
-
-| Category | Operations | Description |
-| --- | --- | --- |
-| **Peers** | list, get, update, delete | Manage network peers |
-| **Groups** | list, get, create, update, delete | Manage peer groups |
-| **Policies** | list, get, create, update, delete | Manage access control policies |
+| Resource | Operations | Description |
+|----------|-----------|-------------|
+| **Peers** | list, get, update, delete | Manage network peers and their configuration |
+| **Groups** | list, get, create, update, delete | Organize peers into logical groups |
+| **Policies** | list, get, create, update, delete | Control network access between groups |
 | **Networks** | list, get, create, update, delete | Manage network configurations |
-| **Network Resources** | list, get, create, update, delete | Manage network resources (subnets) |
-| **Network Routers** | list, get, create, update, delete | Manage network routing peers |
+| **Network Resources** | list, get, create, update, delete | Define network subnets and resources |
+| **Network Routers** | list, get, create, update, delete | Configure routing peers for networks |
 | **Nameservers** | list, get, create, update, delete | Manage DNS nameserver groups |
-| **Routes** | list, get, create, update, delete | Manage network routes (deprecated) |
-| **Setup Keys** | list, get, create, update, delete | Manage peer setup keys |
-| **Users** | list, get, invite, update, delete | Manage user accounts |
-| **Posture Checks** | list, get, create, update, delete | Manage security posture checks |
-| **Port Allocations** | list, get, create, update, delete | Manage ingress port allocations |
-| **Account** | get, update | Manage account settings |
+| **Routes** | list, get, create, update, delete | Configure network routes (legacy) |
+| **Setup Keys** | list, get, create, update, delete | Generate peer enrollment keys |
+| **Users** | list, get, invite, update, delete | Manage user accounts and permissions |
+| **Posture Checks** | list, get, create, update, delete | Define security posture requirements |
+| **Port Allocations** | list, get, create, update, delete | Manage ingress port forwarding |
+| **Account** | get, update | Configure account-wide settings |
 
-#### Helper Tools
+### Helper Tools
 
-| Tool | Description |
-| --- | --- |
-| `list_policies_by_group` | Find all policies that reference a specific group |
-| `replace_group_in_policies` | Replace one group with another across all policies |
-| `get_policy_template` | Get example policy structures with documentation |
+Advanced tools for common administrative workflows:
 
-### Adding tools
+- **list_policies_by_group**: Find all policies referencing a specific group
+- **replace_group_in_policies**: Bulk replace groups across all policies
+- **get_policy_template**: Get example policy structures with documentation
 
-To add new tools:
+### Key Capabilities
 
-1. Create a new file in `tools` (e.g., `tools/users.go`), possibly use existing code as a template
-2. Add API route and response specifics to the new file
-3. Add the tool to `func newServer()` in `cmd/main.go`
+- ✅ **Full CRUD Operations**: Create, read, update, and delete all NetBird resources
+- ✅ **Policy Validation**: Automatic validation of policy rules before API submission
+- ✅ **Dependency Tracking**: Find and manage resource dependencies
+- ✅ **Bulk Operations**: Perform operations across multiple resources
+- ✅ **Error Handling**: Comprehensive error messages and recovery suggestions
+- ✅ **Production Ready**: Secure authentication, logging, and monitoring support
 
-## Usage
+## Usage Examples
 
-### Quick Start
+### Basic Operations
 
-1. Get your [Netbird API token](https://docs.netbird.io/api/guides/authentication) from the Netbird management console.
+**List all peers**:
+```javascript
+mcp_MCP_DOCKER_list_netbird_peers()
+// Returns: Array of peer objects with IP, status, groups, etc.
+```
 
-2. Install the `mcp-netbird` binary using one of the installation methods above. Make sure the binary is in your PATH.
+**Create a group**:
+```javascript
+mcp_MCP_DOCKER_create_netbird_group({
+  name: "developers",
+  peers: []  // Add peer IDs here
+})
+```
 
-3. Configure the server using one of three methods:
+**Create a setup key**:
+```javascript
+mcp_MCP_DOCKER_create_netbird_setup_key({
+  name: "dev-team-key",
+  type: "reusable",
+  expires_in: 2592000,  // 30 days
+  auto_groups: ["dev-group-id"],
+  usage_limit: 50
+})
+```
 
-   **Method 1: Environment Variables (Traditional)**
-   
-   Add the server configuration to your client configuration file. E.g., for Codeium Windsurf add the following to `~/.codeium/windsurf/mcp_config.json`:
+### Policy Management
 
-   ```json
-   {
-     "mcpServers": {
-       "netbird": {
-         "command": "mcp-netbird",
-         "args": [],
-         "env": {
-           "NETBIRD_API_TOKEN": "<your-api-token>",
-           "NETBIRD_HOST": "api.netbird.io"
-         }
-       }
-     }
-   }
-   ```
+**Create a simple policy**:
+```javascript
+mcp_MCP_DOCKER_create_netbird_policy({
+  name: "Admin SSH Access",
+  description: "Allow admins to SSH to servers",
+  enabled: true,
+  rules: [{
+    name: "SSH Rule",
+    enabled: true,
+    action: "accept",
+    bidirectional: false,
+    protocol: "tcp",
+    sources: ["admin-group-id"],
+    destinations: ["server-group-id"],
+    port_ranges: [{ start: 22, end: 22 }]
+  }]
+})
+```
 
-   **Method 2: Command-Line Arguments**
-   
-   Pass configuration directly via CLI flags:
+**Find policies using a group**:
+```javascript
+mcp_MCP_DOCKER_list_policies_by_group({
+  group_id: "d535b93ngf8s73892nng"
+})
+// Returns: List of policies referencing this group
+```
 
-   ```json
-   {
-     "mcpServers": {
-       "netbird": {
-         "command": "mcp-netbird",
-         "args": [
-           "--api-token", "<your-api-token>",
-           "--api-host", "api.netbird.io"
-         ]
-       }
-     }
-   }
-   ```
+**Replace a group across all policies**:
+```javascript
+mcp_MCP_DOCKER_replace_group_in_policies({
+  old_group_id: "old-group-id",
+  new_group_id: "new-group-id"
+})
+// Updates all policies to use the new group
+```
 
-   **Method 3: HTTP Headers (SSE Mode Only)**
-   
-   For Docker MCP Toolkit or other SSE-based clients:
+### Network Configuration
 
-   ```json
-   {
-     "mcpServers": {
-       "netbird": {
-         "url": "http://localhost:8001/sse",
-         "headers": {
-           "X-Netbird-API-Token": "<your-api-token>",
-           "X-Netbird-Host": "api.netbird.io"
-         }
-       }
-     }
-   }
-   ```
+**Create a network**:
+```javascript
+const network = mcp_MCP_DOCKER_create_netbird_network({
+  name: "production-network",
+  description: "Production infrastructure"
+})
+```
 
-   **Note**: `NETBIRD_HOST` (or `--api-host` or `X-Netbird-Host`) defaults to `api.netbird.io` if not specified. For self-hosted instances, set it to your NetBird API host (e.g., `api.yourdomain.com`).
+**Add network resource**:
+```javascript
+mcp_MCP_DOCKER_create_netbird_network_resource({
+  network_id: network.id,
+  name: "database-subnet",
+  address: "10.0.1.0/24",
+  enabled: true,
+  groups: ["db-group-id"]
+})
+```
 
-   For more information on how to add a similar configuration to Claude Desktop, see [here](https://modelcontextprotocol.io/quickstart/user).
+**Configure network router**:
+```javascript
+mcp_MCP_DOCKER_create_netbird_network_router({
+  network_id: network.id,
+  peer: "router-peer-id",
+  metric: 100,
+  masquerade: true,
+  enabled: true
+})
+```
 
-   > Note: if you see something along the lines of `[netbird] [error] spawn mcp-netbird ENOENT` in Claude Desktop logs, you need to specify the full path to `mcp-netbird`. On macOS Claude Logs are in `~/Library/Logs/Claude`.
+### DNS Configuration
 
-4. Try asking questions along the lines of "Can you explain my Netbird peers, groups and policies to me?"
-   
-![claude-desktop-mcp-netbird](https://github.com/user-attachments/assets/094614cd-9399-4c90-adb3-06ae67c604e4)
+**Add nameserver group**:
+```javascript
+mcp_MCP_DOCKER_create_netbird_nameserver({
+  name: "Cloudflare DNS",
+  description: "Primary DNS resolver",
+  nameservers: [
+    { ip: "1.1.1.1", ns_type: "udp", port: 53 },
+    { ip: "1.0.0.1", ns_type: "udp", port: 53 }
+  ],
+  enabled: true,
+  groups: ["all-group-id"],
+  primary: true,
+  domains: [],
+  search_domains_enabled: false
+})
+```
 
-### Working with Policies
+### Complete Workflow Example
 
-#### Policy Rule Format
+Here's a complete example of setting up a new environment:
 
-When creating or updating policies, rules must follow this format:
+```javascript
+// 1. Create groups
+const adminGroup = mcp_MCP_DOCKER_create_netbird_group({
+  name: "admins",
+  peers: []
+})
+
+const serverGroup = mcp_MCP_DOCKER_create_netbird_group({
+  name: "servers",
+  peers: []
+})
+
+// 2. Create setup keys
+const adminKey = mcp_MCP_DOCKER_create_netbird_setup_key({
+  name: "admin-key",
+  type: "reusable",
+  expires_in: 2592000,
+  auto_groups: [adminGroup.id],
+  usage_limit: 10
+})
+
+const serverKey = mcp_MCP_DOCKER_create_netbird_setup_key({
+  name: "server-key",
+  type: "reusable",
+  expires_in: 2592000,
+  auto_groups: [serverGroup.id],
+  usage_limit: 100
+})
+
+// 3. Create policy
+mcp_MCP_DOCKER_create_netbird_policy({
+  name: "Admin Access",
+  description: "Allow admins to access servers",
+  enabled: true,
+  rules: [{
+    name: "Admin to Servers",
+    enabled: true,
+    action: "accept",
+    bidirectional: true,
+    protocol: "all",
+    sources: [adminGroup.id],
+    destinations: [serverGroup.id]
+  }]
+})
+
+// 4. Configure DNS
+mcp_MCP_DOCKER_create_netbird_nameserver({
+  name: "Primary DNS",
+  nameservers: [
+    { ip: "1.1.1.1", ns_type: "udp", port: 53 }
+  ],
+  enabled: true,
+  groups: [adminGroup.id, serverGroup.id],
+  primary: true
+})
+
+// Setup keys can now be used to enroll peers
+console.log("Admin key:", adminKey.key)
+console.log("Server key:", serverKey.key)
+```
+
+### Using with AI Assistants
+
+Once configured, you can interact with NetBird through natural language:
+
+**Kiro/Claude Desktop**:
+- "Can you explain my NetBird peers, groups and policies?"
+- "Create a new group called 'developers' and generate a setup key for it"
+- "Show me all policies that reference the admin group"
+- "Configure DNS to use Cloudflare for all peers"
+
+For more examples and detailed documentation, see [docs/MCP_SETUP_GUIDE.md](docs/MCP_SETUP_GUIDE.md).
+
+## Advanced Usage
+
+### Policy Rule Format
+
+When creating or updating policies, rules must follow this structure:
 
 ```json
 {
@@ -523,8 +588,8 @@ When creating or updating policies, rules must follow this format:
   "action": "accept",
   "bidirectional": true,
   "protocol": "all",
-  "sources": ["group-id-1", "group-id-2"],
-  "destinations": ["group-id-3", "group-id-4"],
+  "sources": ["group-id-1"],
+  "destinations": ["group-id-2"],
   "port_ranges": [
     {"start": 80, "end": 80},
     {"start": 443, "end": 443}
@@ -532,308 +597,213 @@ When creating or updating policies, rules must follow this format:
 }
 ```
 
-**Required Fields:**
-- `name` (string): Rule name
-- `enabled` (boolean): Whether rule is active
-- `action` (string): Either "accept" or "drop"
-- `bidirectional` (boolean): Whether traffic is allowed in both directions
-- `protocol` (string): One of "tcp", "udp", "icmp", or "all"
-- At least one source: `sources` (array of group IDs) OR `sourceResource` (object with id and type)
-- At least one destination: `destinations` (array of group IDs) OR `destinationResource` (object with id and type)
+**Required Fields**:
+- `name`, `enabled`, `action`, `bidirectional`, `protocol`
+- At least one source (array of group IDs or sourceResource object)
+- At least one destination (array of group IDs or destinationResource object)
 
-**Optional Fields:**
-- `description` (string): Rule description
-- `port_ranges` (array): Port ranges for TCP/UDP protocols
-- `authorized_groups` (object): Map of group IDs to arrays of authorized group IDs
+**Optional Fields**:
+- `description`, `port_ranges` (TCP/UDP only), `authorized_groups`
 
-**Important Notes:**
-- Sources and destinations must be arrays of group ID strings (e.g., `["d535b93ngf8s73892nng"]`)
-- Port ranges are only valid for TCP and UDP protocols
-- Port range start must be <= end
-- All rules are automatically validated before being sent to the API
-
-#### Example: Simple Policy
-
-```json
-{
-  "name": "Admin SSH Access",
-  "description": "Allow admins to SSH to all servers",
-  "enabled": true,
-  "rules": [
-    {
-      "name": "SSH Rule",
-      "enabled": true,
-      "action": "accept",
-      "bidirectional": false,
-      "protocol": "tcp",
-      "sources": ["admin-group-id"],
-      "destinations": ["server-group-id"],
-      "port_ranges": [{"start": 22, "end": 22}]
-    }
-  ]
-}
+**Get policy templates**:
+```javascript
+mcp_MCP_DOCKER_get_policy_template()
+// Returns example policy structures with documentation
 ```
 
-#### Example: Complex Policy with Multiple Rules
+### Group Management
 
-```json
-{
-  "name": "Infrastructure Access",
-  "description": "Complex access control for infrastructure",
-  "enabled": true,
-  "rules": [
-    {
-      "name": "HTTP/HTTPS Access",
-      "enabled": true,
-      "action": "accept",
-      "bidirectional": true,
-      "protocol": "tcp",
-      "sources": ["user-group-id"],
-      "destinations": ["web-server-group-id"],
-      "port_ranges": [
-        {"start": 80, "end": 80},
-        {"start": 443, "end": 443}
-      ]
-    },
-    {
-      "name": "Database Access",
-      "enabled": true,
-      "action": "accept",
-      "bidirectional": false,
-      "protocol": "tcp",
-      "sources": ["app-server-group-id"],
-      "destinations": ["database-group-id"],
-      "port_ranges": [{"start": 5432, "end": 5432}],
-      "authorized_groups": {
-        "admin-group-id": ["dba-group-id"]
-      }
-    }
-  ]
-}
+**Find group dependencies**:
+```javascript
+mcp_MCP_DOCKER_list_policies_by_group({
+  group_id: "d535b93ngf8s73892nng"
+})
+// Returns all policies referencing this group
 ```
 
-#### Getting Policy Templates
-
-Use the `get_policy_template` tool to get example policy structures:
-
-```bash
-# Returns examples of simple and complex policy rules with documentation
-get_policy_template
+**Force delete a group** (removes from all policies):
+```javascript
+mcp_MCP_DOCKER_delete_netbird_group({
+  group_id: "group-id",
+  force: true
+})
 ```
 
-### Working with Groups
+### Production Deployment
 
-#### Finding Group Dependencies
+For production environments, deploy the MCP server as a remote SSE service:
 
-Before deleting or modifying a group, find which policies reference it:
+1. **Deploy with Docker Compose** (see [Configuration](#configuration))
+2. **Configure reverse proxy** with SSL/TLS (Caddy or Nginx)
+3. **Set up monitoring** and logging
+4. **Use service user** with appropriate permissions
+5. **Rotate API tokens** regularly
 
-```bash
-# Find all policies that reference a specific group
-list_policies_by_group --group_id "d535b93ngf8s73892nng"
-```
-
-Returns:
-```json
-{
-  "group_id": "d535b93ngf8s73892nng",
-  "group_name": "Admins",
-  "policies": [
-    {
-      "policy_id": "policy-1",
-      "policy_name": "Admin Access",
-      "rule_id": "rule-1",
-      "rule_name": "Admin Rule",
-      "location": "sources"
-    }
-  ]
-}
-```
-
-#### Replacing Groups Across Policies
-
-Replace one group with another in all policies:
-
-```bash
-# Replace old group with new group in all policies
-replace_group_in_policies \
-  --old_group_id "old-group-id" \
-  --new_group_id "new-group-id"
-```
-
-Returns:
-```json
-{
-  "old_group_id": "old-group-id",
-  "new_group_id": "new-group-id",
-  "updated_policies": ["policy-1", "policy-2"],
-  "errors": []
-}
-```
-
-#### Force Deleting Groups
-
-Delete a group and automatically remove it from all dependent policies:
-
-```bash
-# Delete group without checking dependencies (removes from all policies)
-delete_netbird_group --group_id "group-id" --force true
-```
-
-If `force=false` and dependencies exist, returns an error with the list of dependent policies.
+See [docs/MCP_SETUP_GUIDE.md](docs/MCP_SETUP_GUIDE.md) for detailed production deployment guide.
 
 ## Docker
 
-Build an image and tag it:
+### Building Custom Images
 
+Build and tag an image:
 ```bash
 docker build -t mcp-netbird-sse:v1 -f Dockerfile.sse .
 ```
 
-Run the image with different configuration methods:
+Run with different configuration methods:
 
-**Option 1: Environment Variables (Traditional)**
+**Environment Variables**:
 ```bash
 docker run --name mcp-netbird -p 8001:8001 \
-  -e NETBIRD_API_TOKEN=<your-api-token> \
+  -e NETBIRD_API_TOKEN=your_token \
+  -e NETBIRD_API_HOST=api.netbird.io \
   mcp-netbird-sse:v1
 ```
 
-**Option 2: Command-Line Arguments**
+**Command-Line Arguments**:
 ```bash
 docker run --name mcp-netbird -p 8001:8001 \
   mcp-netbird-sse:v1 \
   --transport sse \
   --sse-address :8001 \
-  --api-token <your-api-token> \
+  --api-token your_token \
   --api-host api.netbird.io
 ```
 
-**Option 3: HTTP Headers (Stateless Containers)**
+**Stateless (HTTP Headers)**:
 ```bash
-# Run without credentials (stateless)
+# Run without credentials
 docker run --name mcp-netbird -p 8001:8001 mcp-netbird-sse:v1
 
-# Pass credentials via HTTP headers with each request
+# Pass credentials per request
 curl -X POST http://localhost:8001/sse \
-  -H "X-Netbird-API-Token: <your-api-token>" \
+  -H "X-Netbird-API-Token: your_token" \
   -H "X-Netbird-Host: api.netbird.io" \
   -H "Content-Type: application/json" \
   -d '{"method": "tools/list"}'
 ```
 
-**Note:** Option 3 is ideal for Docker MCP Toolkit and other stateless container environments where you don't want to bake credentials into the container.
+### Using ToolHive
 
-## ToolHive
-
-[ToolHive](https://github.com/StacklokLabs/toolhive) (thv) is a lightweight utility designed to simplify the deployment and management of MCP servers.
-
-You can use ToolHive to deploy and run Netbird MCP as follows:
-
-1. Install `thv` as described in [ToolHive README](https://github.com/StacklokLabs/toolhive#installation).
-
-2. Add Netbird API token to `thv` secrets:
+[ToolHive](https://github.com/StacklokLabs/toolhive) simplifies MCP server deployment:
 
 ```bash
+# Install thv
+# See: https://github.com/StacklokLabs/toolhive#installation
+
+# Add NetBird API token
 thv secret set netbird
-```
 
-3. Build an SSE image as described in the Docker section [above](#docker)
+# Build SSE image
+docker build -t mcp-netbird-sse:v1 -f Dockerfile.sse .
 
-4. Start Netbird MCP with `thv run` on port 8080:
+# Start server
+thv run --secret netbird,target=NETBIRD_API_TOKEN \
+  --transport sse \
+  --name thv-mcp-netbird \
+  --port 8080 \
+  --target-port 8001 \
+  mcp-netbird-sse:v1
 
-```bash
-thv run --secret netbird,target=NETBIRD_API_TOKEN --transport sse --name thv-mcp-netbird --port 8080 --target-port 8001 mcp-netbird-sse:v1
-```
-
-5. When you want to stop the server, use:
-
-```bash
+# Stop server
 thv stop thv-mcp-netbird
 ```
 
 ## Development
 
-Contributions are welcome! Please open an issue or submit a pull request if you have any suggestions or improvements.
+Contributions are welcome! Please open an issue or submit a pull request.
 
-This project is written in Go. Install Go following the instructions for your platform.
+### Prerequisites
 
-To run the server manually, you can use any of the three configuration methods:
+- Go 1.21 or later
+- Docker (for testing SSE mode)
+- Make (optional, for convenience commands)
 
-**Option 1: Environment Variables**
+### Running Locally
+
+**STDIO mode**:
 ```bash
-export NETBIRD_API_TOKEN=your-token && \
+export NETBIRD_API_TOKEN=your_token
 go run cmd/mcp-netbird/main.go
 ```
 
-**Option 2: Command-Line Arguments**
-```bash
-go run cmd/mcp-netbird/main.go --api-token your-token --api-host api.netbird.io
-```
-
-**Option 3: SSE Mode with HTTP Headers**
-```bash
-# Start server without credentials
-go run cmd/mcp-netbird/main.go --transport sse --sse-address :8001
-
-# In another terminal, make requests with headers
-curl -X POST http://localhost:8001/sse \
-  -H "X-Netbird-API-Token: your-token" \
-  -H "X-Netbird-Host: api.netbird.io" \
-  -H "Content-Type: application/json" \
-  -d '{"method": "tools/list"}'
-```
-
-Or in SSE mode with CLI arguments:
-
+**SSE mode**:
 ```bash
 go run cmd/mcp-netbird/main.go \
   --transport sse \
   --sse-address :8001 \
-  --api-token your-token \
+  --api-token your_token \
   --api-host api.netbird.io
 ```
 
-### Debugging
+### Debugging with MCP Inspector
 
-The **MCP Inspector** is an interactive developer tool for testing and debugging MCP servers. Read more about it [here](https://modelcontextprotocol.io/docs/tools/inspector).
+The [MCP Inspector](https://modelcontextprotocol.io/docs/tools/inspector) is an interactive tool for testing MCP servers:
 
-Here's how to start the MCP Inspector with different configuration methods:
-
-**Option 1: Environment Variables**
 ```bash
-export NETBIRD_API_TOKEN=your-token && \
+# Install and run
 npx @modelcontextprotocol/inspector
+
+# In the UI, configure:
+# - Transport: stdio or sse
+# - Command: mcp-netbird --api-token your_token
+# - Or URL: http://localhost:8001/sse (for SSE mode)
 ```
-
-**Option 2: Command-Line Arguments**
-```bash
-npx @modelcontextprotocol/inspector
-# Then in the UI, specify: mcp-netbird --api-token your-token --api-host api.netbird.io
-```
-
-**Option 3: SSE Mode with HTTP Headers**
-```bash
-# Start the server
-go run cmd/mcp-netbird/main.go --transport sse --sse-address :8001
-
-# In the MCP Inspector UI, configure SSE transport with headers:
-# URL: http://localhost:8001/sse
-# Headers: X-Netbird-API-Token: your-token
-```
-
-Netbird MCP Server can then be tested with either `stdio` or `SSE` transport type. For `stdio` specify the full path to `mcp-netbird` in the UI.
 
 ### Testing
 
-**TODO: add more tests**
+Run the test suite:
+```bash
+make test
+```
+
+Run specific tests:
+```bash
+go test ./tools -v -run TestListPeers
+```
 
 ### Linting
-
-To lint the code, run:
 
 ```bash
 make lint
 ```
+
+### Adding New Tools
+
+1. Create a new file in `tools/` (e.g., `tools/new_resource.go`)
+2. Implement the tool functions following existing patterns
+3. Add the tool to `func newServer()` in `cmd/mcp-netbird/main.go`
+4. Add tests in `tools/new_resource_test.go`
+5. Update documentation
+
+### Project Structure
+
+```
+mcp-netbird/
+├── cmd/mcp-netbird/     # Main application entry point
+├── tools/               # MCP tool implementations
+│   ├── peers.go
+│   ├── groups.go
+│   ├── policies.go
+│   └── ...
+├── docs/                # Documentation
+│   └── MCP_SETUP_GUIDE.md
+├── Dockerfile           # STDIO mode container
+├── Dockerfile.sse       # SSE mode container
+└── Makefile            # Build and development commands
+```
+
+## Documentation
+
+- **[MCP Setup Guide](docs/MCP_SETUP_GUIDE.md)**: Comprehensive setup guide with all deployment options
+- **[NetBird API Documentation](https://docs.netbird.io/api)**: Official NetBird API reference
+- **[Model Context Protocol](https://modelcontextprotocol.io)**: MCP specification and documentation
+
+## Support and Community
+
+- **Issues**: [GitHub Issues](https://github.com/XNet-NGO/mcp-netbird/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/XNet-NGO/mcp-netbird/discussions)
+- **NetBird Community**: [NetBird Slack](https://netbird.io/community)
 
 ## License
 
@@ -844,10 +814,12 @@ This project is licensed under the [Apache License, Version 2.0](LICENSE).
 
 ### Attribution
 
-This project was originally derived from the MCP Server for Grafana (https://github.com/grafana/mcp-grafana) developed by Grafana Labs. The current codebase has been substantially modified and extended.
+This project was originally derived from the [MCP Server for Grafana](https://github.com/grafana/mcp-grafana) developed by Grafana Labs. The current codebase has been substantially modified and extended for NetBird infrastructure management.
 
-This project uses MCP Go (https://github.com/mark3labs/mcp-go) developed by Mark III Labs.
+This project uses [MCP Go](https://github.com/mark3labs/mcp-go) developed by Mark III Labs.
 
 ---
 
 **Maintained by XNet Inc. | Lead Developer: Joshua S. Doucette**
+
+For questions or support, please open an issue on GitHub or reach out through our community channels.

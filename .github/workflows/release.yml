@@ -60,11 +60,19 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: xnetadmin
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
       - name: Extract metadata
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ghcr.io/xnet-ngo/mcp-netbird
+          images: |
+            ghcr.io/xnet-ngo/mcp-netbird
+            xnetadmin/mcp-netbird
           tags: |
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
@@ -86,9 +94,18 @@ jobs:
           provenance: true  # Enable provenance attestation
           sbom: true  # Enable SBOM attestation
 
-      - name: Generate artifact attestation
+      - name: Generate artifact attestation for GHCR
         uses: actions/attest-build-provenance@v1
         with:
           subject-name: ghcr.io/xnet-ngo/mcp-netbird
           subject-digest: ${{ steps.build-push.outputs.digest }}
           push-to-registry: true
+
+      - name: Update Docker Hub repository description
+        uses: peter-evans/dockerhub-description@v4
+        with:
+          username: xnetadmin
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          repository: xnetadmin/mcp-netbird
+          short-description: ${{ github.event.repository.description }}
+          readme-filepath: ./README.md
